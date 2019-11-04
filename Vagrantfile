@@ -97,13 +97,13 @@ Vagrant.configure(2) do |config|
     testing.vm.network "forwarded_port", guest: 9198, host: 9198
     testing.vm.network "forwarded_port", guest: 9199, host: 9199
 
-    testing.vm.network "forwarded_port", guest: 9000, host: 9000
-    testing.vm.network "forwarded_port", guest: 9001, host: 9001
-    testing.vm.network "forwarded_port", guest: 9002, host: 9002
-    testing.vm.network "forwarded_port", guest: 9003, host: 9003
-    testing.vm.network "forwarded_port", guest: 9004, host: 9004
-    testing.vm.network "forwarded_port", guest: 9005, host: 9005
-    testing.vm.network "forwarded_port", guest: 61616, host: 61616
+    #testing.vm.network "forwarded_port", guest: 9000, host: 9000
+    #testing.vm.network "forwarded_port", guest: 9001, host: 9001
+    #testing.vm.network "forwarded_port", guest: 9002, host: 9002
+    #testing.vm.network "forwarded_port", guest: 9003, host: 9003
+    #testing.vm.network "forwarded_port", guest: 9004, host: 9004
+    #testing.vm.network "forwarded_port", guest: 9005, host: 9005
+    #testing.vm.network "forwarded_port", guest: 61616, host: 61616
   end
 
 end
