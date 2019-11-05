@@ -1,0 +1,9 @@
+{
+  "id": "b376cc2f-71f2-43be-8e64-f7941f815d73",
+  "name": "Vendors ReferenceLink Trigger",
+  "description": "Triggers Vendor ReferenceLink build",
+  "type": "MESSAGE_CORRELATE",
+  "method": "POST",
+  "deserializeAs": "EventTrigger",
+  "pathPattern": "/events/referencelink/voyager/vendors"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "12904e55-0234-4ead-877d-57abfc0be757",
+  "name": "Vendors Reference Link Workflow",
+  "deploymentId": null,
+  "processDefinitionIds": [],
+  "active": false,
+  "tasks": [
+    "{{modWorkflow}}/streamingExtractorTask/a98fe894-1f06-4d6b-b214-434cfa5298ed",
+    "{{modWorkflow}}/streamingExtractorTask/fb8381ed-fd9b-4250-b6ec-85da72597cae",
+    "{{modWorkflow}}/processorTask/6dc423e1-6635-4079-9aef-672a6e2da456",
+    "{{modWorkflow}}/streamingRequestTask/da405adf-f092-4d82-ac3e-ea4e05187464"
+  ],
+  "startTrigger": "{{modWorkflow}}/eventTrigger/b376cc2f-71f2-43be-8e64-f7941f815d73"
+}

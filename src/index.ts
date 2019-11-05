@@ -7,18 +7,19 @@ const program = require('commander');
 
 import { okapi } from './service/okapi.service';
 import { config } from './config';
+import { modWorkflow } from './service/workflow.service';
 
 program
   .version('0.0.1')
-  .usage("[options]")
+  .usage('[options]')
   .option('-c, --config', 'show current configuration', () => {
     console.log(JSON.stringify(config.store, null, 2));
   })
-  .description("A CLI for building and running FOLIO migration workflows");
+  .description('A CLI for building and running FOLIO migration workflows');
 
 program
-  .command("config <action> <property> [value]")
-  .description("get/set/delete config value")
+  .command('config <action> <property> [value]')
+  .description('get/set/delete config value')
   .action((action: 'get' | 'set' | 'delete', property: string, value?: string) => {
     switch (action) {
       case 'get':
@@ -40,8 +41,8 @@ program
   });
 
 program
-  .command("login [username] [password]")
-  .description("login to acquire token")
+  .command('login [username] [password]')
+  .description('login to acquire token')
   .action((username?: string, password?: string) => {
     okapi.login(username, password).then((res: string) => {
       console.log(res);
@@ -51,8 +52,8 @@ program
   });
 
 program
-  .command("lookup <module>")
-  .description("lookup module, matching name starting with")
+  .command('lookup <module>')
+  .description('lookup module, matching name starting with')
   .action((name: string) => {
     okapi.getDiscoveryModuleURL(name).then((res: string) => {
       console.log(res);
@@ -62,9 +63,52 @@ program
   });
 
 program
+  .command('build <name>')
+  .description('build workflow by name')
+  .action((name: string) => {
+    modWorkflow.build(name).then((workflow: any) => {
+      console.log(workflow);
+    }, (err: string) => {
+      console.log(err);
+    });
+  });
+
+program
+  .command('activate <name>')
+  .description('activate workflow by name')
+  .action((name: string) => {
+    modWorkflow.activate(name).then((workflow: any) => {
+      console.log(workflow);
+    }, (err: string) => {
+      console.log(err);
+    });
+  });
+
+program
+  .command('deactivate <name>')
+  .description('deactivate workflow by name')
+  .action((name: string) => {
+    modWorkflow.deactivate(name).then((workflow: any) => {
+      console.log(workflow);
+    }, (err: string) => {
+      console.log(err);
+    });
+  });
+
+program
+  .command('run <name>')
+  .description('run workflow by name')
+  .action((name: string) => {
+    modWorkflow.run(name).then((workflow: any) => {
+      console.log(workflow);
+    }, (err: string) => {
+      console.log(err);
+    });
+  });
+
+program
   .parse(process.argv);
 
-// no arguments
 if (process.argv.length === 2) {
   clear();
   console.log(chalk.red(figlet.textSync('folio-migration-cli', { horizontalLayout: 'full' })));

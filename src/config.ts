@@ -1,6 +1,10 @@
 const Conf = require('conf');
 
 const schema = {
+  wd: {
+    type: 'string',
+    default: './workflows'
+  },
   okapi: {
     type: 'string',
     format: 'uri',
@@ -40,8 +44,11 @@ const schema = {
   modExternalReferenceResolver: {
     type: 'string',
     format: 'uri',
-    default: 'http://localhost:9130'
+    default: 'http://localhost:9003'
   }
 };
 
-export const config = new Conf({ schema })
+export const config = new Conf({
+  projectName: 'fmcli',
+  schema: schema
+});

@@ -1,5 +1,5 @@
-import { RestService } from "./rest.service";
-import { config } from "../config";
+import { RestService } from './rest.service';
+import { config } from '../config';
 
 class OkapiService extends RestService {
 

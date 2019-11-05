@@ -1,0 +1,8 @@
+{
+  "id": "da405adf-f092-4d82-ac3e-ea4e05187464",
+  "name": "Create Reference Links",
+  "delegate": "streamingRequestDelegate",
+  "deserializeAs": "StreamingRequestTask",
+  "streaming": false,
+  "storageDestination": "{{modExternalReferenceResolver}}/referenceLinks"
+}

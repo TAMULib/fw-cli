@@ -1,0 +1,9 @@
+{
+  "id": "6dc423e1-6635-4079-9aef-672a6e2da456",
+  "name": "buildVendorReferenceLink",
+  "delegate": "streamingProcessDelegate",
+  "deserializeAs": "ProcessorTask",
+  "streaming": false,
+  "script": "var vendorTypes={AMDB:'{{modExternalReferenceResolver}}/referenceLinkTypes/08c7dd18-dbaf-11e9-8a34-2a2ae2dbcce4',MSDB:'{{modExternalReferenceResolver}}/referenceLinkTypes/08c7df8e-dbaf-11e9-8a34-2a2ae2dbcce4'},returnObj={folioReference:UUID.randomUUID().toString(),externalReference:args.VENDOR_ID,type:'amdb'===args.SCHEMA.toLowerCase()?vendorTypes.AMDB:vendorTypes.MSDB};",
+  "scriptType": "JS"
+}
