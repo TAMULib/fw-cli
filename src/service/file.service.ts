@@ -1,7 +1,5 @@
 const fs = require('fs');
 
-import { config } from '../config';
-
 class FileService {
 
   public read(path: string): any {

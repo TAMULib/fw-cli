@@ -1,4 +1,3 @@
-const fs = require('fs');
 const handlebars = require('handlebars');
 
 import { config } from '../config';
