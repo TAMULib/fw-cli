@@ -36,7 +36,7 @@ program
         config.delete(property);
         break;
       default:
-        console.log(`${action} not a valid action. <get/set/delete>`)
+        console.log(`${action} not a valid action. <get/set/delete>`);
     }
   });
 

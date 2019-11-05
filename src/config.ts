@@ -48,7 +48,9 @@ const schema = {
   }
 };
 
+export const projectName = 'fmcli';
+
 export const config = new Conf({
-  projectName: 'fmcli',
-  schema: schema
+  projectName,
+  schema
 });
