@@ -7,7 +7,7 @@ class TemplateService {
   public template(value: string, data: any = {}): any {
     const templateFn = handlebars.compile(value);
     const store = JSON.parse(JSON.stringify(config.store));
-    return JSON.parse(templateFn(Object.assign(data, store)));
+    return templateFn(Object.assign(data, store));
   }
 
 }

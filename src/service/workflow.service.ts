@@ -1,6 +1,7 @@
 const fs = require('fs');
 
 import { RestService } from './rest.service';
+import { Enhancer } from './enhancer.interface';
 
 import { config } from '../config';
 import { modExternalReferenceResolver } from './external-reference.service';
@@ -8,7 +9,7 @@ import { modDataExtractor } from './data-extractor.service';
 import { fileService } from './file.service';
 import { templateService } from './template.service';
 
-class WorkflowService extends RestService {
+class WorkflowService extends RestService implements Enhancer {
 
   public createTrigger(extractor: any): Promise<any> {
     return this.post(`${config.get('modWorkflow')}/triggers`, extractor);
@@ -26,7 +27,7 @@ class WorkflowService extends RestService {
     const path = `${config.get('wd')}/${name}`;
     if (fs.existsSync(path)) {
       const json = fileService.read(`${path}/workflow.json`);
-      const workflow = templateService.template(json);
+      const workflow = JSON.parse(templateService.template(json));
       return this.put(`${config.get('modWorkflow')}/workflows/${workflow.id}/activate`, {});
     }
     throw new Error(`cannot find workflow at ${path}`);
@@ -36,7 +37,7 @@ class WorkflowService extends RestService {
     const path = `${config.get('wd')}/${name}`;
     if (fs.existsSync(path)) {
       const json = fileService.read(`${path}/workflow.json`);
-      const workflow = templateService.template(json);
+      const workflow = JSON.parse(templateService.template(json));
       return this.put(`${config.get('modWorkflow')}/workflows/${workflow.id}/deactivate`, {});
     }
     throw new Error(`cannot find workflow at ${path}`);
@@ -46,7 +47,7 @@ class WorkflowService extends RestService {
     const path = `${config.get('wd')}/${name}`;
     if (fs.existsSync(path)) {
       const json = fileService.read(`${path}/triggers/startTrigger.json`);
-      const startTrigger = templateService.template(json);
+      const startTrigger = JSON.parse(templateService.template(json));
       return this.post(`${config.get('modWorkflow')}/${startTrigger.pathPattern}`, {});
     }
     throw new Error(`cannot find workflow at ${path}`);
@@ -64,7 +65,7 @@ class WorkflowService extends RestService {
         () => {
           const json = fileService.read(`${path}/workflow.json`);
           const workflow = templateService.template(json);
-          return this.createWorkflow(workflow);
+          return this.createWorkflow(JSON.parse(workflow));
         }
       ].reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
     }
@@ -116,9 +117,25 @@ class WorkflowService extends RestService {
 
   private create(path: string, service: any, fn: string): Promise<any> {
     const promises = fileService.readAll(path)
+      .map((json: any) => service.enhance(path, json))
       .map((json: any) => templateService.template(json))
-      .map((data: any) => service[fn](data));
+      .map((json: any) => service[fn](JSON.parse(json)));
     return Promise.all(promises);
+  }
+
+  public enhance(path: string, json: any): any {
+    const obj = JSON.parse(json);
+    if (obj.script) {
+      const scriptJson = fileService.read(`${path}/js/${obj.script}`);
+      obj.script = templateService.template(scriptJson)
+        // remove all endline characters
+        .replace(/(\r\n|\n|\r)/gm, '')
+        // remove all extraneous double spaces
+        .replace(/\s+/g, ' ')
+        // replace all double quotes with single quotes
+        .replace(/"/g, '\'');
+    }
+    return JSON.stringify(obj);
   }
 
 }

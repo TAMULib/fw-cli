@@ -11,7 +11,9 @@ class FileService {
 
   public readAll(path: string): any[] {
     if (fs.existsSync(path)) {
-      return fs.readdirSync(path).map((file: string) => {
+      return fs.readdirSync(path).filter((file: string) => {
+        return fs.lstatSync(`${path}/${file}`).isFile();
+      }).map((file: string) => {
         return this.read(`${path}/${file}`);
       });
     }
