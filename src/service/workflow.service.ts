@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 import { RestService } from './rest.service';
 import { Enhancer } from './enhancer.interface';
 
@@ -25,7 +23,7 @@ class WorkflowService extends RestService implements Enhancer {
 
   public activate(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}`;
-    if (fs.existsSync(path)) {
+    if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
       return this.put(`${config.get('modWorkflow')}/workflows/${workflow.id}/activate`, {});
@@ -35,7 +33,7 @@ class WorkflowService extends RestService implements Enhancer {
 
   public deactivate(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}`;
-    if (fs.existsSync(path)) {
+    if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
       return this.put(`${config.get('modWorkflow')}/workflows/${workflow.id}/deactivate`, {});
@@ -45,7 +43,7 @@ class WorkflowService extends RestService implements Enhancer {
 
   public run(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}`;
-    if (fs.existsSync(path)) {
+    if (fileService.exists(path)) {
       const json = fileService.read(`${path}/triggers/startTrigger.json`);
       const startTrigger = JSON.parse(templateService.template(json));
       return this.post(`${config.get('modWorkflow')}/${startTrigger.pathPattern}`, {});
@@ -55,7 +53,7 @@ class WorkflowService extends RestService implements Enhancer {
 
   public build(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}`;
-    if (fs.existsSync(path)) {
+    if (fileService.exists(path)) {
       return [
         () => this.createReferenceData(name),
         () => this.createReferenceLinkTypes(name),
@@ -75,7 +73,7 @@ class WorkflowService extends RestService implements Enhancer {
   public createReferenceData(name: string): Promise<any> {
     return new Promise((resolve, reject) => {
       const path = `${config.get('wd')}/${name}/referenceData`;
-      if (fs.existsSync(path)) {
+      if (fileService.exists(path)) {
         resolve({});
       } else {
         reject(`cannot find reference data at ${path}`);
@@ -85,7 +83,7 @@ class WorkflowService extends RestService implements Enhancer {
 
   public createReferenceLinkTypes(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/referenceLinkTypes`;
-    if (fs.existsSync(path)) {
+    if (fileService.exists(path)) {
       return this.create(path, modExternalReferenceResolver, 'createReferenceLinkType');
     }
     throw new Error(`cannot find reference link types at ${path}`);
@@ -93,7 +91,7 @@ class WorkflowService extends RestService implements Enhancer {
 
   public createExtractors(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/extractors`;
-    if (fs.existsSync(path)) {
+    if (fileService.exists(path)) {
       return this.create(path, modDataExtractor, 'createExtractor');
     }
     throw new Error(`cannot find extractors at ${path}`);
@@ -101,7 +99,7 @@ class WorkflowService extends RestService implements Enhancer {
 
   public createTriggers(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/triggers`;
-    if (fs.existsSync(path)) {
+    if (fileService.exists(path)) {
       return this.create(path, modWorkflow, 'createTrigger');
     }
     throw new Error(`cannot find triggers at ${path}`);
@@ -109,7 +107,7 @@ class WorkflowService extends RestService implements Enhancer {
 
   public createTasks(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/tasks`;
-    if (fs.existsSync(path)) {
+    if (fileService.exists(path)) {
       return this.create(path, modWorkflow, 'createTask');
     }
     throw new Error(`cannot find tasks at ${path}`);
@@ -126,14 +124,17 @@ class WorkflowService extends RestService implements Enhancer {
   public enhance(path: string, json: any): any {
     const obj = JSON.parse(json);
     if (obj.script) {
-      const scriptJson = fileService.read(`${path}/js/${obj.script}`);
-      obj.script = templateService.template(scriptJson)
-        // remove all endline characters
-        .replace(/(\r\n|\n|\r)/gm, '')
-        // remove all extraneous double spaces
-        .replace(/\s+/g, ' ')
-        // replace all double quotes with single quotes
-        .replace(/"/g, '\'');
+      if (fileService.exists(`${path}/js/${obj.script}`)) {
+        const scriptJson = fileService.read(`${path}/js/${obj.script}`);
+        obj.script = templateService.template(scriptJson)
+          // remove all endline characters
+          .replace(/(\r\n|\n|\r)/gm, '')
+          // remove all extraneous double spaces
+          .replace(/\s+/g, ' ')
+          // replace all double quotes with single quotes
+          .replace(/"/g, '\'');
+      }
+
     }
     return JSON.stringify(obj);
   }
