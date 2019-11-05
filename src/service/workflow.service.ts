@@ -28,7 +28,7 @@ class WorkflowService extends RestService implements Enhancer {
       const workflow = JSON.parse(templateService.template(json));
       return this.put(`${config.get('modWorkflow')}/workflows/${workflow.id}/activate`, {});
     }
-    throw new Error(`cannot find workflow at ${path}`);
+    return Promise.reject(`cannot find workflow at ${path}`);
   }
 
   public deactivate(name: string): Promise<any> {
@@ -38,7 +38,7 @@ class WorkflowService extends RestService implements Enhancer {
       const workflow = JSON.parse(templateService.template(json));
       return this.put(`${config.get('modWorkflow')}/workflows/${workflow.id}/deactivate`, {});
     }
-    throw new Error(`cannot find workflow at ${path}`);
+    return Promise.reject(`cannot find workflow at ${path}`);
   }
 
   public run(name: string): Promise<any> {
@@ -48,7 +48,7 @@ class WorkflowService extends RestService implements Enhancer {
       const startTrigger = JSON.parse(templateService.template(json));
       return this.post(`${config.get('modWorkflow')}/${startTrigger.pathPattern}`, {});
     }
-    throw new Error(`cannot find workflow at ${path}`);
+    return Promise.reject(`cannot find workflow at ${path}`);
   }
 
   public build(name: string): Promise<any> {
@@ -67,7 +67,7 @@ class WorkflowService extends RestService implements Enhancer {
         }
       ].reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
     }
-    throw new Error(`cannot find workflow at ${path}`);
+    return Promise.reject(`cannot find workflow at ${path}`);
   }
 
   public createReferenceData(name: string): Promise<any> {
@@ -86,7 +86,7 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       return this.create(path, modExternalReferenceResolver, 'createReferenceLinkType');
     }
-    throw new Error(`cannot find reference link types at ${path}`);
+    return Promise.reject(`cannot find reference link types at ${path}`);
   }
 
   public createExtractors(name: string): Promise<any> {
@@ -94,7 +94,7 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       return this.create(path, modDataExtractor, 'createExtractor');
     }
-    throw new Error(`cannot find extractors at ${path}`);
+    return Promise.reject(`cannot find extractors at ${path}`);
   }
 
   public createTriggers(name: string): Promise<any> {
@@ -102,7 +102,7 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       return this.create(path, modWorkflow, 'createTrigger');
     }
-    throw new Error(`cannot find triggers at ${path}`);
+    return Promise.reject(`cannot find triggers at ${path}`);
   }
 
   public createTasks(name: string): Promise<any> {
@@ -110,7 +110,7 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       return this.create(path, modWorkflow, 'createTask');
     }
-    throw new Error(`cannot find tasks at ${path}`);
+    return Promise.reject(`cannot find tasks at ${path}`);
   }
 
   private create(path: string, service: any, fn: string): Promise<any> {
