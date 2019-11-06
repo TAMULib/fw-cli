@@ -38,6 +38,29 @@ var formatSourceData = function (args) {
   return sourceData;
 };
 returnObj = {
+  sourceData: formatSourceData(args),
+  vendorRequestBody: {
+    'id': null,
+    'name': null,
+    'code': null,
+    'description': null,
+    'status': null,
+    'language': null,
+    'isVendor': null,
+    'sanCode': null,
+    'aliases': [],
+    'addresses': [],
+    'phoneNumbers': [],
+    'emails': [],
+    'urls': [],
+    'contacts': [],
+    'agreements': [],
+    'vendorCurrencies': [],
+    'claimingInterval': null,
+    'interfaces': [],
+    'accounts': [],
+    'changelogs': []
+  },
   statuses: [
     'Active',
     'Inactive',
@@ -326,28 +349,5 @@ returnObj = {
     'YEMEN': 'YEM',
     'ZAMBIA': 'ZMB',
     'ZIMBABWE': 'ZWE'
-  },
-  sourceData: formatSourceData(args),
-  vendorRequestBody: {
-    'id': null,
-    'name': null,
-    'code': null,
-    'description': null,
-    'status': null,
-    'language': null,
-    'isVendor': null,
-    'sanCode': null,
-    'aliases': [],
-    'addresses': [],
-    'phoneNumbers': [],
-    'emails': [],
-    'urls': [],
-    'contacts': [],
-    'agreements': [],
-    'vendorCurrencies': [],
-    'claimingInterval': null,
-    'interfaces': [],
-    'accounts': [],
-    'changelogs': []
   }
 };

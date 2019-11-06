@@ -1,7 +1,7 @@
 {
   "id": "81cc6029-f820-4799-88a8-8f3038b5ee2d",
   "name": "User Reference Link Trigger",
-  "description": "Triggers A Build of the User  Reference Links",
+  "description": "Triggers A Build of the User Reference Links",
   "type": "MESSAGE_CORRELATE",
   "method": "POST",
   "deserializeAs": "EventTrigger",

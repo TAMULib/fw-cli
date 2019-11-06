@@ -20,7 +20,7 @@ program
       for (const workflow of workflows) {
         modWorkflow.isActive(workflow).then((isActive: boolean) => {
           console.log(` - ${workflow} ${isActive ? 'ACTIVE' : ''}`);
-        }, console.log);
+        }, () => console.log(` - ${workflow}`));
       }
     }, console.log);
   })
