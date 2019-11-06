@@ -39,12 +39,19 @@ class WorkflowService extends RestService implements Enhancer {
     }
     fileService.createDirectory(path);
     fileService.createDirectory(`${path}/extractors`);
+    fileService.createFile(`${path}/extractors/.gitkeep`);
     fileService.createDirectory(`${path}/extractors/sql`);
+    fileService.createFile(`${path}/extractors/sql/.gitkeep`);
     fileService.createDirectory(`${path}/referenceData`);
+    fileService.createFile(`${path}/referenceData/.gitkeep`);
     fileService.createDirectory(`${path}/referenceLinkTypes`);
+    fileService.createFile(`${path}/referenceLinkTypes/.gitkeep`);
     fileService.createDirectory(`${path}/tasks`);
+    fileService.createFile(`${path}/tasks/.gitkeep`);
     fileService.createDirectory(`${path}/tasks/js`);
+    fileService.createFile(`${path}/tasks/js/.gitkeep`);
     fileService.createDirectory(`${path}/triggers`);
+    fileService.createFile(`${path}/triggers/.gitkeep`);
     fileService.createFile(`${path}/triggers/startTrigger.json`, {
       id: uuid(),
       name: '',

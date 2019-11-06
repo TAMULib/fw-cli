@@ -35,7 +35,7 @@ class FileService {
     return fs.mkdirSync(path);
   }
 
-  public createFile(path: string, data: any = {}): any {
+  public createFile(path: string, data: any = ''): any {
     return fs.writeFileSync(path, JSON.stringify(data, null, 2));
   }
 
