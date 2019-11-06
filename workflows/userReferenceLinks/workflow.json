@@ -1,0 +1,15 @@
+{
+  "id": "7c687c9b-ca60-47f5-b8aa-ec40f437b80c",
+  "name": "Users Reference Link Workflow",
+  "deploymentId": null,
+  "processDefinitionIds": [],
+  "active": false,
+  "tasks": [
+    "{{mod_workflow_url}}/streamingExtractorTask/ea1dcb2e-3015-40c0-94c5-0f44447d0a8a",
+    "{{mod_workflow_url}}/streamingExtractorTask/5b7b0915-1563-46f9-afa7-a574df7b9a52",
+    "{{mod_workflow_url}}/streamingExtractorTask/3c9c3a5b-79a4-4af9-9373-714e922d4fd0",
+    "{{mod_workflow_url}}/processorTask/a8cb3042-6431-4137-9406-d5a90727ce8e",
+    "{{mod_workflow_url}}/streamingRequestTask/bac83a14-e3c5-430e-b88c-4b22d1518b42"
+  ],
+  "startTrigger": "{{mod-workflow-url}}/eventTrigger/81cc6029-f820-4799-88a8-8f3038b5ee2d"
+}

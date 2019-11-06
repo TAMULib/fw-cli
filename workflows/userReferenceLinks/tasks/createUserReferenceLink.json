@@ -1,0 +1,8 @@
+{
+  "id": "bac83a14-e3c5-430e-b88c-4b22d1518b42",
+  "name": "Create User Reference Links",
+  "delegate": "streamingRequestDelegate",
+  "deserializeAs": "StreamingRequestTask",
+  "streaming": false,
+  "storageDestination": "{{mod-external-reference-resolver}}/batch/referenceLinks"
+}

@@ -12,7 +12,7 @@ class FileService {
   public readAll(path: string): any[] {
     if (this.exists(path)) {
       return fs.readdirSync(path).filter((file: string) => {
-        return fs.lstatSync(`${path}/${file}`).isFile();
+        return !file.startsWith('.') && fs.lstatSync(`${path}/${file}`).isFile();
       }).map((file: string) => {
         return this.read(`${path}/${file}`);
       });
@@ -22,7 +22,9 @@ class FileService {
 
   public list(path: string): string[] {
     if (this.exists(path)) {
-      return fs.readdirSync(path);
+      return fs.readdirSync(path).filter((file: string) => {
+        return !file.startsWith('.') && fs.lstatSync(`${path}/${file}`).isFile();
+      });
     }
     throw new Error(`not found: ${path}`);
   }

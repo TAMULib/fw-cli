@@ -1,0 +1,9 @@
+{
+  "id": "a8cb3042-6431-4137-9406-d5a90727ce8e",
+  "name": "buildReferenceLinks",
+  "delegate": "streamingProcessDelegate",
+  "deserializeAs": "ProcessorTask",
+  "streaming": false,
+  "script": "processUserReferenceLinks.js",
+  "scriptType": "JS"
+}

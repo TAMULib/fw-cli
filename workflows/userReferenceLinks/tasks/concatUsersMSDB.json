@@ -1,0 +1,8 @@
+{
+  "id": "3c9c3a5b-79a4-4af9-9373-714e922d4fd0",
+  "name": "Concat Users MSDB",
+  "delegate": "concatenatingExtractorDelegate",
+  "deserializeAs": "StreamingExtractorTask",
+  "mergeStrategy": "CONCAT",
+  "streamSource": "{{mod-data-extractor}}/extractors/331c4123-fa61-4cb4-b336-10e4f341cc26/run"
+}

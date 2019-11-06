@@ -162,9 +162,13 @@ class WorkflowService extends RestService implements Enhancer {
   private createReferenceData(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/referenceData`;
     if (fileService.exists(path)) {
+      const references = fileService.readAll(path);
+      if (references.length === 0) {
+        return Promise.resolve();
+      }
       return [
         () => okapi.login(),
-        () => Promise.all(fileService.readAll(path)
+        () => Promise.all(references
           .map((json: any) => templateService.template(json))
           .map((json: any) => JSON.parse(json))
           .map((data: any) => okapi.createReferenceData(data)))
