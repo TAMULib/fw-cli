@@ -139,7 +139,10 @@ class WorkflowService extends RestService implements Enhancer {
       const lookups = setup.lookups ? setup.lookups : [];
       return Promise.all(lookups.map((module: string) => {
         const promise = okapi.getDiscoveryModuleURL(module);
-        promise.then((url: string) => config.set(module, url), console.log);
+        promise.then((u: string) => {
+          const url = new URL(u);
+          return config.set(module, `http://localhost:${url.port}`);
+        }, console.log);
         return promise;
       }));
     }
