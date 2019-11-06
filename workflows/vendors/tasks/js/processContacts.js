@@ -1,9 +1,9 @@
-if (args.sourceData.address_ids)
-  for (var i = 0; i < args.sourceData.address_ids.length; i++) {
-    var addressId = args.sourceData.address_ids[i];
-    if (args.sourceData.contact_names[addressId]) {
+if (args.sourceData.ADDRESS_IDS)
+  for (var i = 0; i < args.sourceData.ADDRESS_IDS.length; i++) {
+    var addressId = args.sourceData.ADDRESS_IDS[i];
+    if (args.sourceData.CONTACT_NAMES[addressId]) {
       var contact = {};
-      contact.firstName = args.sourceData.contact_names[addressId];
+      contact.firstName = args.sourceData.CONTACT_NAMES[addressId];
       contact.lastName = "";
       contact.addresses = [];
       contact.phoneNumbers = [];
@@ -12,19 +12,19 @@ if (args.sourceData.address_ids)
 
       contact.categories = [];
 
-      if (args.sourceData.order_addresses[addressId] === 'Y')
+      if (args.sourceData.ORDER_ADDRESSES[addressId] === 'Y')
         contact.categories.push(args.categories.ORDER);
 
-      if (args.sourceData.payment_addreses[addressId] === 'Y')
+      if (args.sourceData.PAYMENT_ADDRESES[addressId] === 'Y')
         contact.categories.push(args.categories.PAYMENT);
 
-      if (args.sourceData.claim_addresses[addressId] === 'Y')
+      if (args.sourceData.CLAIM_ADDRESSES[addressId] === 'Y')
         contact.categories.push(args.categories.CLAIM);
 
-      if (args.sourceData.return_addresses[addressId] === 'Y')
+      if (args.sourceData.RETURN_ADDRESSES[addressId] === 'Y')
         contact.categories.push(args.categories.RETURN);
 
-      if (args.sourceData.other_addresses[addressId] === 'Y')
+      if (args.sourceData.OTHER_ADDRESSES[addressId] === 'Y')
         contact.categories.push(args.categories.OTHER);
 
       args.vendorRequestBody.contacts.push(contact);

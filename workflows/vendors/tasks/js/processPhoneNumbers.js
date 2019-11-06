@@ -1,26 +1,26 @@
-if (args.sourceData.address_ids)
-  for (var i = 0; i < args.sourceData.address_ids.length; i++) {
+if (args.sourceData.ADDRESS_IDS)
+  for (var i = 0; i < args.sourceData.ADDRESS_IDS.length; i++) {
     var phoneNumberObj = {};
-    var addressId = args.sourceData.address_ids[i];
+    var addressId = args.sourceData.ADDRESS_IDS[i];
 
-    if (isPhone(args.sourceData.address_line1s[addressId])) {
-      phoneNumberObj.phoneNumber = args.sourceData.address_line1s[addressId];
-    } else if (typeof args.sourceData.phone_number == 'string') {
-      phoneNumberObj.phoneNumber = args.sourceData.phone_number;
-    } else if (args.sourceData.phone_number) {
-      phoneNumberObj.phoneNumber = args.sourceData.phone_number[addressId];
+    if (isPhone(args.sourceData.ADDRESS_LINE1S[addressId])) {
+      phoneNumberObj.phoneNumber = args.sourceData.ADDRESS_LINE1S[addressId];
+    } else if (typeof args.sourceData.PHONE_NUMBER == 'string') {
+      phoneNumberObj.phoneNumber = args.sourceData.PHONE_NUMBER;
+    } else if (args.sourceData.PHONE_NUMBER) {
+      phoneNumberObj.phoneNumber = args.sourceData.PHONE_NUMBER[addressId];
     }
 
     if (phoneNumberObj.phoneNumber) {
 
       var makePhoneNumber = function (pn, index) {
-        if (args.sourceData.phone_type) {
-          if (Array.isArray(args.sourceData.phone_type[addressId])) {
-            pn.isPrimary = args.sourceData.phone_type[addressId][index] === '0';
-            pn.type = pn.isPrimary ? 'Other' : args.phoneTypes[args.sourceData.phone_type[addressId][index]] ? args.phoneTypes[args.sourceData.phone_type[addressId][index]] : 'Other';
+        if (args.sourceData.PHONE_TYPE) {
+          if (Array.isArray(args.sourceData.PHONE_TYPE[addressId])) {
+            pn.isPrimary = args.sourceData.PHONE_TYPE[addressId][index] === '0';
+            pn.type = pn.isPrimary ? 'Other' : args.phoneTypes[args.sourceData.PHONE_TYPE[addressId][index]] ? args.phoneTypes[args.sourceData.PHONE_TYPE[addressId][index]] : 'Other';
           } else {
-            pn.isPrimary = args.sourceData.phone_type[addressId] === '0';
-            pn.type = pn.isPrimary ? 'Other' : args.phoneTypes[args.sourceData.phone_type[addressId]] ? args.phoneTypes[args.sourceData.phone_type[addressId]] : 'Other';
+            pn.isPrimary = args.sourceData.PHONE_TYPE[addressId] === '0';
+            pn.type = pn.isPrimary ? 'Other' : args.phoneTypes[args.sourceData.PHONE_TYPE[addressId]] ? args.phoneTypes[args.sourceData.PHONE_TYPE[addressId]] : 'Other';
           }
         } else {
           pn.type = 'Other';
@@ -28,25 +28,25 @@ if (args.sourceData.address_ids)
 
         pn.categories = [];
 
-        if (args.sourceData.order_addresses[addressId] === 'Y')
+        if (args.sourceData.ORDER_ADDRESSES[addressId] === 'Y')
           pn.categories.push(args.categories.ORDER);
 
-        if (args.sourceData.payment_addreses[addressId] === 'Y')
+        if (args.sourceData.PAYMENT_ADDRESES[addressId] === 'Y')
           pn.categories.push(args.categories.PAYMENT);
 
-        if (args.sourceData.claim_addresses[addressId] === 'Y')
+        if (args.sourceData.CLAIM_ADDRESSES[addressId] === 'Y')
           pn.categories.push(args.categories.CLAIM);
 
-        if (args.sourceData.return_addresses[addressId] === 'Y')
+        if (args.sourceData.RETURN_ADDRESSES[addressId] === 'Y')
           pn.categories.push(args.categories.RETURN);
 
-        if (args.sourceData.other_addresses[addressId] === 'Y')
+        if (args.sourceData.OTHER_ADDRESSES[addressId] === 'Y')
           pn.categories.push(args.categories.OTHER);
 
-        if (args.sourceData.contact_names[addressId] && args.vendorRequestBody.contacts.length > 0) {
+        if (args.sourceData.CONTACT_NAMES[addressId] && args.vendorRequestBody.contacts.length > 0) {
           for (var j = 0; j < args.vendorRequestBody.contacts.length; j++) {
             var c = args.vendorRequestBody.contacts[j];
-            if (c.firstName === args.sourceData.contact_names[addressId]) {
+            if (c.firstName === args.sourceData.CONTACT_NAMES[addressId]) {
               c.phoneNumbers.push(pn);
             }
           }

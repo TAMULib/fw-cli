@@ -1,39 +1,39 @@
-if (args.sourceData.address_ids) {
-  for (var i = 0; i < args.sourceData.address_ids.length; i++) {
+if (args.sourceData.ADDRESS_IDS) {
+  for (var i = 0; i < args.sourceData.ADDRESS_IDS.length; i++) {
     var emailObj = {};
-    var addressId = args.sourceData.address_ids[i];
-    emailObj.value = args.sourceData.address_line1s[addressId];
+    var addressId = args.sourceData.ADDRESS_IDS[i];
+    emailObj.value = args.sourceData.ADDRESS_LINE1S[addressId];
     if (isEmailLike(emailObj.value)) {
       emailObj.description = null;
       emailObj.categories = [];
 
-      if (args.sourceData.order_addresses[addressId] === 'Y')
+      if (args.sourceData.ORDER_ADDRESSES[addressId] === 'Y')
         emailObj.categories.push(args.categories.ORDER);
 
-      if (args.sourceData.payment_addreses[addressId] === 'Y')
+      if (args.sourceData.PAYMENT_ADDRESES[addressId] === 'Y')
         emailObj.categories.push(args.categories.PAYMENT);
 
-      if (args.sourceData.claim_addresses[addressId] === 'Y')
+      if (args.sourceData.CLAIM_ADDRESSES[addressId] === 'Y')
         emailObj.categories.push(args.categories.CLAIM);
 
-      if (args.sourceData.return_addresses[addressId] === 'Y')
+      if (args.sourceData.RETURN_ADDRESSES[addressId] === 'Y')
         emailObj.categories.push(args.categories.RETURN);
 
-      if (args.sourceData.other_addresses[addressId] === 'Y')
+      if (args.sourceData.OTHER_ADDRESSES[addressId] === 'Y')
         emailObj.categories.push(args.categories.OTHER);
 
-      if (args.sourceData.contact_names[addressId] && args.vendorRequestBody.contacts.length > 0) {
+      if (args.sourceData.CONTACT_NAMES[addressId] && args.vendorRequestBody.contacts.length > 0) {
         for (var j = 0; j < args.vendorRequestBody.contacts.length; j++) {
           var c = args.vendorRequestBody.contacts[j];
-          if (c.firstName === args.sourceData.contact_names[addressId]) {
+          if (c.firstName === args.sourceData.CONTACT_NAMES[addressId]) {
             c.emails.push(emailObj);
           }
         }
       } else {
         args.vendorRequestBody.emails.push(emailObj);
       }
-      if (args.sourceData.address_line2s[addressId])
-        args.vendorRequestBody.description += ' ' + args.sourceData.address_line2s[addressId];
+      if (args.sourceData.ADDRESS_LINE2S[addressId])
+        args.vendorRequestBody.description += ' ' + args.sourceData.ADDRESS_LINE2S[addressId];
     }
   }
 }

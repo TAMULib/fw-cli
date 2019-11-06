@@ -57,6 +57,14 @@ program
   });
 
 program
+  .command('logout')
+  .description('logout to remove token from config')
+  .action(() => {
+    config.delete('token');
+    console.log('success');
+  });
+
+program
   .command('lookup <module>')
   .description('lookup module, matching name starting with')
   .action((name: string) => {
