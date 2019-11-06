@@ -17,7 +17,7 @@ export class RestService {
         if (response && response.statusCode >= 200 && response.statusCode <= 299) {
           resolve(JSON.parse(body));
         } else {
-          console.log('failed get', url);
+          // console.log('failed get', url);
           reject(body);
         }
       });
@@ -44,7 +44,7 @@ export class RestService {
             resolve(body);
           }
         } else {
-          console.log('failed post', url, json);
+          // console.log('failed post', url, json);
           reject(body);
         }
       });
@@ -65,7 +65,7 @@ export class RestService {
         if (response && response.statusCode >= 200 && response.statusCode <= 299) {
           const token = response.headers['x-okapi-token'];
           if (token && config.has('token') && config.get('token') !== token) {
-            config.set('token', token);
+            // config.set('token', token);
             resolve(body);
           } else {
             resolve(body);
