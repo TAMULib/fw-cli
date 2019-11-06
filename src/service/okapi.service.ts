@@ -4,6 +4,7 @@ import { config } from '../config';
 class OkapiService extends RestService {
 
   public login(username: string = config.get('username'), password: string = config.get('password')): Promise<any> {
+    config.delete('token');
     return this.post(`${config.get('okapi')}/authn/login`, { username, password });
   }
 
