@@ -27,19 +27,19 @@ if (args.sourceData.address_ids) {
       if (args.sourceData.other_addresses[addressId] === 'Y')
         urlObj.categories.push(args.categories.OTHER);
 
-      if (args.sourceData.contact_names[addressId] && args.vendorResponseBody.contacts.length > 0) {
-        for (var j = 0; j < args.vendorResponseBody.contacts.length; j++) {
-          var c = args.vendorResponseBody.contacts[j];
+      if (args.sourceData.contact_names[addressId] && args.vendorRequestBody.contacts.length > 0) {
+        for (var j = 0; j < args.vendorRequestBody.contacts.length; j++) {
+          var c = args.vendorRequestBody.contacts[j];
           if (c.firstName === args.sourceData.contact_names[addressId]) {
             c.urls.push(urlObj);
           }
         }
       } else {
-        args.vendorResponseBody.urls.push(urlObj);
+        args.vendorRequestBody.urls.push(urlObj);
       }
 
       if (args.sourceData.address_line2s[addressId])
-        args.vendorResponseBody.description += ' ' + args.sourceData.address_line2s[addressId];
+        args.vendorRequestBody.description += ' ' + args.sourceData.address_line2s[addressId];
     }
   }
 }

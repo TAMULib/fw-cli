@@ -1,8 +1,8 @@
 var cleanContact = [];
-for (var i = 0; i < args.vendorResponseBody.contacts.length; i++) {
-  var c = args.vendorResponseBody.contacts[i];
+for (var i = 0; i < args.vendorRequestBody.contacts.length; i++) {
+  var c = args.vendorRequestBody.contacts[i];
   if (typeof c === 'string') cleanContact.push(c);
 }
-args.vendorResponseBody.contacts = cleanContact;
+args.vendorRequestBody.contacts = cleanContact;
 
-returnObj = args.vendorResponseBody;
+returnObj = args.vendorRequestBody;

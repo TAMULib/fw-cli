@@ -6,6 +6,6 @@
   "streaming": false,
   "endpoint": "{{mod-organizations-storage}}/organizations-storage/contacts",
   "target": "id",
-  "source": "vendorResponseBody/contacts",
+  "source": "vendorRequestBody/contacts",
   "uniqueBy": null
 }

@@ -27,7 +27,7 @@ if (args.sourceData.address_ids)
       if (args.sourceData.other_addresses[addressId] === 'Y')
         contact.categories.push(args.categories.OTHER);
 
-      args.vendorResponseBody.contacts.push(contact);
+      args.vendorRequestBody.contacts.push(contact);
     }
   }
 returnObj = args;

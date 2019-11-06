@@ -9,6 +9,6 @@ if (args.sourceData.account_ids)
     account.notes = args.sourceData.account_notes[account_id] ? args.sourceData.account_notes[account_id] : '';
     account.libraryCode = '';
     account.libraryEdiCode = '';
-    args.vendorResponseBody.accounts.push(account);
+    args.vendorRequestBody.accounts.push(account);
   }
 returnObj = args;

@@ -328,7 +328,7 @@ returnObj = {
     'ZIMBABWE': 'ZWE'
   },
   sourceData: formatSourceData(args),
-  vendorResponseBody: {
+  vendorRequestBody: {
     'id': null,
     'name': null,
     'code': null,
