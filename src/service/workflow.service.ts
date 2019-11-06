@@ -1,3 +1,5 @@
+const uuid = require('uuid/v1');
+
 import { RestService } from './rest.service';
 import { Enhancer } from './enhancer.interface';
 
@@ -49,6 +51,31 @@ class WorkflowService extends RestService implements Enhancer {
       return this.post(`${config.get('modWorkflow')}/${startTrigger.pathPattern}`, {});
     }
     return Promise.reject(`cannot find workflow at ${path}`);
+  }
+
+  public scaffold(name: string): Promise<any> {
+    const path = `${config.get('wd')}/${name}`;
+    if (fileService.exists(path)) {
+      return Promise.reject(`cannot find workflow at ${path}`);
+    }
+    fileService.createDirectory(path);
+    fileService.createDirectory(`${path}/extractors`);
+    fileService.createDirectory(`${path}/extractors/sql`);
+    fileService.createDirectory(`${path}/referenceData`);
+    fileService.createDirectory(`${path}/referenceLinkTypes`);
+    fileService.createDirectory(`${path}/tasks`);
+    fileService.createDirectory(`${path}/tasks/js`);
+    fileService.createDirectory(`${path}/triggers`);
+    fileService.createFile(`${path}/triggers/startTrigger.json`, {
+      id: uuid(),
+      name: '',
+      description: '',
+      type: 'MESSAGE_CORRELATE',
+      method: 'POST',
+      deserializeAs: 'EventTrigger',
+      pathPattern: ''
+    });
+    return Promise.resolve(`new workflow ${name} scaffold created`);
   }
 
   public build(name: string): Promise<any> {
@@ -132,7 +159,7 @@ class WorkflowService extends RestService implements Enhancer {
           // remove all extraneous double spaces
           .replace(/\s+/g, ' ')
           // replace all double quotes with single quotes
-          .replace(/"/g, '\'');
+          .replace(/'/g, '\'');
       }
 
     }

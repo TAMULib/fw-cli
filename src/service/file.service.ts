@@ -24,6 +24,14 @@ class FileService {
     return fs.existsSync(path);
   }
 
+  public createDirectory(path: string): any {
+    return fs.mkdirSync(path);
+  }
+
+  public createFile(path: string, data: any = {}): any {
+    return fs.writeFileSync(path, JSON.stringify(data, null, 2));
+  }
+
 }
 
 export const fileService = new FileService();

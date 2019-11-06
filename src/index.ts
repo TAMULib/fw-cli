@@ -63,6 +63,17 @@ program
   });
 
 program
+  .command('new <name>')
+  .description('scaffold new workflow with name')
+  .action((name: string) => {
+    modWorkflow.scaffold(name).then((response: any) => {
+      console.log(response);
+    }, (err: string) => {
+      console.log(err);
+    });
+  });
+
+program
   .command('build <name>')
   .description('build workflow by name')
   .action((name: string) => {
