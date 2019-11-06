@@ -4,8 +4,8 @@
   "delegate": "concatenatingExtractorDelegate",
   "deserializeAs": "StreamingExtractorTask",
   "streaming": true,
-  "comparisonProperties": null,
-  "enhancementProperty": null,
+  "enhancementComparisons": [],
+  "enhancementMappings": [],
   "mergeStrategy": "CONCAT",
   "streamSource": "{{mod-data-extractor}}/extractors/c581ccb4-ec0c-49a3-b4b4-50cb9116a88b/run"
 }

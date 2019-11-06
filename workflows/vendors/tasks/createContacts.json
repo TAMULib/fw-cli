@@ -4,7 +4,7 @@
   "delegate": "streamCreateForEachDelegate",
   "deserializeAs": "StreamCreateForEachTask",
   "streaming": false,
-  "endpoint": "{{modOrganizationsStorage}}/organizations-storage/contacts",
+  "endpoint": "{{mod-organizations-storage}}/organizations-storage/contacts",
   "target": "id",
   "source": "vendorResponseBody/contacts",
   "uniqueBy": null
