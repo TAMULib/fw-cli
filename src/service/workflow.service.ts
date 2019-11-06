@@ -27,7 +27,7 @@ class WorkflowService extends RestService implements Enhancer {
   public list(): Promise<any> {
     const path = `${config.get('wd')}`;
     if (fileService.exists(path)) {
-      return Promise.resolve(fileService.list(path));
+      return Promise.resolve(fileService.listDirectories(path));
     }
     return Promise.reject(`cannot find workflow directory at ${path}`);
   }
@@ -89,6 +89,21 @@ class WorkflowService extends RestService implements Enhancer {
       ].reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
     }
     return Promise.reject(`cannot find workflow at ${path}`);
+  }
+
+  public isActive(name: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const path = `${config.get('wd')}/${name}`;
+      if (fileService.exists(path)) {
+        const json = fileService.read(`${path}/workflow.json`);
+        const workflow = JSON.parse(templateService.template(json));
+        this.get(`${config.get('mod-workflow')}/workflows/${workflow.id}`).then((response: any) => {
+          resolve(response.active);
+        }, reject);
+      } else {
+        reject(`cannot find workflow at ${path}`);
+      }
+    });
   }
 
   public activate(name: string): Promise<any> {

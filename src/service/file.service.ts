@@ -20,10 +20,10 @@ class FileService {
     throw new Error(`not found: ${path}`);
   }
 
-  public list(path: string): string[] {
+  public listDirectories(path: string): string[] {
     if (this.exists(path)) {
       return fs.readdirSync(path).filter((file: string) => {
-        return !file.startsWith('.') && fs.lstatSync(`${path}/${file}`).isFile();
+        return fs.lstatSync(`${path}/${file}`).isDirectory();
       });
     }
     throw new Error(`not found: ${path}`);

@@ -18,7 +18,9 @@ program
   .option('-w, --workflows', 'list workflows', () => {
     modWorkflow.list().then((workflows: string[]) => {
       for (const workflow of workflows) {
-        console.log(` - ${workflow}`);
+        modWorkflow.isActive(workflow).then((isActive: boolean) => {
+          console.log(` - ${workflow} ${isActive ? 'ACTIVE' : ''}`);
+        }, console.log);
       }
     }, console.log);
   })
