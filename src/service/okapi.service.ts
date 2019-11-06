@@ -7,6 +7,10 @@ class OkapiService extends RestService {
     return this.post(`${config.get('okapi')}/authn/login`, { username, password });
   }
 
+  public createReferenceData(request: { path: string, body: any }): Promise<any> {
+    return this.post(`${config.get('okapi')}/${request.path}`, request.body);
+  }
+
   public getDiscoveryModules(): Promise<any> {
     return this.get(`${config.get('okapi')}/_/discovery/modules`);
   }

@@ -27,6 +27,10 @@ const schema = {
     type: 'string',
     default: 'admin'
   },
+  useLocalhost: {
+    type: 'boolean',
+    default: true
+  },
   'mod-camunda': {
     type: 'string',
     format: 'uri',

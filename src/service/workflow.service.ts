@@ -140,8 +140,11 @@ class WorkflowService extends RestService implements Enhancer {
       return Promise.all(lookups.map((module: string) => {
         const promise = okapi.getDiscoveryModuleURL(module);
         promise.then((u: string) => {
-          const url = new URL(u);
-          return config.set(module, `http://localhost:${url.port}`);
+          if (config.get('useLocalhost')) {
+            const url = new URL(u);
+            return config.set(module, `http://localhost:${url.port}`);
+          }
+          return module;
         }, console.log);
         return promise;
       }));
@@ -150,20 +153,26 @@ class WorkflowService extends RestService implements Enhancer {
   }
 
   private createReferenceData(name: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const path = `${config.get('wd')}/${name}/referenceData`;
-      if (fileService.exists(path)) {
-        resolve({});
-      } else {
-        reject(`cannot find reference data at ${path}`);
-      }
-    });
+    const path = `${config.get('wd')}/${name}/referenceData`;
+    if (fileService.exists(path)) {
+      return [
+        () => okapi.login(),
+        () => Promise.all(fileService.readAll(path)
+          .map((json: any) => templateService.template(json))
+          .map((json: any) => JSON.parse(json))
+          .map((data: any) => okapi.createReferenceData(data)))
+      ].reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
+    }
+    return Promise.reject(`cannot find reference data at ${path}`);
   }
 
   private createReferenceLinkTypes(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/referenceLinkTypes`;
     if (fileService.exists(path)) {
-      return this.create(path, modExternalReferenceResolver, 'createReferenceLinkType');
+      return Promise.all(fileService.readAll(path)
+        .map((json: any) => templateService.template(json))
+        .map((json: any) => JSON.parse(json))
+        .map((data: any) => modExternalReferenceResolver.createReferenceLinkType(data)));
     }
     return Promise.reject(`cannot find reference link types at ${path}`);
   }
@@ -171,7 +180,11 @@ class WorkflowService extends RestService implements Enhancer {
   private createExtractors(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/extractors`;
     if (fileService.exists(path)) {
-      return this.create(path, modDataExtractor, 'createExtractor');
+      return Promise.all(fileService.readAll(path)
+        .map((json: any) => modDataExtractor.enhance(path, json))
+        .map((json: any) => templateService.template(json))
+        .map((json: any) => JSON.parse(json))
+        .map((data: any) => modDataExtractor.createExtractor(data)));
     }
     return Promise.reject(`cannot find extractors at ${path}`);
   }
@@ -179,7 +192,11 @@ class WorkflowService extends RestService implements Enhancer {
   private createTriggers(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/triggers`;
     if (fileService.exists(path)) {
-      return this.create(path, modWorkflow, 'createTrigger');
+      return Promise.all(fileService.readAll(path)
+        .map((json: any) => modWorkflow.enhance(path, json))
+        .map((json: any) => templateService.template(json))
+        .map((json: any) => JSON.parse(json))
+        .map((data: any) => modWorkflow.createTrigger(data)));
     }
     return Promise.reject(`cannot find triggers at ${path}`);
   }
@@ -187,7 +204,11 @@ class WorkflowService extends RestService implements Enhancer {
   private createTasks(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/tasks`;
     if (fileService.exists(path)) {
-      return this.create(path, modWorkflow, 'createTask');
+      return Promise.all(fileService.readAll(path)
+        .map((json: any) => modWorkflow.enhance(path, json))
+        .map((json: any) => templateService.template(json))
+        .map((json: any) => JSON.parse(json))
+        .map((data: any) => modWorkflow.createTask(data)));
     }
     return Promise.reject(`cannot find tasks at ${path}`);
   }
@@ -200,14 +221,6 @@ class WorkflowService extends RestService implements Enhancer {
       return this.createWorkflow(JSON.parse(workflow));
     }
     return Promise.reject(`cannot find workflow.json at ${path}`);
-  }
-
-  private create(path: string, service: any, fn: string): Promise<any> {
-    const promises = fileService.readAll(path)
-      .map((json: any) => service.enhance(path, json))
-      .map((json: any) => templateService.template(json))
-      .map((json: any) => service[fn](JSON.parse(json)));
-    return Promise.all(promises);
   }
 
 }
