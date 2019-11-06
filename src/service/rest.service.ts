@@ -17,7 +17,7 @@ export class RestService {
         if (response && response.statusCode >= 200 && response.statusCode <= 299) {
           resolve(JSON.parse(body));
         } else {
-          // console.log('failed get', url);
+          console.log('failed get', url);
           reject(body);
         }
       });
@@ -44,7 +44,7 @@ export class RestService {
             resolve(body);
           }
         } else {
-          // console.log('failed post', url, json);
+          console.log('failed post', url, json);
           reject(body);
         }
       });
@@ -71,7 +71,7 @@ export class RestService {
             resolve(body);
           }
         } else {
-          // console.log('failed put', url, json);
+          console.log('failed put', url, json);
           reject(body);
         }
       });
