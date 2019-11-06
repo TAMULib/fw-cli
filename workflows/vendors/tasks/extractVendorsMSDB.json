@@ -1,0 +1,11 @@
+{
+  "id": "5b7b0915-1563-46f9-afa7-a574df7b9a52",
+  "name": "Merge Vendors MSDB",
+  "delegate": "orderedMergingExtractorDelegate",
+  "deserializeAs": "StreamingExtractorTask",
+  "streaming": true,
+  "comparisonProperties": "{\"/VENDOR_ID\": \"/VENDOR_ID\", \"/SCHEMA\": \"/SCHEMA\"}",
+  "enhancementProperty": null,
+  "mergeStrategy": "MERGE",
+  "streamSource": "{{mod-data-extractor}}/extractors/11192db4-57c5-4d6e-bef6-518f728934a7/run"
+}

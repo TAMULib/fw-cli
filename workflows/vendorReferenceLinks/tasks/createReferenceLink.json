@@ -4,5 +4,5 @@
   "delegate": "streamingRequestDelegate",
   "deserializeAs": "StreamingRequestTask",
   "streaming": false,
-  "storageDestination": "{{modExternalReferenceResolver}}/referenceLinks"
+  "storageDestination": "{{mod-external-reference-resolver}}/referenceLinks"
 }

@@ -15,6 +15,13 @@ program
   .option('-c, --config', 'show current configuration', () => {
     console.log(JSON.stringify(config.store, null, 2));
   })
+  .option('-w, --workflows', 'list workflows', () => {
+    modWorkflow.list().then((workflows: string[]) => {
+      for (const workflow of workflows) {
+        console.log(` - ${workflow}`);
+      }
+    }, console.log);
+  })
   .description('A CLI for building and running FOLIO migration workflows');
 
 program
@@ -28,12 +35,14 @@ program
       case 'set':
         if (value) {
           config.set(property, value);
+          console.log(`set ${property} to ${value}`);
         } else {
           console.log('set requires a value');
         }
         break;
       case 'delete':
         config.delete(property);
+        console.log(`deleted ${property}`);
         break;
       default:
         console.log(`${action} not a valid action. <get/set/delete>`);
@@ -44,77 +53,49 @@ program
   .command('login [username] [password]')
   .description('login to acquire token')
   .action((username?: string, password?: string) => {
-    okapi.login(username, password).then((res: string) => {
-      console.log(res);
-    }, (err: string) => {
-      console.log(err);
-    });
+    okapi.login(username, password).then(console.log, console.log);
   });
 
 program
   .command('lookup <module>')
   .description('lookup module, matching name starting with')
   .action((name: string) => {
-    okapi.getDiscoveryModuleURL(name).then((res: string) => {
-      console.log(res);
-    }, (err: string) => {
-      console.log(err);
-    });
+    okapi.getDiscoveryModuleURL(name).then(console.log, console.log);
   });
 
 program
   .command('new <name>')
   .description('scaffold new workflow with name')
   .action((name: string) => {
-    modWorkflow.scaffold(name).then((response: any) => {
-      console.log(response);
-    }, (err: string) => {
-      console.log(err);
-    });
+    modWorkflow.scaffold(name).then(console.log, console.log);
   });
 
 program
   .command('build <name>')
   .description('build workflow by name')
   .action((name: string) => {
-    modWorkflow.build(name).then((workflow: any) => {
-      console.log(workflow);
-    }, (err: string) => {
-      console.log(err);
-    });
+    modWorkflow.build(name).then(console.log, console.log);
   });
 
 program
   .command('activate <name>')
   .description('activate workflow by name')
   .action((name: string) => {
-    modWorkflow.activate(name).then((workflow: any) => {
-      console.log(workflow);
-    }, (err: string) => {
-      console.log(err);
-    });
+    modWorkflow.activate(name).then(console.log, console.log);
   });
 
 program
   .command('deactivate <name>')
   .description('deactivate workflow by name')
   .action((name: string) => {
-    modWorkflow.deactivate(name).then((workflow: any) => {
-      console.log(workflow);
-    }, (err: string) => {
-      console.log(err);
-    });
+    modWorkflow.deactivate(name).then(console.log, console.log);
   });
 
 program
   .command('run <name>')
   .description('run workflow by name')
   .action((name: string) => {
-    modWorkflow.run(name).then((workflow: any) => {
-      console.log(workflow);
-    }, (err: string) => {
-      console.log(err);
-    });
+    modWorkflow.run(name).then(console.log, console.log);
   });
 
 program

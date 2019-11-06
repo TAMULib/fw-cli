@@ -1,0 +1,25 @@
+{
+  "id": "de04846c-1982-42b0-a7ec-b0cb8b69084a",
+  "name": "Vendors Migration Workflow",
+  "deploymentId": null,
+  "processDefinitionIds": [],
+  "active": false,
+  "tasks": [
+    "{{mod-workflow}}/streamingExtractorTask/a98fe894-1f06-4d6b-b214-434cfa5298ed",
+    "{{mod-workflow}}/streamingExtractorTask/5b7b0915-1563-46f9-afa7-a574df7b9a52",
+    "{{mod-workflow}}/streamingExtractorTask/de94790d-380c-4a9b-8bd4-673c593521f4",
+    "{{mod-workflow}}/streamingExtractorTask/614b731e-83e1-4e37-92ff-63dfc6978b7f",
+    "{{mod-workflow}}/processorTask/f4ba610d-32cc-40ed-a862-e61fe95e6b14",
+    "{{mod-workflow}}/processorTask/b57bef31-a045-42a4-8e0d-d3478ae317c2",
+    "{{mod-workflow}}/processorTask/f4acfb54-cb63-454d-a7b2-b5fd5d413113",
+    "{{mod-workflow}}/processorTask/91e9e10d-6c25-4ed6-ada7-a2793e4f89be",
+    "{{mod-workflow}}/processorTask/7541cd60-d642-499f-aa5e-93b03114e913",
+    "{{mod-workflow}}/processorTask/7df06a2f-f698-4201-926b-cd6fe07ab6d7",
+    "{{mod-workflow}}/processorTask/d4ee9e68-3863-46dc-abf2-910b134e5084",
+    "{{mod-workflow}}/processorTask/acbb08fe-4f16-4cc2-8cf2-e549daa7d1d5",
+    "{{mod-workflow}}/streamCreateForEachTask/be62e1d1-f92d-42c5-9148-e4b12cc5b57c",
+    "{{mod-workflow}}/processorTask/27edc167-15dc-4fe4-808e-d2abf49739a3",
+    "{{mod-workflow}}/streamingRequestTask/bfe0baf4-6f8b-4667-97b8-4de3bf6a00ea"
+  ],
+  "startTrigger": "{{mod-workflow}}/eventTrigger/e1c0c44a-3765-4e3d-8efd-833cbfcea864"
+}

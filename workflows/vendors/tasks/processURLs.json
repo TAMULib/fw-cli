@@ -1,0 +1,9 @@
+{
+  "id": "d4ee9e68-3863-46dc-abf2-910b134e5084",
+  "name": "ProcessURLs",
+  "delegate": "streamingProcessDelegate",
+  "deserializeAs": "ProcessorTask",
+  "streaming": false,
+  "script": "processURLs.js",
+  "scriptType": "JS"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "be62e1d1-f92d-42c5-9148-e4b12cc5b57c",
+  "name": "Create For Each Task",
+  "delegate": "streamCreateForEachDelegate",
+  "deserializeAs": "StreamCreateForEachTask",
+  "streaming": false,
+  "endpoint": "{{modOrganizationsStorage}}/organizations-storage/contacts",
+  "target": "id",
+  "source": "vendorResponseBody/contacts",
+  "uniqueBy": null
+}

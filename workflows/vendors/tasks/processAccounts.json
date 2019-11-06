@@ -1,0 +1,9 @@
+{
+  "id": "acbb08fe-4f16-4cc2-8cf2-e549daa7d1d5",
+  "name": "ProcessAccounts",
+  "delegate": "streamingProcessDelegate",
+  "deserializeAs": "ProcessorTask",
+  "streaming": false,
+  "script": "processAccounts.js",
+  "scriptType": "JS"
+}

@@ -1,0 +1,9 @@
+{
+  "id": "e1c0c44a-3765-4e3d-8efd-833cbfcea864",
+  "name": "Vendors Migration Trigger",
+  "description": "Triggers Vendor Migration",
+  "type": "MESSAGE_CORRELATE",
+  "method": "POST",
+  "deserializeAs": "EventTrigger",
+  "pathPattern": "/events/voyager/vendors/migrate"
+}

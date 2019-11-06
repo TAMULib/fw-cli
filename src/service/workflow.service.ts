@@ -8,49 +8,28 @@ import { modExternalReferenceResolver } from './external-reference.service';
 import { modDataExtractor } from './data-extractor.service';
 import { fileService } from './file.service';
 import { templateService } from './template.service';
+import { okapi } from './okapi.service';
 
 class WorkflowService extends RestService implements Enhancer {
 
   public createTrigger(extractor: any): Promise<any> {
-    return this.post(`${config.get('modWorkflow')}/triggers`, extractor);
+    return this.post(`${config.get('mod-workflow')}/triggers`, extractor);
   }
 
   public createTask(task: any): Promise<any> {
-    return this.post(`${config.get('modWorkflow')}/tasks`, task);
+    return this.post(`${config.get('mod-workflow')}/tasks`, task);
   }
 
   public createWorkflow(workflow: any): Promise<any> {
-    return this.post(`${config.get('modWorkflow')}/workflows`, workflow);
+    return this.post(`${config.get('mod-workflow')}/workflows`, workflow);
   }
 
-  public activate(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}`;
+  public list(): Promise<any> {
+    const path = `${config.get('wd')}`;
     if (fileService.exists(path)) {
-      const json = fileService.read(`${path}/workflow.json`);
-      const workflow = JSON.parse(templateService.template(json));
-      return this.put(`${config.get('modWorkflow')}/workflows/${workflow.id}/activate`, {});
+      return Promise.resolve(fileService.list(path));
     }
-    return Promise.reject(`cannot find workflow at ${path}`);
-  }
-
-  public deactivate(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}`;
-    if (fileService.exists(path)) {
-      const json = fileService.read(`${path}/workflow.json`);
-      const workflow = JSON.parse(templateService.template(json));
-      return this.put(`${config.get('modWorkflow')}/workflows/${workflow.id}/deactivate`, {});
-    }
-    return Promise.reject(`cannot find workflow at ${path}`);
-  }
-
-  public run(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}`;
-    if (fileService.exists(path)) {
-      const json = fileService.read(`${path}/triggers/startTrigger.json`);
-      const startTrigger = JSON.parse(templateService.template(json));
-      return this.post(`${config.get('modWorkflow')}/${startTrigger.pathPattern}`, {});
-    }
-    return Promise.reject(`cannot find workflow at ${path}`);
+    return Promise.reject(`cannot find workflow directory at ${path}`);
   }
 
   public scaffold(name: string): Promise<any> {
@@ -75,6 +54,17 @@ class WorkflowService extends RestService implements Enhancer {
       deserializeAs: 'EventTrigger',
       pathPattern: ''
     });
+    fileService.createFile(`${path}/workflow.json`, {
+      id: uuid(),
+      name: '',
+      processDefinitionIds: [],
+      active: false,
+      tasks: [],
+      startTrigger: ''
+    });
+    fileService.createFile(`${path}/setup.json`, {
+      lookups: []
+    });
     return Promise.resolve(`new workflow ${name} scaffold created`);
   }
 
@@ -82,77 +72,53 @@ class WorkflowService extends RestService implements Enhancer {
     const path = `${config.get('wd')}/${name}`;
     if (fileService.exists(path)) {
       return [
+        () => this.setup(name),
         () => this.createReferenceData(name),
         () => this.createReferenceLinkTypes(name),
         () => this.createExtractors(name),
         () => this.createTriggers(name),
         () => this.createTasks(name),
-        () => {
-          const json = fileService.read(`${path}/workflow.json`);
-          const workflow = templateService.template(json);
-          return this.createWorkflow(JSON.parse(workflow));
-        }
+        () => this.finalize(name)
       ].reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
     }
     return Promise.reject(`cannot find workflow at ${path}`);
   }
 
-  public createReferenceData(name: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const path = `${config.get('wd')}/${name}/referenceData`;
-      if (fileService.exists(path)) {
-        resolve({});
-      } else {
-        reject(`cannot find reference data at ${path}`);
-      }
-    });
-  }
-
-  public createReferenceLinkTypes(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}/referenceLinkTypes`;
+  public activate(name: string): Promise<any> {
+    const path = `${config.get('wd')}/${name}`;
     if (fileService.exists(path)) {
-      return this.create(path, modExternalReferenceResolver, 'createReferenceLinkType');
+      const json = fileService.read(`${path}/workflow.json`);
+      const workflow = JSON.parse(templateService.template(json));
+      return this.put(`${config.get('mod-workflow')}/workflows/${workflow.id}/activate`, {});
     }
-    return Promise.reject(`cannot find reference link types at ${path}`);
+    return Promise.reject(`cannot find workflow at ${path}`);
   }
 
-  public createExtractors(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}/extractors`;
+  public deactivate(name: string): Promise<any> {
+    const path = `${config.get('wd')}/${name}`;
     if (fileService.exists(path)) {
-      return this.create(path, modDataExtractor, 'createExtractor');
+      const json = fileService.read(`${path}/workflow.json`);
+      const workflow = JSON.parse(templateService.template(json));
+      return this.put(`${config.get('mod-workflow')}/workflows/${workflow.id}/deactivate`, {});
     }
-    return Promise.reject(`cannot find extractors at ${path}`);
+    return Promise.reject(`cannot find workflow at ${path}`);
   }
 
-  public createTriggers(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}/triggers`;
+  public run(name: string): Promise<any> {
+    const path = `${config.get('wd')}/${name}`;
     if (fileService.exists(path)) {
-      return this.create(path, modWorkflow, 'createTrigger');
+      const json = fileService.read(`${path}/triggers/startTrigger.json`);
+      const startTrigger = JSON.parse(templateService.template(json));
+      return this.post(`${config.get('mod-workflow')}/${startTrigger.pathPattern}`, {});
     }
-    return Promise.reject(`cannot find triggers at ${path}`);
-  }
-
-  public createTasks(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}/tasks`;
-    if (fileService.exists(path)) {
-      return this.create(path, modWorkflow, 'createTask');
-    }
-    return Promise.reject(`cannot find tasks at ${path}`);
-  }
-
-  private create(path: string, service: any, fn: string): Promise<any> {
-    const promises = fileService.readAll(path)
-      .map((json: any) => service.enhance(path, json))
-      .map((json: any) => templateService.template(json))
-      .map((json: any) => service[fn](JSON.parse(json)));
-    return Promise.all(promises);
+    return Promise.reject(`cannot find workflow at ${path}`);
   }
 
   public enhance(path: string, json: any): any {
     const obj = JSON.parse(json);
     if (obj.script) {
       if (fileService.exists(`${path}/js/${obj.script}`)) {
-        const scriptJson = fileService.read(`${path}/js/${obj.script}`);
+        const scriptJson = fileService.read(`${path}/js/${obj.script}`).trim();
         obj.script = templateService.template(scriptJson)
           // remove all endline characters
           .replace(/(\r\n|\n|\r)/gm, '')
@@ -164,6 +130,81 @@ class WorkflowService extends RestService implements Enhancer {
 
     }
     return JSON.stringify(obj);
+  }
+
+  private setup(name: string): Promise<any> {
+    const path = `${config.get('wd')}/${name}/setup.json`;
+    if (fileService.exists(path)) {
+      const setup = JSON.parse(fileService.read(path));
+      const lookups = setup.lookups ? setup.lookups : [];
+      return Promise.all(lookups.map((module: string) => {
+        const promise = okapi.getDiscoveryModuleURL(module);
+        promise.then((url: string) => config.set(module, url), console.log);
+        return promise;
+      }));
+    }
+    return Promise.reject(`cannot find setup.json at ${path}`);
+  }
+
+  private createReferenceData(name: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const path = `${config.get('wd')}/${name}/referenceData`;
+      if (fileService.exists(path)) {
+        resolve({});
+      } else {
+        reject(`cannot find reference data at ${path}`);
+      }
+    });
+  }
+
+  private createReferenceLinkTypes(name: string): Promise<any> {
+    const path = `${config.get('wd')}/${name}/referenceLinkTypes`;
+    if (fileService.exists(path)) {
+      return this.create(path, modExternalReferenceResolver, 'createReferenceLinkType');
+    }
+    return Promise.reject(`cannot find reference link types at ${path}`);
+  }
+
+  private createExtractors(name: string): Promise<any> {
+    const path = `${config.get('wd')}/${name}/extractors`;
+    if (fileService.exists(path)) {
+      return this.create(path, modDataExtractor, 'createExtractor');
+    }
+    return Promise.reject(`cannot find extractors at ${path}`);
+  }
+
+  private createTriggers(name: string): Promise<any> {
+    const path = `${config.get('wd')}/${name}/triggers`;
+    if (fileService.exists(path)) {
+      return this.create(path, modWorkflow, 'createTrigger');
+    }
+    return Promise.reject(`cannot find triggers at ${path}`);
+  }
+
+  private createTasks(name: string): Promise<any> {
+    const path = `${config.get('wd')}/${name}/tasks`;
+    if (fileService.exists(path)) {
+      return this.create(path, modWorkflow, 'createTask');
+    }
+    return Promise.reject(`cannot find tasks at ${path}`);
+  }
+
+  private finalize(name: string): Promise<any> {
+    const path = `${config.get('wd')}/${name}/workflow.json`;
+    if (fileService.exists(path)) {
+      const json = fileService.read(path);
+      const workflow = templateService.template(json);
+      return this.createWorkflow(JSON.parse(workflow));
+    }
+    return Promise.reject(`cannot find workflow.json at ${path}`);
+  }
+
+  private create(path: string, service: any, fn: string): Promise<any> {
+    const promises = fileService.readAll(path)
+      .map((json: any) => service.enhance(path, json))
+      .map((json: any) => templateService.template(json))
+      .map((json: any) => service[fn](JSON.parse(json)));
+    return Promise.all(promises);
   }
 
 }

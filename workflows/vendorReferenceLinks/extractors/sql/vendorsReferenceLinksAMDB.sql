@@ -184,3 +184,4 @@ FROM AMDB.vendor v
   LEFT JOIN vendor_account2_parts_distinct vacp ON v.vendor_id = vacp.vendor_id
   LEFT JOIN vendor_note_parts_distinct vnop ON v.vendor_id = vnop.vendor_id
 ORDER BY v.vendor_id
+;

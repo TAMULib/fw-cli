@@ -3,8 +3,8 @@ WITH
     SELECT va.vendor_id,
       LISTAGG(va.address_id || '::' || vp.phone_number || ';;') WITHIN GROUP (ORDER BY va.vendor_id, vp.address_id) OVER (PARTITION BY va.vendor_id) AS phone_number,
       LISTAGG(va.address_id || '::' || vp.phone_type || ';;') WITHIN GROUP (ORDER BY va.vendor_id, vp.address_id) OVER (PARTITION BY va.vendor_id) AS phone_type
-    FROM MSDB.vendor_phone vp
-      INNER JOIN MSDB.vendor_address va ON (vp.address_id = va.address_id)
+    FROM AMDB.vendor_phone vp
+      INNER JOIN AMDB.vendor_address va ON (vp.address_id = va.address_id)
     ORDER BY va.vendor_id, va.address_id
   ),
   vendor_address_part1 AS (
@@ -24,7 +24,7 @@ WITH
       LISTAGG(address_id || '::' || address_line3 || ';;') WITHIN GROUP (ORDER BY vendor_id, address_id) OVER (PARTITION BY vendor_id) AS address_line3s,
       LISTAGG(address_id || '::' || address_line4 || ';;') WITHIN GROUP (ORDER BY vendor_id, address_id) OVER (PARTITION BY vendor_id) AS address_line4s,
       LISTAGG(address_id || '::' || address_line5 || ';;') WITHIN GROUP (ORDER BY vendor_id, address_id) OVER (PARTITION BY vendor_id) AS address_line5s
-    FROM MSDB.vendor_address
+    FROM AMDB.vendor_address
     ORDER BY vendor_id, address_id
   ),
   vendor_address_part2 AS (
@@ -35,7 +35,7 @@ WITH
       LISTAGG(address_id || '::' || country || ';;') WITHIN GROUP (ORDER BY vendor_id, address_id) OVER (PARTITION BY vendor_id) AS countries,
       LISTAGG(address_id || '::' || modify_date || ';;') WITHIN GROUP (ORDER BY vendor_id, address_id) OVER (PARTITION BY vendor_id) AS modify_dates,
       LISTAGG(address_id || '::' || modify_operator_id || ';;') WITHIN GROUP (ORDER BY vendor_id, address_id) OVER (PARTITION BY vendor_id) AS modify_operator_ids
-    FROM MSDB.vendor_address
+    FROM AMDB.vendor_address
     ORDER BY vendor_id, address_id
   ),
   vendor_address_parts_distinct AS (
@@ -70,7 +70,7 @@ WITH
   vendor_alias_parts AS (
     SELECT vendor_id,
       LISTAGG(alt_vendor_name || ';;') WITHIN GROUP (ORDER BY vendor_id) OVER (PARTITION BY vendor_id) AS vendor_aliases
-    FROM MSDB.alt_vendor_names
+    FROM AMDB.alt_vendor_names
     ORDER BY vendor_id, alt_vendor_name
   ),
   vendor_alias_parts_distinct AS (
@@ -89,8 +89,8 @@ WITH
       va.account_status,
       va.status_date,
       anp.note
-    FROM MSDB.vendor_account va
-      LEFT JOIN MSDB.account_note anp ON va.account_id = anp.account_id
+    FROM AMDB.vendor_account va
+      LEFT JOIN AMDB.account_note anp ON va.account_id = anp.account_id
   ),
   vendor_account2_parts AS (
     SELECT vendor_id,
@@ -121,7 +121,7 @@ WITH
   vendor_note_parts AS (
     SELECT vn.vendor_id,
       LISTAGG(vn.note || ';;') WITHIN GROUP (ORDER BY vn.vendor_id) OVER (PARTITION BY vn.vendor_id) AS vendor_notes
-    FROM MSDB.vendor_note vn
+    FROM AMDB.vendor_note vn
   ),
   vendor_note_parts_distinct AS (
     SELECT DISTINCT vendor_id,
@@ -129,7 +129,7 @@ WITH
     FROM vendor_note_parts
   )
 SELECT v.vendor_id,
-  'VENDOR_MSDB' AS schema,
+  'AMDB' AS schema,
   v.vendor_code,
   v.vendor_name,
   v.federal_tax_id,
@@ -178,7 +178,7 @@ SELECT v.vendor_id,
   vacp.status_dates,
   vacp.account_notes,
   vnop.vendor_notes
-FROM MSDB.vendor v
+FROM AMDB.vendor v
   LEFT JOIN vendor_address_parts_distinct vadp ON v.vendor_id = vadp.vendor_id
   LEFT JOIN vendor_alias_parts_distinct valp ON v.vendor_id = valp.vendor_id
   LEFT JOIN vendor_account2_parts_distinct vacp ON v.vendor_id = vacp.vendor_id

@@ -129,7 +129,7 @@ WITH
     FROM vendor_note_parts
   )
 SELECT v.vendor_id,
-  'VENDOR_MSDB' AS schema,
+  'MSDB' AS schema,
   v.vendor_code,
   v.vendor_name,
   v.federal_tax_id,

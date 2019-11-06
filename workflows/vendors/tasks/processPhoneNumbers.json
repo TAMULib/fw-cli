@@ -1,0 +1,9 @@
+{
+  "id": "7541cd60-d642-499f-aa5e-93b03114e913",
+  "name": "ProcessPhoneNumbers",
+  "delegate": "streamingProcessDelegate",
+  "deserializeAs": "ProcessorTask",
+  "streaming": false,
+  "script": "processPhoneNumbers.js",
+  "scriptType": "JS"
+}

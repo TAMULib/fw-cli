@@ -20,6 +20,13 @@ class FileService {
     throw new Error(`not found: ${path}`);
   }
 
+  public list(path: string): string[] {
+    if (this.exists(path)) {
+      return fs.readdirSync(path);
+    }
+    throw new Error(`not found: ${path}`);
+  }
+
   public exists(path: string): boolean {
     return fs.existsSync(path);
   }

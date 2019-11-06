@@ -7,5 +7,5 @@
   "comparisonProperties": null,
   "enhancementProperty": null,
   "mergeStrategy": "CONCAT",
-  "streamSource": "{{modDataExtractor}}/extractors/11192db4-57c5-4d6e-bef6-518f728934a7/run"
+  "streamSource": "{{mod-data-extractor}}/extractors/11192db4-57c5-4d6e-bef6-518f728934a7/run"
 }

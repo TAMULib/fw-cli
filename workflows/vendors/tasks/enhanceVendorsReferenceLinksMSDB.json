@@ -1,0 +1,11 @@
+{
+  "id": "614b731e-83e1-4e37-92ff-63dfc6978b7f",
+  "name": "Enhance Vendor Reference Links MSDB",
+  "delegate": "enhancingExtractorDelegate",
+  "deserializeAs": "StreamingExtractorTask",
+  "streaming": true,
+  "comparisonProperties": "{\"/VENDOR_ID\": \"/externalReference\", \"/SCHEMA\": \"/type/name\"}",
+  "enhancementProperty": "folioReference",
+  "mergeStrategy": "ENHANCE",
+  "streamSource": "{{mod-external-reference-resolver}}/streaming/referenceLinks/type/08c7df8e-dbaf-11e9-8a34-2a2ae2dbcce4"
+}

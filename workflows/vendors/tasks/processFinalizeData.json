@@ -1,0 +1,9 @@
+{
+  "id": "27edc167-15dc-4fe4-808e-d2abf49739a3",
+  "name": "FinalizeVendorData",
+  "delegate": "streamingProcessDelegate",
+  "deserializeAs": "ProcessorTask",
+  "streaming": false,
+  "script": "processFinalizeData.js",
+  "scriptType": "JS"
+}

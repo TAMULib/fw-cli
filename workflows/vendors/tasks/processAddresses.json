@@ -1,0 +1,9 @@
+{
+  "id": "91e9e10d-6c25-4ed6-ada7-a2793e4f89be",
+  "name": "ProcessAddresses",
+  "delegate": "streamingProcessDelegate",
+  "deserializeAs": "ProcessorTask",
+  "streaming": false,
+  "script": "processAddresses.js",
+  "scriptType": "JS"
+}

@@ -1,5 +1,6 @@
 const Conf = require('conf');
 
+// tslint:disable: object-literal-key-quotes
 const schema = {
   wd: {
     type: 'string',
@@ -26,22 +27,22 @@ const schema = {
     type: 'string',
     default: 'admin'
   },
-  modCamunda: {
+  'mod-camunda': {
     type: 'string',
     format: 'uri',
     default: 'http://localhost:9000'
   },
-  modWorkflow: {
+  'mod-workflow': {
     type: 'string',
     format: 'uri',
     default: 'http://localhost:9001'
   },
-  modDataExtractor: {
+  'mod-data-extractor': {
     type: 'string',
     format: 'uri',
     default: 'http://localhost:9002'
   },
-  modExternalReferenceResolver: {
+  'mod-external-reference-resolver': {
     type: 'string',
     format: 'uri',
     default: 'http://localhost:9003'

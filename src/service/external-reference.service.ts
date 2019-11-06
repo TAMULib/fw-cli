@@ -6,7 +6,7 @@ import { config } from '../config';
 class ExternalReferenceService extends RestService implements Enhancer {
 
   public createReferenceLinkType(referenceLinkType: any): Promise<any> {
-    return this.post(`${config.get('modExternalReferenceResolver')}/referenceLinkTypes`, referenceLinkType);
+    return this.post(`${config.get('mod-external-reference-resolver')}/referenceLinkTypes`, referenceLinkType);
   }
 
   public enhance(path: string, json: any): any {

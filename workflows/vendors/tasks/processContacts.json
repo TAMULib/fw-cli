@@ -1,0 +1,9 @@
+{
+  "id": "f4acfb54-cb63-454d-a7b2-b5fd5d413113",
+  "name": "ProcessContacts",
+  "delegate": "streamingProcessDelegate",
+  "deserializeAs": "ProcessorTask",
+  "streaming": false,
+  "script": "processContacts.js",
+  "scriptType": "JS"
+}

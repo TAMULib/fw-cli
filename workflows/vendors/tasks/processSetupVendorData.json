@@ -1,0 +1,9 @@
+{
+  "id": "f4ba610d-32cc-40ed-a862-e61fe95e6b14",
+  "name": "SetupVendorData",
+  "delegate": "streamingProcessDelegate",
+  "deserializeAs": "ProcessorTask",
+  "streaming": false,
+  "script": "processSetupVendorData.js",
+  "scriptType": "JS"
+}
