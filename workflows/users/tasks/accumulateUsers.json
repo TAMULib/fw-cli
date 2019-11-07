@@ -5,5 +5,5 @@
   "deserializeAs": "AccumulatorTask",
   "streaming": false,
   "accumulateTo": 25000,
-  "delayDuration": 60
+  "delayDuration": 1
 }
