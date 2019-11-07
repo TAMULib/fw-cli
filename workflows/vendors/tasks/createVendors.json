@@ -1,8 +1,0 @@
-{
-  "id": "bfe0baf4-6f8b-4667-97b8-4de3bf6a00ea",
-  "name": "Create Vendor Organization",
-  "delegate": "streamingRequestDelegate",
-  "deserializeAs": "StreamingRequestTask",
-  "streaming": false,
-  "storageDestination": "{{mod-organizations-storage}}/organizations-storage/organizations"
-}

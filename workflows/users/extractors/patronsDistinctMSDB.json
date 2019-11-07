@@ -1,6 +1,0 @@
-{
-  "id": "d0e5d47e-79f0-43b8-a001-ef34873c84ee",
-  "name": "Partons MSDB Extractor Distinct",
-  "query": "patronsDistinctMSDB.sql",
-  "type": "VOYAGER"
-}

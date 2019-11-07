@@ -1,9 +1,0 @@
-{
-  "id": "6dc423e1-6635-4079-9aef-672a6e2da456",
-  "name": "buildVendorReferenceLink",
-  "delegate": "streamingProcessDelegate",
-  "deserializeAs": "ProcessorTask",
-  "streaming": false,
-  "script": "processVendorReferenceLink.js",
-  "scriptType": "JS"
-}

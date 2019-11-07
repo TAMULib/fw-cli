@@ -1,9 +1,0 @@
-{
-  "id": "7e6b3cb4-5a97-4572-9f6e-d5daab6176b0",
-  "name": "processFlatData",
-  "delegate": "streamingProcessDelegate",
-  "deserializeAs": "ProcessorTask",
-  "streaming": false,
-  "script": "processFlatData.js",
-  "scriptType": "JS"
-}

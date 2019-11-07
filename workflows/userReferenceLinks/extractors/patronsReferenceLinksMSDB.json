@@ -1,6 +1,0 @@
-{
-  "id": "bc1eac8c-a497-4672-9b15-b0a63848b09a",
-  "name": "Partons Reference Links MSDB Extractor",
-  "query": "patronsReferenceLinksMSDB.sql",
-  "type": "VOYAGER"
-}

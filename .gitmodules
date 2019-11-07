@@ -13,3 +13,6 @@
 [submodule "spring-module-core"]
 	path = spring-module-core
 	url = https://github.com/folio-org/spring-module-core.git
+[submodule "fm-workflows"]
+	path = fm-workflows
+	url = https://github.com/TAMULib/fm-workflows.git

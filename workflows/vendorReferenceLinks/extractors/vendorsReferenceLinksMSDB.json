@@ -1,6 +1,0 @@
-{
-  "id": "11192db4-57c5-4d6e-bef6-518f728934a7",
-  "name": "Vendor Reference Link MSDB Extractor",
-  "query": "vendorsReferenceLinksMSDB.sql",
-  "type": "VOYAGER"
-}

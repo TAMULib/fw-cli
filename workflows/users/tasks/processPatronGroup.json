@@ -1,9 +1,0 @@
-{
-  "id": "b1425fdc-9cd6-4adc-bd31-d6aefe5fddbc",
-  "name": "processPatronGroup",
-  "delegate": "streamingProcessDelegate",
-  "deserializeAs": "ProcessorTask",
-  "streaming": false,
-  "script": "processPatronGroup.js",
-  "scriptType": "JS"
-}

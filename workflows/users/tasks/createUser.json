@@ -1,8 +1,0 @@
-{
-  "id": "a2caaa74-e03b-4f34-aaff-0bbebe89bd88",
-  "name": "Create Users",
-  "delegate": "streamingRequestDelegate",
-  "deserializeAs": "StreamingRequestTask",
-  "streaming": false,
-  "storageDestination": "{{okapi}}/user-import"
-}

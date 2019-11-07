@@ -4,7 +4,7 @@ const Conf = require('conf');
 const schema = {
   wd: {
     type: 'string',
-    default: './workflows'
+    default: './fm-workflows'
   },
   okapi: {
     type: 'string',
