@@ -183,11 +183,16 @@ class WorkflowService extends RestService implements Enhancer {
       }
       return [
         () => okapi.login(),
+        // clear reference data
+        () => Promise.all(references
+          .map((json: any) => JSON.parse(json))
+          .map((reference: any) => okapi.deleteReferenceData(reference))),
+        // create reference data
         () => Promise.all(references
           .map((json: any) => templateService.template(json))
           .map((json: any) => JSON.parse(json))
           .map((data: any) => okapi.createReferenceData(data)))
-      ].reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
+      ].reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
     }
     return Promise.reject(`cannot find reference data at ${path}`);
   }
