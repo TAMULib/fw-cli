@@ -2,13 +2,15 @@
 FOLIO Migration CLI
 
 ```
+git submodule update --init --recursive
+
 yarn install
 yarn build
 npm install -g ./
 
-vagrant up
+fm
 
-git submodule update --init --recursive
+vagrant up
 
 cd mod-workflow
 mvn clean spring-boot:run
