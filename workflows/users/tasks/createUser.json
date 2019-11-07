@@ -4,5 +4,5 @@
   "delegate": "streamingRequestDelegate",
   "deserializeAs": "StreamingRequestTask",
   "streaming": false,
-  "storageDestination": "{{mod-user-import}}/user-import"
+  "storageDestination": "{{okapi}}/user-import"
 }
