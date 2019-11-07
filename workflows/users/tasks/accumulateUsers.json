@@ -1,0 +1,9 @@
+{
+  "id": "e429df79-7a2b-4712-970a-e8730783ff0e",
+  "name": "Accumulate Users",
+  "delegate": "streamAccumulationDelegate",
+  "deserializeAs": "AccumulatorTask",
+  "streaming": false,
+  "accumulateTo": 25000,
+  "delayDuration": 1
+}

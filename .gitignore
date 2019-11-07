@@ -61,4 +61,5 @@ typings/
 .next
 
 lib/
+folio/
 .vagrant/

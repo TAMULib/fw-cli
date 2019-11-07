@@ -1,0 +1,15 @@
+{
+  "id": "0a42b49e-d203-4197-8a1f-917ce7790202",
+  "name": "Merge Users MSDB",
+  "delegate": "concatenatingExtractorDelegate",
+  "deserializeAs": "StreamingExtractorTask",
+  "streaming": true,
+  "enhancementComparisons": [
+    {
+      "sourceProperty": "/EXTERNAL_SYSTEM_ID",
+      "targetProperty": "/EXTERNAL_SYSTEM_ID"
+    }
+  ],
+  "mergeStrategy": "MERGE",
+  "streamSource": "{{mod-data-extractor}}/extractors/d0e5d47e-79f0-43b8-a001-ef34873c84ee/run"
+}

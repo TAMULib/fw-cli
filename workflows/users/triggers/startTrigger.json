@@ -1,0 +1,9 @@
+{
+  "id": "e6b5cac3-8c7e-4883-9119-08e339c5aea1",
+  "name": "User Migration Trigger",
+  "description": "Triggers User Migration",
+  "type": "MESSAGE_CORRELATE",
+  "method": "POST",
+  "deserializeAs": "EventTrigger",
+  "pathPattern": "/events/voyager/users/migrate"
+}

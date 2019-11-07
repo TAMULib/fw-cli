@@ -1,0 +1,21 @@
+{
+  "id": "0fb74eb3-ffb5-463b-b875-be094088d518",
+  "name": "Enhance Vendor NetIds",
+  "delegate": "enhancingExtractorDelegate",
+  "deserializeAs": "StreamingExtractorTask",
+  "streaming": true,
+  "enhancementComparisons": [
+    {
+      "sourceProperty": "/EXTERNAL_SYSTEM_ID",
+      "targetProperty": "/UIN"
+    }
+  ],
+  "enhancementMappings": [
+    {
+      "toProperty": "netid",
+      "fromProperty": "/TAMU_NETID"
+    }
+  ],
+  "mergeStrategy": "ENHANCE",
+  "streamSource": "{{mod-data-extractor}}/extractors/96b02e0b-850b-4f5f-88cd-e41dacfec581/run"
+}

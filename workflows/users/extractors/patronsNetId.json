@@ -1,0 +1,6 @@
+{
+  "id": "96b02e0b-850b-4f5f-88cd-e41dacfec581",
+  "name": "Patrons NetId Extractor",
+  "query": "patronsNetId.sql",
+  "type": "ORACLE"
+}

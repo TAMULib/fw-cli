@@ -4,6 +4,10 @@ import { config } from '../config';
 
 export class RestService {
 
+  public request(req: any, cb: any): any {
+    return request(req, cb);
+  }
+
   public get(url: string, contentType: string = 'application/json'): Promise<any> {
     return new Promise((resolve, reject) => {
       request.get({
@@ -17,6 +21,7 @@ export class RestService {
         if (response && response.statusCode >= 200 && response.statusCode <= 299) {
           resolve(JSON.parse(body));
         } else {
+          // console.log('failed get', url);
           reject(body);
         }
       });
@@ -35,14 +40,9 @@ export class RestService {
         }
       }, (error: any, response: any, body: any) => {
         if (response && response.statusCode >= 200 && response.statusCode <= 299) {
-          const token = response.headers['x-okapi-token'];
-          if (token && config.has('token') && config.get('token') !== token) {
-            config.set('token', token);
-            resolve(body);
-          } else {
-            resolve(body);
-          }
+          resolve(body);
         } else {
+          console.log('failed post', url, json);
           reject(body);
         }
       });
@@ -61,14 +61,30 @@ export class RestService {
         }
       }, (error: any, response: any, body: any) => {
         if (response && response.statusCode >= 200 && response.statusCode <= 299) {
-          const token = response.headers['x-okapi-token'];
-          if (token && config.has('token') && config.get('token') !== token) {
-            config.set('token', token);
-            resolve(body);
-          } else {
-            resolve(body);
-          }
+          resolve(body);
         } else {
+          console.log('failed put', url, json);
+          reject(body);
+        }
+      });
+    });
+  }
+
+  public delete(url: string, contentType: string = 'application/json', accept: string = 'text/plain'): Promise<any> {
+    return new Promise((resolve, reject) => {
+      request.delete({
+        url,
+        headers: {
+          'X-Okapi-Tenant': config.get('tenant'),
+          'X-Okapi-Token': config.get('token'),
+          'Content-Type': contentType,
+          'Accept': accept
+        }
+      }, (error: any, response: any, body: any) => {
+        if (response && response.statusCode >= 200 && response.statusCode <= 299) {
+          resolve(body);
+        } else {
+          // console.log('failed delete', url);
           reject(body);
         }
       });

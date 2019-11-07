@@ -1,0 +1,25 @@
+{
+  "id": "8b199071-9f41-41df-bc83-844e70b7119e",
+  "name": "Enhance User Reference Links AMDB",
+  "delegate": "enhancingExtractorDelegate",
+  "deserializeAs": "StreamingExtractorTask",
+  "streaming": true,
+  "enhancementComparisons": [
+    {
+      "sourceProperty": "/EXTERNAL_SYSTEM_ID",
+      "targetProperty": "/externalReference"
+    },
+    {
+      "sourceProperty": "/SCHEMA",
+      "targetProperty": "/type/name"
+    }
+  ],
+  "enhancementMappings": [
+    {
+      "toProperty": "id",
+      "fromProperty": "/folioReference"
+    }
+  ],
+  "mergeStrategy": "ENHANCE",
+  "streamSource": "{{mod-external-reference-resolver}}/streaming/referenceLinks/type/0ed6f994-8dbd-4827-94c0-905504169c90"
+}

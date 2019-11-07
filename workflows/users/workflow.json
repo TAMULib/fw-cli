@@ -1,0 +1,22 @@
+{
+  "id": "a459afe7-9ba7-4336-8827-a127cfc7c09b",
+  "name": "Users Migration Workflow",
+  "deploymentId": null,
+  "processDefinitionIds": [],
+  "active": false,
+  "tasks": [
+    "{{mod-workflow}}/streamingExtractorTask/33f8b3cf-6305-4871-9e94-c8ec4e6c43ef",
+    "{{mod-workflow}}/streamingExtractorTask/0a42b49e-d203-4197-8a1f-917ce7790202",
+    "{{mod-workflow}}/streamingExtractorTask/0fb74eb3-ffb5-463b-b875-be094088d518",
+    "{{mod-workflow}}/streamingExtractorTask/8b199071-9f41-41df-bc83-844e70b7119e",
+    "{{mod-workflow}}/streamingExtractorTask/ae03a847-f36e-445c-b45d-bb6c625a341d",
+    "{{mod-workflow}}/processorTask/6e86b6f2-cc0d-439d-8be7-b8f58e6e374d",
+    "{{mod-workflow}}/processorTask/7e6b3cb4-5a97-4572-9f6e-d5daab6176b0",
+    "{{mod-workflow}}/processorTask/a3cea734-00c0-11ea-8d71-362b9e155667",
+    "{{mod-workflow}}/processorTask/b1425fdc-9cd6-4adc-bd31-d6aefe5fddbc",
+    "{{mod_workflow_url}}/accumulatorTask/e429df79-7a2b-4712-970a-e8730783ff0e",
+    "{{mod-workflow}}/processorTask/df1a0a42-239d-44dd-9304-22159bb6ea9b",
+    "{{mod-workflow}}/streamingRequestTask/a2caaa74-e03b-4f34-aaff-0bbebe89bd88"
+  ],
+  "startTrigger": "{{mod-workflow}}/eventTrigger/e6b5cac3-8c7e-4883-9119-08e339c5aea1"
+}

@@ -1,0 +1,9 @@
+{
+  "id": "6e86b6f2-cc0d-439d-8be7-b8f58e6e374d",
+  "name": "setupUserData",
+  "delegate": "streamingProcessDelegate",
+  "deserializeAs": "ProcessorTask",
+  "streaming": false,
+  "script": "processSetupUserData.js",
+  "scriptType": "JS"
+}

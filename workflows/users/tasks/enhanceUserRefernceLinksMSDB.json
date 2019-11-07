@@ -1,0 +1,25 @@
+{
+  "id": "ae03a847-f36e-445c-b45d-bb6c625a341d",
+  "name": "Enhance User Reference Links MSDB",
+  "delegate": "enhancingExtractorDelegate",
+  "deserializeAs": "StreamingExtractorTask",
+  "streaming": true,
+  "enhancementComparisons": [
+    {
+      "sourceProperty": "/EXTERNAL_SYSTEM_ID",
+      "targetProperty": "/externalReference"
+    },
+    {
+      "sourceProperty": "/SCHEMA",
+      "targetProperty": "/type/name"
+    }
+  ],
+  "enhancementMappings": [
+    {
+      "toProperty": "id",
+      "fromProperty": "/folioReference"
+    }
+  ],
+  "mergeStrategy": "ENHANCE",
+  "streamSource": "{{mod-external-reference-resolver}}/streaming/referenceLinks/type/426ce32f-388c-4edf-9c79-d6b8348148a0"
+}

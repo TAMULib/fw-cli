@@ -1,0 +1,9 @@
+{
+  "id": "33f8b3cf-6305-4871-9e94-c8ec4e6c43ef",
+  "name": "Concat Users AMDB",
+  "delegate": "concatenatingExtractorDelegate",
+  "deserializeAs": "StreamingExtractorTask",
+  "streaming": true,
+  "mergeStrategy": "CONCAT",
+  "streamSource": "{{mod-data-extractor}}/extractors/b564e765-4284-42c8-adff-37fafd2c7507/run"
+}

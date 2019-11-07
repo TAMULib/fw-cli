@@ -1,0 +1,6 @@
+{
+  "id": "b564e765-4284-42c8-adff-37fafd2c7507",
+  "name": "Patrons AMDB Extractor",
+  "query": "patronsAMDB.sql",
+  "type": "VOYAGER"
+}
