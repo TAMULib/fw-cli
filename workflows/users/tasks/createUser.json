@@ -4,5 +4,5 @@
   "delegate": "streamingRequestDelegate",
   "deserializeAs": "StreamingRequestTask",
   "streaming": false,
-  "storageDestination": "{{mod-users}}/users"
+  "storageDestination": "{{mod-user-import}}/user-import"
 }

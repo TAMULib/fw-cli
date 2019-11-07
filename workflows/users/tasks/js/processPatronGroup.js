@@ -4,4 +4,4 @@ if (args.patronGroups[args.sourceData.PATRON_GROUP_CODE]) {
   args.userRequestBody.patronGroup = args.patronGroups['other'];
 }
 
-returnObj = args;
+returnObj = args.userRequestBody;

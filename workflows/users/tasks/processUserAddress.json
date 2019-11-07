@@ -4,6 +4,6 @@
   "delegate": "streamingProcessDelegate",
   "deserializeAs": "ProcessorTask",
   "streaming": false,
-  "script": "processAddresses.js",
+  "script": "processUserAddress.js",
   "scriptType": "JS"
 }

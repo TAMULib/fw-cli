@@ -59,14 +59,14 @@ returnObj = {
     'expirationDate': null
   },
   patronGroups: {
-    'fac/staff': 'a6e82340-00e4-11ea-8d71-362b9e155667',
-    'fast': 'a6e82340-00e4-11ea-8d71-362b9e155667',
-    'grad/prof': 'afa72b3e-00e4-11ea-8d71-362b9e155667',
-    'undergrad': 'b61c14ac-00e4-11ea-8d71-362b9e155667',
-    'ungr': 'b61c14ac-00e4-11ea-8d71-362b9e155667',
-    'texshare': 'bde3f466-00e4-11ea-8d71-362b9e155667',
-    'other': 'c8a0eef4-00e4-11ea-8d71-362b9e155667',
-    'ill': 'd1cb4e02-00e4-11ea-8d71-362b9e155667'
+    'fac/staff': 'fast',
+    'fast': 'fast',
+    'grad/prof': 'grad',
+    'undergrad': 'ugrad',
+    'ungr': 'ugrad',
+    'texshare': 'texs',
+    'other': 'cour',
+    'ill': 'illend'
   },
   addressTypes: {
     'Claim': '',

@@ -1,1 +1,4 @@
-returnObj = args.userRequestBody;
+returnObj = {
+  users: args,
+  totalRecords: args.length
+};
