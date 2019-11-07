@@ -19,7 +19,7 @@
     "clear": "0.1.0",
     "commander": "4.0.0",
     "conf": "6.2.0",
-    "core-js": "3.3.6",
+    "core-js": "3.4.0",
     "figlet": "1.2.4",
     "handlebars": "4.5.1",
     "handlebars-loader": "1.7.1",
