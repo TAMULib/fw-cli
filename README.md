@@ -1,4 +1,4 @@
-# fmcli
+# fm-cli
 FOLIO Migration CLI
 
 ```
@@ -13,6 +13,8 @@ fm
 vagrant up
 
 cd mod-workflow
+mvn clean install
+cd service
 mvn clean spring-boot:run
 
 cd mod-camunda
