@@ -1,4 +1,4 @@
-# fmcli
+# fm-cli
 FOLIO Migration CLI
 
 ```
