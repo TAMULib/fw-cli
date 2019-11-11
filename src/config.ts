@@ -27,10 +27,6 @@ const schema = {
     type: 'string',
     default: 'admin'
   },
-  useLocalhost: {
-    type: 'boolean',
-    default: true
-  },
   'mod-camunda': {
     type: 'string',
     format: 'uri',
@@ -50,6 +46,10 @@ const schema = {
     type: 'string',
     format: 'uri',
     default: 'http://localhost:9003'
+  },
+  'mod-organizations-storage': {
+    type: 'string',
+    format: 'uri'
   }
 };
 
