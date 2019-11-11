@@ -32,7 +32,17 @@ const schema = {
     format: 'uri',
     default: 'http://localhost:9000'
   },
+  'mod-camunda-internal': {
+    type: 'string',
+    format: 'uri',
+    default: 'http://localhost:9000'
+  },
   'mod-workflow': {
+    type: 'string',
+    format: 'uri',
+    default: 'http://localhost:9001'
+  },
+  'mod-workflow-internal': {
     type: 'string',
     format: 'uri',
     default: 'http://localhost:9001'
@@ -42,7 +52,17 @@ const schema = {
     format: 'uri',
     default: 'http://localhost:9002'
   },
+  'mod-data-extractor-internal': {
+    type: 'string',
+    format: 'uri',
+    default: 'http://localhost:9002'
+  },
   'mod-external-reference-resolver': {
+    type: 'string',
+    format: 'uri',
+    default: 'http://localhost:9003'
+  },
+  'mod-external-reference-resolver-internal': {
     type: 'string',
     format: 'uri',
     default: 'http://localhost:9003'
