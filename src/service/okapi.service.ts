@@ -30,15 +30,15 @@ class OkapiService extends RestService {
   }
 
   public createReferenceData(request: { path: string, data: any[] }): Promise<any> {
-    return Promise.all(request.data.map((data: any) => {
-      return this.post(`${config.get('okapi')}/${request.path}`, data);
-    }));
+    return request.data.map((data: any) => {
+      return () => this.post(`${config.get('okapi')}/${request.path}`, data);
+    }).reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
   }
 
   public deleteReferenceData(request: { path: string, data: any[] }): Promise<any> {
-    return Promise.all(request.data.map((data: any) => {
-      return this.delete(`${config.get('okapi')}/${request.path}/${data.id}`);
-    }));
+    return request.data.map((data: any) => {
+      return () => this.delete(`${config.get('okapi')}/${request.path}/${data.id}`);
+    }).reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
   }
 
   public getDiscoveryModules(): Promise<any> {

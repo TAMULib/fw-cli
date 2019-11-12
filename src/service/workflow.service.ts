@@ -155,15 +155,17 @@ class WorkflowService extends RestService implements Enhancer {
       }
       return [
         () => okapi.login(),
-        // clear reference data
-        () => Promise.all(references
+        // clear reference data, iterate in reverse
+        () => references.slice().reverse()
           .map((json: any) => JSON.parse(json))
-          .map((reference: any) => okapi.deleteReferenceData(reference))),
+          .map((reference: any) => () => okapi.deleteReferenceData(reference))
+          .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve()),
         // create reference data
-        () => Promise.all(references
+        () => references
           .map((json: any) => templateService.template(json))
           .map((json: any) => JSON.parse(json))
-          .map((data: any) => okapi.createReferenceData(data)))
+          .map((data: any) => () => okapi.createReferenceData(data))
+          .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve())
       ].reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
     }
     return Promise.reject(`cannot find reference data at ${path}`);
@@ -172,10 +174,11 @@ class WorkflowService extends RestService implements Enhancer {
   private createReferenceLinkTypes(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/referenceLinkTypes`;
     if (fileService.exists(path)) {
-      return Promise.all(fileService.readAll(path, '.json')
+      return fileService.readAll(path, '.json')
         .map((json: any) => templateService.template(json))
         .map((json: any) => JSON.parse(json))
-        .map((data: any) => modExternalReferenceResolver.createReferenceLinkType(data)));
+        .map((data: any) => () => modExternalReferenceResolver.createReferenceLinkType(data))
+        .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
     }
     return Promise.reject(`cannot find reference link types at ${path}`);
   }
@@ -183,11 +186,12 @@ class WorkflowService extends RestService implements Enhancer {
   private createExtractors(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/extractors`;
     if (fileService.exists(path)) {
-      return Promise.all(fileService.readAll(path, '.json')
+      return fileService.readAll(path, '.json')
         .map((json: any) => modDataExtractor.enhance(path, json))
         .map((json: any) => templateService.template(json))
         .map((json: any) => JSON.parse(json))
-        .map((data: any) => modDataExtractor.createExtractor(data)));
+        .map((data: any) => () => modDataExtractor.createExtractor(data))
+        .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
     }
     return Promise.reject(`cannot find extractors at ${path}`);
   }
@@ -195,11 +199,12 @@ class WorkflowService extends RestService implements Enhancer {
   private createTriggers(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/triggers`;
     if (fileService.exists(path)) {
-      return Promise.all(fileService.readAll(path, '.json')
+      return fileService.readAll(path, '.json')
         .map((json: any) => modWorkflow.enhance(path, json))
         .map((json: any) => templateService.template(json))
         .map((json: any) => JSON.parse(json))
-        .map((data: any) => modWorkflow.createTrigger(data)));
+        .map((data: any) => () => modWorkflow.createTrigger(data))
+        .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
     }
     return Promise.reject(`cannot find triggers at ${path}`);
   }
@@ -207,11 +212,12 @@ class WorkflowService extends RestService implements Enhancer {
   private createTasks(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/tasks`;
     if (fileService.exists(path)) {
-      return Promise.all(fileService.readAll(path, '.json')
+      return fileService.readAll(path, '.json')
         .map((json: any) => modWorkflow.enhance(path, json))
         .map((json: any) => templateService.template(json))
         .map((json: any) => JSON.parse(json))
-        .map((data: any) => modWorkflow.createTask(data)));
+        .map((data: any) => () => modWorkflow.createTask(data))
+        .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
     }
     return Promise.reject(`cannot find tasks at ${path}`);
   }
