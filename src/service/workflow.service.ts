@@ -172,7 +172,7 @@ class WorkflowService extends RestService implements Enhancer {
   private createReferenceLinkTypes(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/referenceLinkTypes`;
     if (fileService.exists(path)) {
-      return Promise.all(fileService.readAll(path)
+      return Promise.all(fileService.readAll(path, '.json')
         .map((json: any) => templateService.template(json))
         .map((json: any) => JSON.parse(json))
         .map((data: any) => modExternalReferenceResolver.createReferenceLinkType(data)));
@@ -183,7 +183,7 @@ class WorkflowService extends RestService implements Enhancer {
   private createExtractors(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/extractors`;
     if (fileService.exists(path)) {
-      return Promise.all(fileService.readAll(path)
+      return Promise.all(fileService.readAll(path, '.json')
         .map((json: any) => modDataExtractor.enhance(path, json))
         .map((json: any) => templateService.template(json))
         .map((json: any) => JSON.parse(json))
@@ -195,7 +195,7 @@ class WorkflowService extends RestService implements Enhancer {
   private createTriggers(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/triggers`;
     if (fileService.exists(path)) {
-      return Promise.all(fileService.readAll(path)
+      return Promise.all(fileService.readAll(path, '.json')
         .map((json: any) => modWorkflow.enhance(path, json))
         .map((json: any) => templateService.template(json))
         .map((json: any) => JSON.parse(json))
@@ -207,7 +207,7 @@ class WorkflowService extends RestService implements Enhancer {
   private createTasks(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/tasks`;
     if (fileService.exists(path)) {
-      return Promise.all(fileService.readAll(path)
+      return Promise.all(fileService.readAll(path, '.json')
         .map((json: any) => modWorkflow.enhance(path, json))
         .map((json: any) => templateService.template(json))
         .map((json: any) => JSON.parse(json))
