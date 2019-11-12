@@ -2,22 +2,22 @@ const uuid = require('uuid/v1');
 
 class DefaultService {
 
-  public trigger(): any {
+  public trigger(name: string): any {
     return {
       id: uuid(),
-      name: '',
+      name,
       description: '',
       type: 'MESSAGE_CORRELATE',
       method: 'POST',
       deserializeAs: 'EventTrigger',
-      pathPattern: ''
+      pathPattern: `/events/${name}/workflow`
     };
   }
 
-  public workflow(): any {
+  public workflow(name: string): any {
     return {
       id: uuid(),
-      name: '',
+      name,
       processDefinitionIds: [],
       active: false,
       tasks: [],
