@@ -106,20 +106,24 @@ program
 
 program
   .command('add <workflow> <type> <name>')
-  .description('add new extractor/processor with name to an existing workflow')
-  .action((workflow: string, type: 'extractor' | 'processor', name: string) => {
+  .description('add new extractor/processor/references with name to an existing workflow')
+  .action((workflow: string, type: 'extractor' | 'processor' | 'references', name: string) => {
     const path = `${config.get('wd')}/${workflow}`;
     if (fileService.exists(path)) {
       switch (type) {
         case 'extractor':
           fileService.createFile(`${path}/extractors/${name}.json`, defaultService.extractor(name));
           fileService.createFile(`${path}/extractors/sql/${name}.sql`);
-          console.log(`new ${type} ${name} added to ${workflow}`);
+          console.log(`new ${name} ${type} added to ${workflow}`);
           break;
         case 'processor':
           fileService.createFile(`${path}/tasks/${name}.json`, defaultService.processor(name));
           fileService.createFile(`${path}/tasks/js/${name}.js`);
-          console.log(`new ${type} ${name} added to ${workflow}`);
+          console.log(`new ${name} ${type} added to ${workflow}`);
+          break;
+        case 'references':
+          fileService.createFile(`${path}/referenceData/${name}.json`, defaultService.references());
+          console.log(`new ${name} ${type} added to ${workflow}`);
           break;
         default:
           console.log(`${type} not supported. <extractor/processor>`);

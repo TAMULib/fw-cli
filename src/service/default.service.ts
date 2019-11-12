@@ -46,6 +46,13 @@ class DefaultService {
     };
   }
 
+  public references(): any {
+    return {
+      path: '',
+      data: []
+    };
+  }
+
 }
 
 export const defaultService = new DefaultService();
