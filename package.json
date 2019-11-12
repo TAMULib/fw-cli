@@ -1,6 +1,6 @@
 {
   "name": "fm-cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "FOLIO Migration CLI",
   "author": "William Welling <wwelling@library.tamu.edu>",
   "license": "MIT",
@@ -19,7 +19,7 @@
     "clear": "0.1.0",
     "commander": "4.0.1",
     "conf": "6.2.0",
-    "core-js": "3.4.0",
+    "core-js": "3.4.1",
     "figlet": "1.2.4",
     "handlebars": "4.5.1",
     "handlebars-loader": "1.7.1",

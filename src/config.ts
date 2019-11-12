@@ -69,7 +69,8 @@ const schema = {
   },
   'mod-organizations-storage': {
     type: 'string',
-    format: 'uri'
+    format: 'uri',
+    default: 'http://localhost:9146'
   }
 };
 
