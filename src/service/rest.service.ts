@@ -21,7 +21,7 @@ export class RestService {
         if (response && response.statusCode >= 200 && response.statusCode <= 299) {
           resolve(JSON.parse(body));
         } else {
-          // console.log('failed get', url);
+          // console.log('failed get', url, response.statusCode);
           reject(body);
         }
       });
@@ -42,7 +42,7 @@ export class RestService {
         if (response && response.statusCode >= 200 && response.statusCode <= 299) {
           resolve(body);
         } else {
-          console.log('failed post', url, json);
+          console.log('failed post', url, response.statusCode, json);
           reject(body);
         }
       });
@@ -63,7 +63,7 @@ export class RestService {
         if (response && response.statusCode >= 200 && response.statusCode <= 299) {
           resolve(body);
         } else {
-          console.log('failed put', url, json);
+          console.log('failed put', url, response.statusCode, json);
           reject(body);
         }
       });
@@ -84,7 +84,7 @@ export class RestService {
         if (response && response.statusCode >= 200 && response.statusCode <= 299) {
           resolve(body);
         } else {
-          // console.log('failed delete', url);
+          // console.log('failed delete', url, response.statusCode);
           reject(body);
         }
       });
