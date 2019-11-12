@@ -108,27 +108,67 @@ program
   .command('add <workflow> <type> <name>')
   .description('add new extractor/processor/references with name to an existing workflow')
   .action((workflow: string, type: 'extractor' | 'processor' | 'references', name: string) => {
-    const path = `${config.get('wd')}/${workflow}`;
-    if (fileService.exists(path)) {
+    const workflowPath = `${config.get('wd')}/${workflow}`;
+    if (fileService.exists(workflowPath)) {
       switch (type) {
         case 'extractor':
-          fileService.createFile(`${path}/extractors/${name}.json`, defaultService.extractor(name));
-          fileService.createFile(`${path}/extractors/sql/${name}.sql`);
+          fileService.createFile(`${workflowPath}/extractors/${name}.json`, defaultService.extractor(name));
+          fileService.createFile(`${workflowPath}/extractors/sql/${name}.sql`);
           console.log(`new ${name} ${type} added to ${workflow}`);
           break;
         case 'processor':
-          fileService.createFile(`${path}/tasks/${name}.json`, defaultService.processor(name));
-          fileService.createFile(`${path}/tasks/js/${name}.js`);
+          fileService.createFile(`${workflowPath}/tasks/${name}.json`, defaultService.processor(name));
+          fileService.createFile(`${workflowPath}/tasks/js/${name}.js`);
           console.log(`new ${name} ${type} added to ${workflow}`);
           break;
         case 'references':
-          fileService.createFile(`${path}/referenceData/${name}.json`, defaultService.references());
+          fileService.createFile(`${workflowPath}/referenceData/${name}.json`, defaultService.references());
           console.log(`new ${name} ${type} added to ${workflow}`);
           break;
         default:
           console.log(`${type} not supported. <extractor/processor>`);
           break;
       }
+    } else {
+      console.log(`${workflow} workflow does not exist`);
+    }
+  });
+
+program
+  .command('reference <workflow> <name> <path>')
+  .description('load reference data from path into references with name of workflow')
+  .action((workflow: string, name: string, path: string) => {
+    if (!fileService.exists(path)) {
+      console.log(`${path} does not exist`);
+      return;
+    }
+    const workflowPath = `${config.get('wd')}/${workflow}`;
+    if (fileService.exists(workflowPath)) {
+      const referencesPath = `${workflowPath}/referenceData/${name}.json`;
+      if (fileService.exists(workflowPath)) {
+        console.log(`adding to ${name} references of ${workflow}`);
+      } else {
+        fileService.createFile(referencesPath, defaultService.references());
+        console.log(`new ${name} references added to ${workflow}`);
+      }
+      const references = JSON.parse(fileService.read(referencesPath));
+      fileService.readAll(path)
+        .map((data: any) => JSON.parse(data))
+        .filter((referenceData: any) => {
+          for (const data of references.data) {
+            if (data.id === referenceData.id) {
+              console.log('already exists');
+              return false;
+            }
+          }
+          return true;
+        })
+        .forEach((referenceData: any) => {
+          references.data.push(referenceData);
+          console.log('added', referenceData);
+        });
+      fileService.save(referencesPath, references);
+      console.log(`${referencesPath} saved`);
     } else {
       console.log(`${workflow} workflow does not exist`);
     }

@@ -12,7 +12,7 @@ class FileService {
   public readAll(path: string): any[] {
     if (this.exists(path)) {
       return fs.readdirSync(path).filter((file: string) => {
-        return !file.startsWith('.') && fs.lstatSync(`${path}/${file}`).isFile();
+        return !file.startsWith('.') && file.endsWith('.json') && fs.lstatSync(`${path}/${file}`).isFile();
       }).map((file: string) => {
         return this.read(`${path}/${file}`);
       });
@@ -38,6 +38,10 @@ class FileService {
   }
 
   public createFile(path: string, data: any = ''): any {
+    return fs.writeFileSync(path, JSON.stringify(data, null, 2));
+  }
+
+  public save(path: string, data: any): any {
     return fs.writeFileSync(path, JSON.stringify(data, null, 2));
   }
 
