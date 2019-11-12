@@ -69,9 +69,7 @@ class WorkflowService extends RestService implements Enhancer {
       tasks: [],
       startTrigger: ''
     });
-    fileService.createFile(`${path}/setup.json`, {
-      lookups: []
-    });
+    fileService.createFile(`${path}/setup.json`, {});
     return Promise.resolve(`new workflow ${name} scaffold created`);
   }
 
@@ -158,18 +156,8 @@ class WorkflowService extends RestService implements Enhancer {
     const path = `${config.get('wd')}/${name}/setup.json`;
     if (fileService.exists(path)) {
       const setup = JSON.parse(fileService.read(path));
-      const lookups = setup.lookups ? setup.lookups : [];
-      return Promise.all(lookups.map((module: string) => {
-        const promise = okapi.getDiscoveryModuleURL(module);
-        promise.then((u: string) => {
-          if (config.get('useLocalhost')) {
-            const url = new URL(u);
-            return config.set(module, `http://localhost:${url.port}`);
-          }
-          return module;
-        }, console.log);
-        return promise;
-      }));
+      // nothing to do here
+      return Promise.resolve(setup);
     }
     return Promise.reject(`cannot find setup.json at ${path}`);
   }

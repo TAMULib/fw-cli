@@ -27,11 +27,12 @@ const schema = {
     type: 'string',
     default: 'admin'
   },
-  useLocalhost: {
-    type: 'boolean',
-    default: true
-  },
   'mod-camunda': {
+    type: 'string',
+    format: 'uri',
+    default: 'http://localhost:9000'
+  },
+  'mod-camunda-internal': {
     type: 'string',
     format: 'uri',
     default: 'http://localhost:9000'
@@ -41,7 +42,17 @@ const schema = {
     format: 'uri',
     default: 'http://localhost:9001'
   },
+  'mod-workflow-internal': {
+    type: 'string',
+    format: 'uri',
+    default: 'http://localhost:9001'
+  },
   'mod-data-extractor': {
+    type: 'string',
+    format: 'uri',
+    default: 'http://localhost:9002'
+  },
+  'mod-data-extractor-internal': {
     type: 'string',
     format: 'uri',
     default: 'http://localhost:9002'
@@ -50,6 +61,15 @@ const schema = {
     type: 'string',
     format: 'uri',
     default: 'http://localhost:9003'
+  },
+  'mod-external-reference-resolver-internal': {
+    type: 'string',
+    format: 'uri',
+    default: 'http://localhost:9003'
+  },
+  'mod-organizations-storage': {
+    type: 'string',
+    format: 'uri'
   }
 };
 
