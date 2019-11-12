@@ -1,5 +1,3 @@
-const uuid = require('uuid/v1');
-
 import { RestService } from './rest.service';
 import { Enhancer } from './enhancer.interface';
 
@@ -9,6 +7,7 @@ import { modDataExtractor } from './data-extractor.service';
 import { fileService } from './file.service';
 import { templateService } from './template.service';
 import { okapi } from './okapi.service';
+import { defaultService } from './default.service';
 
 class WorkflowService extends RestService implements Enhancer {
 
@@ -52,23 +51,8 @@ class WorkflowService extends RestService implements Enhancer {
     fileService.createFile(`${path}/tasks/js/.gitkeep`);
     fileService.createDirectory(`${path}/triggers`);
     fileService.createFile(`${path}/triggers/.gitkeep`);
-    fileService.createFile(`${path}/triggers/startTrigger.json`, {
-      id: uuid(),
-      name: '',
-      description: '',
-      type: 'MESSAGE_CORRELATE',
-      method: 'POST',
-      deserializeAs: 'EventTrigger',
-      pathPattern: ''
-    });
-    fileService.createFile(`${path}/workflow.json`, {
-      id: uuid(),
-      name: '',
-      processDefinitionIds: [],
-      active: false,
-      tasks: [],
-      startTrigger: ''
-    });
+    fileService.createFile(`${path}/triggers/startTrigger.json`, defaultService.trigger());
+    fileService.createFile(`${path}/workflow.json`, defaultService.workflow());
     fileService.createFile(`${path}/setup.json`, {});
     return Promise.resolve(`new workflow ${name} scaffold created`);
   }
