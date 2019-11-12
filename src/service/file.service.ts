@@ -9,10 +9,10 @@ class FileService {
     throw new Error(`not found: ${path}`);
   }
 
-  public readAll(path: string): any[] {
+  public readAll(path: string, endsWith: string = ''): any[] {
     if (this.exists(path)) {
       return fs.readdirSync(path).filter((file: string) => {
-        return !file.startsWith('.') && file.endsWith('.json') && fs.lstatSync(`${path}/${file}`).isFile();
+        return !file.startsWith('.') && file.endsWith(endsWith) && fs.lstatSync(`${path}/${file}`).isFile();
       }).map((file: string) => {
         return this.read(`${path}/${file}`);
       });

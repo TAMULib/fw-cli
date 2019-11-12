@@ -30,7 +30,7 @@ program
 
 program
   .command('config <action> [property] [value]')
-  .description('get/set/delete/reset config value or reset to defaults')
+  .description('get/set/delete/reset config value or reset all config to defaults')
   .action((action: 'get' | 'set' | 'delete' | 'reset', property?: string, value?: string) => {
     switch (action) {
       case 'get':
@@ -152,7 +152,7 @@ program
         console.log(`new ${name} references added to ${workflow}`);
       }
       const references = JSON.parse(fileService.read(referencesPath));
-      fileService.readAll(path)
+      fileService.readAll(path, '.json')
         .map((data: any) => JSON.parse(data))
         .filter((referenceData: any) => {
           for (const data of references.data) {
