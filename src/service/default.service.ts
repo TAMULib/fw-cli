@@ -10,7 +10,7 @@ class DefaultService {
       type: 'MESSAGE_CORRELATE',
       method: 'POST',
       deserializeAs: 'EventTrigger',
-      pathPattern: `/events/${name}/workflow`
+      pathPattern: ``
     };
   }
 
