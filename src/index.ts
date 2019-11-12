@@ -135,7 +135,7 @@ program
   });
 
 program
-  .command('reference <workflow> <name> <path>')
+  .command('load <workflow> <name> <path>')
   .description('load reference data from path into references with name of workflow')
   .action((workflow: string, name: string, path: string) => {
     if (!fileService.exists(path)) {
@@ -157,18 +157,17 @@ program
         .filter((referenceData: any) => {
           for (const data of references.data) {
             if (data.id === referenceData.id) {
-              console.log('already exists');
+              console.log(`reference data with id ${referenceData.id} already exists`);
               return false;
             }
           }
           return true;
-        })
-        .forEach((referenceData: any) => {
+        }).forEach((referenceData: any) => {
           references.data.push(referenceData);
           console.log('added', referenceData);
         });
       fileService.save(referencesPath, references);
-      console.log(`${referencesPath} saved`);
+      console.log(`${referencesPath} updated`);
     } else {
       console.log(`${workflow} workflow does not exist`);
     }
