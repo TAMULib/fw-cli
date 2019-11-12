@@ -145,7 +145,7 @@ program
     const workflowPath = `${config.get('wd')}/${workflow}`;
     if (fileService.exists(workflowPath)) {
       const referencesPath = `${workflowPath}/referenceData/${name}.json`;
-      if (fileService.exists(workflowPath)) {
+      if (fileService.exists(referencesPath)) {
         console.log(`adding to ${name} references of ${workflow}`);
       } else {
         fileService.createFile(referencesPath, defaultService.references());
