@@ -15,7 +15,9 @@ Vagrant.configure(2) do |config|
   config.vm.define "testing", autostart: true do |testing|
     testing.vm.box = "folio/testing"
 
-    testing.vm.synced_folder ".", "/vagrant", type: "smb", mount_options: ["vers=3.02"]
+    if Vagrant::Util::Platform.windows?
+      testing.vm.synced_folder ".", "/vagrant", type: "smb", mount_options: ["vers=3.02"]
+    end
 
     testing.vm.network "forwarded_port", guest: 3000, host: 3000
     testing.vm.network "forwarded_port", guest: 8000, host: 8130
