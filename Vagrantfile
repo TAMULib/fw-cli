@@ -3,47 +3,9 @@
 # Build a VM to serve as an Okapi/Docker server
 # Deploy development environment
 
-Vagrant.configure(2) do |config|
-
-  # Give us a little headroom
-  # Note that provisioning a Stripes webpack requires more RAM
-  config.vm.provider "virtualbox" do |vb|
-    vb.memory = 16384
-    vb.cpus = 4
-  end
-
-  config.vm.define "snapshot-backend-core", autostart: false do |snapshot_backend_core|
-    snapshot_backend_core.vm.box = "folio/snapshot-backend-core"
-    snapshot_backend_core.vm.network "forwarded_port", guest: 9130, host: 9130
-  end
-
-  config.vm.define "snapshot-core", autostart: false do |snapshot_core|
-    snapshot_core.vm.box = "folio/snapshot-core"
-    snapshot_core.vm.network "forwarded_port", guest: 3000, host: 3000
-  end
-
-  config.vm.define "snapshot", autostart: false do |snapshot|
-    snapshot.vm.box = "folio/snapshot"
-    snapshot.vm.network "forwarded_port", guest: 3000, host: 3000
-    snapshot.vm.network "forwarded_port", guest: 9130, host: 9130
-  end
-
-  config.vm.define "testing-backend", autostart: false do |testing_backend|
-    testing_backend.vm.box = "folio/testing-backend"
-    testing_backend.vm.network "forwarded_port", guest: 9130, host: 9130
-  end
-
-  config.vm.define "testing", autostart: false do |testing|
-    testing.vm.box = "folio/testing"
-    testing.vm.network "forwarded_port", guest: 3000, host: 3000
-    testing.vm.network "forwarded_port", guest: 9130, host: 9130
-  end
-
-  if Vagrant::Util::Platform.windows?
-    config.vm.synced_folder ".", "/vagrant", type: "smb", mount_options: ["vers=3.02"]
-  end
-
+def backend_port_mapping(config)
   # config.vm.network "forwarded_port", guest: 8000, host: 8130
+  config.vm.network "forwarded_port", guest: 9130, host: 9130
 
   config.vm.network "forwarded_port", guest: 9131, host: 9131
   config.vm.network "forwarded_port", guest: 9132, host: 9132
@@ -128,5 +90,58 @@ Vagrant.configure(2) do |config|
   #config.vm.network "forwarded_port", guest: 9004, host: 9004
   #config.vm.network "forwarded_port", guest: 9005, host: 9005
   #config.vm.network "forwarded_port", guest: 61616, host: 61616
+end
+
+def frontend_port_mapping(config)
+  config.vm.network "forwarded_port", guest: 3000, host: 3000
+end
+
+Vagrant.configure(2) do |config|
+
+  # Give us a little headroom
+  # Note that provisioning a Stripes webpack requires more RAM
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 16384
+    vb.cpus = 4
+  end
+
+  # https://app.vagrantup.com/folio/boxes/snapshot-backend-core
+  config.vm.define "snapshot-backend-core", autostart: false do |snapshot_backend_core|
+    snapshot_backend_core.vm.box = "folio/snapshot-backend-core"
+    backend_port_mapping(snapshot_backend_core)
+  end
+
+  # https://app.vagrantup.com/folio/boxes/snapshot-core
+  config.vm.define "snapshot-core", autostart: false do |snapshot_core|
+    snapshot_core.vm.box = "folio/snapshot-core"
+    frontend_port_mapping(snapshot_core)
+    backend_port_mapping(snapshot_core)
+  end
+
+  # https://app.vagrantup.com/folio/boxes/snapshot
+  config.vm.define "snapshot", autostart: false do |snapshot|
+    snapshot.vm.box = "folio/snapshot"
+    frontend_port_mapping(snapshot)
+    backend_port_mapping(snapshot)
+  end
+
+  # https://app.vagrantup.com/folio/boxes/testing-backend
+  config.vm.define "testing-backend", autostart: false do |testing_backend|
+    testing_backend.vm.box = "folio/testing-backend"
+    backend_port_mapping(testing_backend)
+  end
+
+  # https://app.vagrantup.com/folio/boxes/testing
+  config.vm.define "testing", autostart: false do |testing|
+    testing.vm.box = "folio/testing"
+    frontend_port_mapping(testing)
+    backend_port_mapping(testing)
+  end
+
+  if Vagrant::Util::Platform.windows?
+    config.vm.synced_folder ".", "/vagrant", type: "smb", mount_options: ["vers=3.02"]
+  end
+
+  
 
 end
