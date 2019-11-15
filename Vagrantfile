@@ -14,26 +14,37 @@ Vagrant.configure(2) do |config|
 
   config.vm.define "snapshot-backend-core", autostart: false do |snapshot_backend_core|
     snapshot_backend_core.vm.box = "folio/snapshot-backend-core"
+    snapshot_backend_core.vm.network "forwarded_port", guest: 9130, host: 9130
+  end
 
-    if Vagrant::Util::Platform.windows?
-      snapshot_backend_core.vm.synced_folder ".", "/vagrant", type: "smb", mount_options: ["vers=3.02"]
-    end
+  config.vm.define "snapshot-core", autostart: false do |snapshot_core|
+    snapshot_core.vm.box = "folio/snapshot-core"
+    snapshot_core.vm.network "forwarded_port", guest: 3000, host: 3000
+  end
 
-    snapshot_backend_core.vm.network "forwarded_port", guest: 8000, host: 8130
+  config.vm.define "snapshot", autostart: false do |snapshot|
+    snapshot.vm.box = "folio/snapshot"
+    snapshot.vm.network "forwarded_port", guest: 3000, host: 3000
+    snapshot.vm.network "forwarded_port", guest: 9130, host: 9130
+  end
+
+  config.vm.define "testing-backend", autostart: false do |testing_backend|
+    testing_backend.vm.box = "folio/testing-backend"
+    testing_backend.vm.network "forwarded_port", guest: 9130, host: 9130
   end
 
   config.vm.define "testing", autostart: false do |testing|
     testing.vm.box = "folio/testing"
-
-    if Vagrant::Util::Platform.windows?
-      testing.vm.synced_folder ".", "/vagrant", type: "smb", mount_options: ["vers=3.02"]
-    end
-
     testing.vm.network "forwarded_port", guest: 3000, host: 3000
-    testing.vm.network "forwarded_port", guest: 8000, host: 8130
+    testing.vm.network "forwarded_port", guest: 9130, host: 9130
   end
 
-  config.vm.network "forwarded_port", guest: 9130, host: 9130
+  if Vagrant::Util::Platform.windows?
+    config.vm.synced_folder ".", "/vagrant", type: "smb", mount_options: ["vers=3.02"]
+  end
+
+  # config.vm.network "forwarded_port", guest: 8000, host: 8130
+
   config.vm.network "forwarded_port", guest: 9131, host: 9131
   config.vm.network "forwarded_port", guest: 9132, host: 9132
   config.vm.network "forwarded_port", guest: 9133, host: 9133

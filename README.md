@@ -27,7 +27,7 @@ cd mod-external-reference-resolve
 mvn clean spring-boot:run
 ```
 
-> If `mod-source-record-manager` is required, use `vagrant up snapshot-backend-core`. *It does not have a Stripes UI.*
+> If `mod-source-record-manager` is required, use `vagrant up testing-backend`. *It does not have a Stripes UI.*
 
 > `mod-data-extractor` requires installing Oracle JDBC drivers and configuring credentials for database connections.
 
