@@ -10,7 +10,7 @@ npm install -g ./
 
 fm
 
-vagrant up
+vagrant up testing
 
 cd mod-workflow
 mvn clean install
@@ -26,6 +26,8 @@ mvn clean spring-boot:run
 cd mod-external-reference-resolve
 mvn clean spring-boot:run
 ```
+
+> If `mod-source-record-manager` is required, use `vagrant up snapshot-backend-core`. *It does not have a Stripes UI.*
 
 > `mod-data-extractor` requires installing Oracle JDBC drivers and configuring credentials for database connections.
 
