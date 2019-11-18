@@ -70,7 +70,7 @@ const schema = {
   'mod-organizations-storage': {
     type: 'string',
     format: 'uri',
-    default: 'http://localhost:9159'
+    default: 'http://localhost:9164'
   },
   'mod-source-record-manager': {
     type: 'string',
