@@ -27,6 +27,11 @@ const schema = {
     type: 'string',
     default: 'admin'
   },
+  userId: {
+    type: 'string',
+    format: 'uuid',
+    default: 'ad6d42d1-1239-526b-a997-6b96888f7719'
+  },
   'mod-camunda': {
     type: 'string',
     format: 'uri',
@@ -70,7 +75,7 @@ const schema = {
   'mod-organizations-storage': {
     type: 'string',
     format: 'uri',
-    default: 'http://localhost:9164'
+    default: 'http://localhost:9171'
   },
   'mod-source-record-manager': {
     type: 'string',
