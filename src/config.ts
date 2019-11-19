@@ -32,6 +32,10 @@ const schema = {
     format: 'uuid',
     default: 'ad6d42d1-1239-526b-a997-6b96888f7719'
   },
+  bibBatchSize: {
+    type: 'number',
+    default: 1000
+  },
   'mod-camunda': {
     type: 'string',
     format: 'uri',
