@@ -29,15 +29,28 @@ class OkapiService extends RestService {
     });
   }
 
-  public createReferenceData(request: { path: string, data: any[] }): Promise<any> {
+  public createReferenceData(request: { path: string, config?: string, data: any[] }): Promise<any> {
     return request.data.map((data: any) => {
-      return () => this.post(`${config.get('okapi')}/${request.path}`, data);
+      return () => {
+        const promise = this.post(`${config.get('okapi')}/${request.path}`, data);
+        if (request.config) {
+          promise.then((res) => {
+            // NOTE: adding id response into config only supports single reference data
+            const jobExecutionId = res.jobExecutions[0].id;
+            config.set(request.config, jobExecutionId);
+          });
+        }
+        return promise;
+      };
     }).reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
   }
 
-  public deleteReferenceData(request: { path: string, data: any[] }): Promise<any> {
+  public deleteReferenceData(request: { path: string, config?: string, data: any[] }): Promise<any> {
     return request.data.map((data: any) => {
-      return () => this.delete(`${config.get('okapi')}/${request.path}/${data.id}`);
+      return () => {
+        const id = request.config ? config.get(request.config) : data.id;
+        return this.delete(`${config.get('okapi')}/${request.path}/${id}`);
+      };
     }).reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
   }
 
