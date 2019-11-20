@@ -43,7 +43,11 @@ program
       case 'set':
         if (property) {
           if (value) {
-            config.set(property, value);
+            try {
+              config.set(property, value);
+            } catch (error) {
+              config.set(property, Number(value));
+            }
             console.log(`set ${property} to ${value}`);
           } else {
             console.log('set requires a value');
