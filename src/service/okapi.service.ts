@@ -29,15 +29,58 @@ class OkapiService extends RestService {
     });
   }
 
-  public createReferenceData(request: { path: string, data: any[] }): Promise<any> {
+  public getUser(username: string = config.get('username')): Promise<any> {
+    const url = `${config.get('okapi')}/users?query=username==${username}`;
+    return new Promise((resolve, reject) => {
+      this.request({
+        url,
+        method: 'GET',
+        headers: {
+          'X-Okapi-Tenant': config.get('tenant'),
+          'X-Okapi-Token': config.get('token'),
+          'Accept': ['application/json', 'text/plain'],
+          'Content-Type': 'application/json'
+        }
+      }, (error: any, response: any, body: any) => {
+        if (response && response.statusCode >= 200 && response.statusCode <= 299) {
+          const users = JSON.parse(body).users;
+          if (users.length > 0) {
+            const user = users[0]
+            config.set('userId', user.id);
+            resolve(user);
+          } else {
+            reject(`cannot find user ${username}`)
+          }
+        } else {
+          console.log('failed user lookup', url);
+          reject(body);
+        }
+      });
+    });
+  }
+
+  public createReferenceData(request: { path: string, config?: string, data: any[] }): Promise<any> {
     return request.data.map((data: any) => {
-      return () => this.post(`${config.get('okapi')}/${request.path}`, data);
+      return () => {
+        const promise = this.post(`${config.get('okapi')}/${request.path}`, data);
+        if (request.config) {
+          promise.then((res) => {
+            // NOTE: adding id response into config only supports single reference data
+            const jobExecutionId = res.jobExecutions[0].id;
+            config.set(request.config, jobExecutionId);
+          });
+        }
+        return promise;
+      };
     }).reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
   }
 
-  public deleteReferenceData(request: { path: string, data: any[] }): Promise<any> {
+  public deleteReferenceData(request: { path: string, config?: string, data: any[] }): Promise<any> {
     return request.data.map((data: any) => {
-      return () => this.delete(`${config.get('okapi')}/${request.path}/${data.id}`);
+      return () => {
+        const id = request.config ? config.get(request.config) : data.id;
+        return this.delete(`${config.get('okapi')}/${request.path}/${id}`);
+      };
     }).reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
   }
 
