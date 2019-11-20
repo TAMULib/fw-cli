@@ -84,7 +84,7 @@ const schema = {
   'mod-source-record-manager': {
     type: 'string',
     format: 'uri',
-    default: 'http://localhost:9157'
+    default: 'http://localhost:9161'
   }
 };
 

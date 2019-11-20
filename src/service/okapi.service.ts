@@ -29,6 +29,36 @@ class OkapiService extends RestService {
     });
   }
 
+  public getUser(username: string = config.get('username')): Promise<any> {
+    const url = `${config.get('okapi')}/users?query=username==${username}`;
+    return new Promise((resolve, reject) => {
+      this.request({
+        url,
+        method: 'GET',
+        headers: {
+          'X-Okapi-Tenant': config.get('tenant'),
+          'X-Okapi-Token': config.get('token'),
+          'Accept': ['application/json', 'text/plain'],
+          'Content-Type': 'application/json'
+        }
+      }, (error: any, response: any, body: any) => {
+        if (response && response.statusCode >= 200 && response.statusCode <= 299) {
+          const users = JSON.parse(body).users;
+          if (users.length > 0) {
+            const user = users[0]
+            config.set('userId', user.id);
+            resolve(user);
+          } else {
+            reject(`cannot find user ${username}`)
+          }
+        } else {
+          console.log('failed user lookup', url);
+          reject(body);
+        }
+      });
+    });
+  }
+
   public createReferenceData(request: { path: string, config?: string, data: any[] }): Promise<any> {
     return request.data.map((data: any) => {
       return () => {

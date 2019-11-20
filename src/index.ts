@@ -95,6 +95,13 @@ program
   });
 
 program
+  .command('user [username]')
+  .description('lookup user')
+  .action((username?: string) => {
+    okapi.getUser(username).then(console.log, console.log);
+  });
+
+program
   .command('lookup <module>')
   .description('lookup module, matching name starting with')
   .action((name: string) => {

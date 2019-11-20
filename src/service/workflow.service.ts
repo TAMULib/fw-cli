@@ -155,6 +155,7 @@ class WorkflowService extends RestService implements Enhancer {
       }
       return [
         () => okapi.login(),
+        () => okapi.getUser(),
         // clear reference data, iterate in reverse
         () => references.slice().reverse()
           .map((json: any) => JSON.parse(json))
