@@ -27,11 +27,21 @@ const schema = {
     type: 'string',
     default: 'admin'
   },
-  useLocalhost: {
-    type: 'boolean',
-    default: true
+  userId: {
+    type: 'string',
+    format: 'uuid',
+    default: 'ad6d42d1-1239-526b-a997-6b96888f7719'
+  },
+  bibBatchSize: {
+    type: 'number',
+    default: 1000
   },
   'mod-camunda': {
+    type: 'string',
+    format: 'uri',
+    default: 'http://localhost:9000'
+  },
+  'mod-camunda-internal': {
     type: 'string',
     format: 'uri',
     default: 'http://localhost:9000'
@@ -41,7 +51,17 @@ const schema = {
     format: 'uri',
     default: 'http://localhost:9001'
   },
+  'mod-workflow-internal': {
+    type: 'string',
+    format: 'uri',
+    default: 'http://localhost:9001'
+  },
   'mod-data-extractor': {
+    type: 'string',
+    format: 'uri',
+    default: 'http://localhost:9002'
+  },
+  'mod-data-extractor-internal': {
     type: 'string',
     format: 'uri',
     default: 'http://localhost:9002'
@@ -50,6 +70,21 @@ const schema = {
     type: 'string',
     format: 'uri',
     default: 'http://localhost:9003'
+  },
+  'mod-external-reference-resolver-internal': {
+    type: 'string',
+    format: 'uri',
+    default: 'http://localhost:9003'
+  },
+  'mod-organizations-storage': {
+    type: 'string',
+    format: 'uri',
+    default: 'http://localhost:9171'
+  },
+  'mod-source-record-manager': {
+    type: 'string',
+    format: 'uri',
+    default: 'http://localhost:9161'
   }
 };
 
