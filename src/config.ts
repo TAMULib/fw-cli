@@ -34,7 +34,7 @@ const schema = {
   },
   bibBatchSize: {
     type: 'number',
-    default: 1000
+    default: 10000
   },
   'mod-camunda': {
     type: 'string',
@@ -79,12 +79,12 @@ const schema = {
   'mod-organizations-storage': {
     type: 'string',
     format: 'uri',
-    default: 'http://localhost:9171'
+    default: 'http://10.0.2.15:9175'
   },
   'mod-source-record-manager': {
     type: 'string',
     format: 'uri',
-    default: 'http://localhost:9161'
+    default: 'http://10.0.2.15:9160'
   }
 };
 
