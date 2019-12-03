@@ -79,12 +79,12 @@ const schema = {
   'mod-organizations-storage': {
     type: 'string',
     format: 'uri',
-    default: 'http://10.0.2.15:9175'
+    default: 'http://localhost:9175'
   },
   'mod-source-record-manager': {
     type: 'string',
     format: 'uri',
-    default: 'http://10.0.2.15:9160'
+    default: 'http://localhost:9160'
   }
 };
 
