@@ -11,6 +11,12 @@ import { modWorkflow } from './service/workflow.service';
 import { fileService } from './service/file.service';
 import { defaultService } from './service/default.service';
 
+const CONF_DIR = 'configs';
+
+if (!fileService.exists(CONF_DIR)) {
+  fileService.createDirectory(CONF_DIR);
+}
+
 program
   .version('0.0.2')
   .usage('[options]')
@@ -76,8 +82,7 @@ program
         break;
       case 'save':
         if (property) {
-          const wd = config.get('wd');
-          const path = `${wd}/configs/${property}.conf`;
+          const path = `${CONF_DIR}/${property}.conf`;
           fileService.save(path, config.store);
           console.log(`stored the following config to ${path}`);
           console.log(JSON.stringify(config.store, null, 2));
@@ -87,8 +92,7 @@ program
         break;
       case 'load':
         if (property) {
-          const wd = config.get('wd');
-          const path = `${wd}/configs/${property}.conf`;
+          const path = `${CONF_DIR}/${property}.conf`;
           const conf = JSON.parse(fileService.read(path));
           config.set(conf);
           console.log(`loaded config from ${path}`);
