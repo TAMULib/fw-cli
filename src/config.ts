@@ -76,6 +76,11 @@ const schema = {
     format: 'uri',
     default: 'http://localhost:9003'
   },
+  'mod-inventory-storage': {
+    type: 'string',
+    format: 'uri',
+    default: 'http://localhost:9157'
+  },
   'mod-organizations-storage': {
     type: 'string',
     format: 'uri',
