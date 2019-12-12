@@ -34,7 +34,15 @@ const schema = {
   },
   bibBatchSize: {
     type: 'number',
-    default: 10000
+    default: 5000
+  },
+  holdingBatchSize: {
+    type: 'number',
+    default: 5000
+  },
+  itemBatchSize: {
+    type: 'number',
+    default: 5000
   },
   'mod-camunda': {
     type: 'string',
