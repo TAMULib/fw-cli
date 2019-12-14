@@ -92,7 +92,7 @@ const schema = {
   'mod-organizations-storage': {
     type: 'string',
     format: 'uri',
-    default: 'http://localhost:9175'
+    default: 'http://localhost:9174'
   },
   'mod-source-record-manager': {
     type: 'string',
