@@ -62,4 +62,5 @@ typings/
 
 lib/
 folio/
+configs/
 .vagrant/

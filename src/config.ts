@@ -34,7 +34,15 @@ const schema = {
   },
   bibBatchSize: {
     type: 'number',
-    default: 1000
+    default: 5000
+  },
+  holdingBatchSize: {
+    type: 'number',
+    default: 5000
+  },
+  itemBatchSize: {
+    type: 'number',
+    default: 5000
   },
   'mod-camunda': {
     type: 'string',
@@ -76,15 +84,20 @@ const schema = {
     format: 'uri',
     default: 'http://localhost:9003'
   },
+  'mod-inventory-storage': {
+    type: 'string',
+    format: 'uri',
+    default: 'http://localhost:9157'
+  },
   'mod-organizations-storage': {
     type: 'string',
     format: 'uri',
-    default: 'http://localhost:9171'
+    default: 'http://localhost:9174'
   },
   'mod-source-record-manager': {
     type: 'string',
     format: 'uri',
-    default: 'http://localhost:9161'
+    default: 'http://localhost:9160'
   }
 };
 

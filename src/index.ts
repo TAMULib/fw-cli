@@ -11,6 +11,12 @@ import { modWorkflow } from './service/workflow.service';
 import { fileService } from './service/file.service';
 import { defaultService } from './service/default.service';
 
+const CONF_DIR = 'configs';
+
+if (!fileService.exists(CONF_DIR)) {
+  fileService.createDirectory(CONF_DIR);
+}
+
 program
   .version('0.0.2')
   .usage('[options]')
@@ -29,9 +35,9 @@ program
   .description('A CLI for building and running FOLIO migration workflows');
 
 program
-  .command('config <action> [property] [value]')
-  .description('get/set/delete/reset config value or reset all config to defaults')
-  .action((action: 'get' | 'set' | 'delete' | 'reset', property?: string, value?: string) => {
+  .command('config <action> [property/name] [value]')
+  .description('get/set/delete/reset/save/load config value or reset all config to defaults')
+  .action((action: 'get' | 'set' | 'delete' | 'reset' | 'save' | 'load', property?: string, value?: string) => {
     switch (action) {
       case 'get':
         if (property) {
@@ -72,6 +78,27 @@ program
           console.log(`deleted ${property}`);
         } else {
           console.log('delete reset a property');
+        }
+        break;
+      case 'save':
+        if (property) {
+          const path = `${CONF_DIR}/${property}.conf`;
+          fileService.save(path, config.store);
+          console.log(`stored the following config to ${path}`);
+          console.log(JSON.stringify(config.store, null, 2));
+        } else {
+          console.log('config save requires name for the stored config');
+        }
+        break;
+      case 'load':
+        if (property) {
+          const path = `${CONF_DIR}/${property}.conf`;
+          const conf = JSON.parse(fileService.read(path));
+          config.set(conf);
+          console.log(`loaded config from ${path}`);
+          console.log(JSON.stringify(config.store, null, 2));
+        } else {
+          console.log('config load requires name for the stored config');
         }
         break;
       default:
