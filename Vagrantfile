@@ -3,6 +3,10 @@
 # Build a VM to serve as an Okapi/Docker server
 # Deploy development environment
 
+def frontend_port_mapping(config)
+  config.vm.network "forwarded_port", guest: 3000, host: 3000
+end
+
 def backend_port_mapping(config)
   # config.vm.network "forwarded_port", guest: 8000, host: 8130
   config.vm.network "forwarded_port", guest: 9130, host: 9130
@@ -83,17 +87,13 @@ def backend_port_mapping(config)
   config.vm.network "forwarded_port", guest: 9198, host: 9198
   config.vm.network "forwarded_port", guest: 9199, host: 9199
 
-  #config.vm.network "forwarded_port", guest: 9000, host: 9000
-  #config.vm.network "forwarded_port", guest: 9001, host: 9001
-  #config.vm.network "forwarded_port", guest: 9002, host: 9002
-  #config.vm.network "forwarded_port", guest: 9003, host: 9003
-  #config.vm.network "forwarded_port", guest: 9004, host: 9004
-  #config.vm.network "forwarded_port", guest: 9005, host: 9005
-  #config.vm.network "forwarded_port", guest: 61616, host: 61616
-end
-
-def frontend_port_mapping(config)
-  config.vm.network "forwarded_port", guest: 3000, host: 3000
+  # config.vm.network "forwarded_port", guest: 9000, host: 9000
+  # config.vm.network "forwarded_port", guest: 9001, host: 9001
+  # config.vm.network "forwarded_port", guest: 9002, host: 9002
+  # config.vm.network "forwarded_port", guest: 9003, host: 9003
+  # config.vm.network "forwarded_port", guest: 9004, host: 9004
+  # config.vm.network "forwarded_port", guest: 9005, host: 9005
+  # config.vm.network "forwarded_port", guest: 61616, host: 61616
 end
 
 Vagrant.configure(2) do |config|
@@ -101,7 +101,7 @@ Vagrant.configure(2) do |config|
   # Give us a little headroom
   # Note that provisioning a Stripes webpack requires more RAM
   config.vm.provider "virtualbox" do |vb|
-    vb.memory = 12288
+    vb.memory = 12388
     vb.cpus = 4
   end
 
