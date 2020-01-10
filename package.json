@@ -14,14 +14,14 @@
     "fm": "./lib/index.js"
   },
   "dependencies": {
-    "axios": "0.19.0",
+    "axios": "0.19.1",
     "chalk": "3.0.0",
     "clear": "0.1.0",
-    "commander": "4.0.1",
+    "commander": "4.1.0",
     "conf": "6.2.0",
-    "core-js": "3.6.0",
+    "core-js": "3.6.2",
     "figlet": "1.2.4",
-    "handlebars": "4.5.3",
+    "handlebars": "4.7.0",
     "handlebars-loader": "1.7.1",
     "path": "0.12.7",
     "request": "2.88.0"
@@ -29,8 +29,8 @@
   "devDependencies": {
     "@types/commander": "2.12.2",
     "@types/core-js": "2.5.2",
-    "@types/node": "12.12.21",
-    "ts-node": "8.5.4",
+    "@types/node": "13.1.6",
+    "ts-node": "8.6.0",
     "tslint": "5.20.1",
     "typescript": "3.7.4"
   }
