@@ -18,10 +18,12 @@ class DefaultService {
     return {
       id: uuid(),
       name: '',
+      description: '',
       deploymentId: null,
       processDefinitionIds: [],
       active: false,
       tasks: [],
+      initialContext: {},
       startTrigger: ''
     };
   }
@@ -30,7 +32,8 @@ class DefaultService {
     return {
       id: uuid(),
       name,
-      query: `${name}.sql`,
+      description: '',
+      queryTemplate: `${name}.sql`,
       type: 'VOYAGER'
     };
   }
@@ -39,11 +42,12 @@ class DefaultService {
     return {
       id: uuid(),
       name,
-      delegate: 'streamingProcessDelegate',
+      description: '',
       deserializeAs: 'ProcessorTask',
-      streaming: false,
       script: `${name}.js`,
-      scriptType: 'JS'
+      scriptType: 'JS',
+      contextInputKeys: [],
+      contextOutputKey: 'output'
     };
   }
 

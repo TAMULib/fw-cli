@@ -15,8 +15,8 @@ class WorkflowService extends RestService implements Enhancer {
     return this.post(`${config.get('mod-workflow')}/triggers`, extractor);
   }
 
-  public createTask(task: any): Promise<any> {
-    return this.post(`${config.get('mod-workflow')}/tasks`, task);
+  public createNode(node: any): Promise<any> {
+    return this.post(`${config.get('mod-workflow')}/nodes`, node);
   }
 
   public createWorkflow(workflow: any): Promise<any> {
@@ -45,10 +45,10 @@ class WorkflowService extends RestService implements Enhancer {
     fileService.createFile(`${path}/referenceData/.gitkeep`);
     fileService.createDirectory(`${path}/referenceLinkTypes`);
     fileService.createFile(`${path}/referenceLinkTypes/.gitkeep`);
-    fileService.createDirectory(`${path}/tasks`);
-    fileService.createFile(`${path}/tasks/.gitkeep`);
-    fileService.createDirectory(`${path}/tasks/js`);
-    fileService.createFile(`${path}/tasks/js/.gitkeep`);
+    fileService.createDirectory(`${path}/nodes`);
+    fileService.createFile(`${path}/nodes/.gitkeep`);
+    fileService.createDirectory(`${path}/nodes/js`);
+    fileService.createFile(`${path}/nodes/js/.gitkeep`);
     fileService.createDirectory(`${path}/triggers`);
     fileService.createFile(`${path}/triggers/.gitkeep`);
     fileService.createFile(`${path}/triggers/startTrigger.json`, defaultService.trigger());
@@ -66,7 +66,7 @@ class WorkflowService extends RestService implements Enhancer {
         () => this.createReferenceLinkTypes(name),
         () => this.createExtractors(name),
         () => this.createTriggers(name),
-        () => this.createTasks(name),
+        () => this.createNodes(name),
         () => this.finalize(name)
       ].reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
     }
@@ -210,14 +210,14 @@ class WorkflowService extends RestService implements Enhancer {
     return Promise.reject(`cannot find triggers at ${path}`);
   }
 
-  private createTasks(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}/tasks`;
+  private createNodes(name: string): Promise<any> {
+    const path = `${config.get('wd')}/${name}/nodes`;
     if (fileService.exists(path)) {
       return fileService.readAll(path, '.json')
         .map((json: any) => modWorkflow.enhance(path, json))
         .map((json: any) => templateService.template(json))
         .map((json: any) => JSON.parse(json))
-        .map((data: any) => () => modWorkflow.createTask(data))
+        .map((data: any) => () => modWorkflow.createNode(data))
         .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
     }
     return Promise.reject(`cannot find tasks at ${path}`);
