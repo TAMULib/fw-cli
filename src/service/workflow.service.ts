@@ -213,14 +213,39 @@ class WorkflowService extends RestService implements Enhancer {
   private createNodes(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/nodes`;
     if (fileService.exists(path)) {
-      return fileService.readAll(path, '.json')
+      const nodes = fileService.readAll(path, '.json')
         .map((json: any) => modWorkflow.enhance(path, json))
         .map((json: any) => templateService.template(json))
-        .map((json: any) => JSON.parse(json))
+        .map((json: any) => JSON.parse(json));
+      return this.sort(nodes)
         .map((data: any) => () => modWorkflow.createNode(data))
         .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
     }
-    return Promise.reject(`cannot find tasks at ${path}`);
+    return Promise.reject(`cannot find nodes at ${path}`);
+  }
+
+  private sort(nodes: any[]): any[] {
+    const sorted: any[] = [];
+    let i = 0;
+    while (nodes.length) {
+      if (i >= nodes.length) {
+        i = 0;
+      }
+      const node = nodes[i];
+      if (node.nodes && node.nodes.length) {
+        if (node.nodes.filter((url: string) => {
+          return sorted.filter((sn) => {
+            return url.endsWith(sn.id);
+          }).length > 0;
+        }).length === node.nodes.length) {
+          sorted.push(nodes.splice(i, 1)[0]);
+        }
+      } else {
+        sorted.push(nodes.splice(i, 1)[0]);
+      }
+      i++;
+    }
+    return sorted;
   }
 
   private finalize(name: string): Promise<any> {
