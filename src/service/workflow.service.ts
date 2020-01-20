@@ -120,20 +120,28 @@ class WorkflowService extends RestService implements Enhancer {
 
   public enhance(path: string, json: any): any {
     const obj = JSON.parse(json);
-    if (obj.script) {
-      if (fileService.exists(`${path}/js/${obj.script}`)) {
-        const scriptJson = fileService.read(`${path}/js/${obj.script}`).trim();
-        obj.script = templateService.template(scriptJson)
-          // remove all endline characters
-          .replace(/(\r\n|\n|\r)/gm, '')
-          // remove all extraneous double spaces
-          .replace(/\s\s+/g, ' ')
-          // replace all double quotes with single quotes
-          .replace(/"/g, '\'');
+    if (obj.process) {
+      this.script(path, obj.process);
+    }
+    if (obj.processes) {
+      for (const process of obj.processes) {
+        this.script(path, process);
       }
-
     }
     return JSON.stringify(obj);
+  }
+
+  private script(path: string, process: any): void {
+    if (fileService.exists(`${path}/js/${process.script}`)) {
+      const scriptJson = fileService.read(`${path}/js/${process.script}`).trim();
+      process.script = templateService.template(scriptJson)
+        // remove all endline characters
+        .replace(/(\r\n|\n|\r)/gm, '')
+        // remove all extraneous double spaces
+        .replace(/\s\s+/g, ' ')
+        // replace all double quotes with single quotes
+        .replace(/"/g, '\'');
+    }
   }
 
   private setup(name: string): Promise<any> {
