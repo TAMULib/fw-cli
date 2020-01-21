@@ -15,6 +15,10 @@ class WorkflowService extends RestService implements Enhancer {
     return this.post(`${config.get('mod-workflow')}/triggers`, extractor);
   }
 
+  public createExtractor(extractor: any): Promise<any> {
+    return this.post(`${config.get('mod-workflow')}/extractors`, extractor);
+  }
+
   public createNode(node: any): Promise<any> {
     return this.post(`${config.get('mod-workflow')}/nodes`, node);
   }
@@ -49,6 +53,8 @@ class WorkflowService extends RestService implements Enhancer {
     fileService.createFile(`${path}/nodes/.gitkeep`);
     fileService.createDirectory(`${path}/nodes/js`);
     fileService.createFile(`${path}/nodes/js/.gitkeep`);
+    fileService.createFile(`${path}/nodes/start.json`, defaultService.startEvent());
+    fileService.createFile(`${path}/nodes/end.json`, defaultService.endEvent());
     fileService.createDirectory(`${path}/triggers`);
     fileService.createFile(`${path}/triggers/.gitkeep`);
     fileService.createFile(`${path}/triggers/startTrigger.json`, defaultService.trigger());
@@ -195,12 +201,19 @@ class WorkflowService extends RestService implements Enhancer {
   private createExtractors(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/extractors`;
     if (fileService.exists(path)) {
-      return fileService.readAll(path, '.json')
-        .map((json: any) => modDataExtractor.enhance(path, json))
-        .map((json: any) => templateService.template(json))
-        .map((json: any) => JSON.parse(json))
-        .map((data: any) => () => modDataExtractor.createExtractor(data))
-        .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
+      return [
+        () => fileService.readAll(path, '.json')
+          .map((json: any) => modDataExtractor.enhance(path, json))
+          .map((json: any) => templateService.template(json))
+          .map((json: any) => JSON.parse(json))
+          .map((data: any) => () => modDataExtractor.createExtractor(data['mod-data-extractor']))
+          .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve()),
+        () => fileService.readAll(path, '.json')
+          .map((json: any) => templateService.template(json))
+          .map((json: any) => JSON.parse(json))
+          .map((data: any) => () => this.createExtractor(data['mod-workflow']))
+          .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve())
+      ].reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
     }
     return Promise.reject(`cannot find extractors at ${path}`);
   }

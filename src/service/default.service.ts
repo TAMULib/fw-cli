@@ -18,13 +18,35 @@ class DefaultService {
     return {
       id: uuid(),
       name: '',
+      versionTag: '1.0',
+      historyTimeToLive: 0,
       description: '',
       deploymentId: null,
-      processDefinitionIds: [],
       active: false,
-      tasks: [],
-      initialContext: {},
-      startTrigger: ''
+      nodes: [],
+      initialContext: {}
+    };
+  }
+
+  public startEvent(): any {
+    return {
+      id: uuid(),
+      name: 'Start',
+      description: '',
+      type: 'MESSAGE_CORRELATION',
+      deserializeAs: 'StartEvent',
+      expression: '',
+      interrupting: false,
+      asyncBefore: true
+    };
+  }
+
+  public endEvent(): any {
+    return {
+      id: uuid(),
+      name: 'End',
+      description: '',
+      deserializeAs: 'EndEvent'
     };
   }
 
@@ -44,10 +66,16 @@ class DefaultService {
       name,
       description: '',
       deserializeAs: 'ProcessorTask',
-      script: `${name}.js`,
-      scriptType: 'JS',
-      contextInputKeys: [],
-      contextOutputKey: 'output'
+      processor: {
+        functionName: name,
+        scriptType: 'JS',
+        code: `${name}.js`
+      },
+      inputVariables: [],
+      outputVariable: {
+        key: 'output',
+        type: 'PROCESS'
+      }
     };
   }
 
