@@ -18,11 +18,15 @@ class DefaultService {
     return {
       id: uuid(),
       name: '',
+      description: '',
       versionTag: '1.0',
       historyTimeToLive: 0,
-      description: '',
       deploymentId: null,
       active: false,
+      setup: {
+        asyncBefore: false,
+        asyncAfter: false
+      },
       nodes: [],
       initialContext: {}
     };
@@ -35,9 +39,7 @@ class DefaultService {
       description: '',
       type: 'MESSAGE_CORRELATION',
       deserializeAs: 'StartEvent',
-      expression: '',
-      interrupting: false,
-      asyncBefore: true
+      expression: ''
     };
   }
 
