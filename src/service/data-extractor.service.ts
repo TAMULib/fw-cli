@@ -11,17 +11,16 @@ class DataExtractorService extends RestService implements Enhancer {
   }
 
   public enhance(path: string, json: any): any {
-    const obj = JSON.parse(json);
-    const modDataExtractorObj = obj['mod-data-extractor'];
-    if (modDataExtractorObj && modDataExtractorObj.queryTemplate) {
-      if (fileService.exists(`${path}/sql/${modDataExtractorObj.queryTemplate}`)) {
-        modDataExtractorObj.queryTemplate = fileService.read(`${path}/sql/${modDataExtractorObj.queryTemplate}`).trim();
-        if (modDataExtractorObj.queryTemplate.endsWith(';')) {
-          modDataExtractorObj.queryTemplate = modDataExtractorObj.queryTemplate.slice(0, -1);
+    const extractor = JSON.parse(json);
+    if (extractor.queryTemplate) {
+      if (fileService.exists(`${path}/sql/${extractor.queryTemplate}`)) {
+        extractor.queryTemplate = fileService.read(`${path}/sql/${extractor.queryTemplate}`).trim();
+        if (extractor.queryTemplate.endsWith(';')) {
+          extractor.queryTemplate = extractor.queryTemplate.slice(0, -1);
         }
       }
     }
-    return JSON.stringify(obj);
+    return JSON.stringify(extractor);
   }
 
 }
