@@ -142,6 +142,4 @@ Vagrant.configure(2) do |config|
     config.vm.synced_folder ".", "/vagrant", type: "smb", mount_options: ["vers=3.02"]
   end
 
-  
-
 end
