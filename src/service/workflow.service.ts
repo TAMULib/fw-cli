@@ -122,21 +122,24 @@ class WorkflowService extends RestService implements Enhancer {
 
   public enhance(path: string, json: any): any {
     const obj = JSON.parse(json);
-    if (obj.processor) {
-      this.script(path, obj.processor);
+    if (obj.deserializeAs === 'ScriptTask') {
+      this.script(path, obj, 'code');
     }
-    if (obj.processors) {
+    if (obj.deserializeAs === 'ProcessorTask' && obj.processor) {
+      this.script(path, obj.processor, 'code');
+    }
+    if (obj.deserializeAs === 'StreamingExtractTransformLoadTask' && obj.processors) {
       for (const processor of obj.processors) {
-        this.script(path, processor);
+        this.script(path, processor, 'code');
       }
     }
     return JSON.stringify(obj);
   }
 
-  private script(path: string, processor: any): void {
-    if (fileService.exists(`${path}/js/${processor.code}`)) {
-      const script = fileService.read(`${path}/js/${processor.code}`).trim();
-      processor.code = templateService.template(script)
+  private script(path: string, obj: any, prop: string): void {
+    if (fileService.exists(`${path}/js/${obj[prop]}`)) {
+      const script = fileService.read(`${path}/js/${obj[prop]}`).trim();
+      obj[prop] = templateService.template(script)
         // remove all endline characters
         .replace(/(\r\n|\n|\r)/gm, '')
         // remove all extraneous double spaces
