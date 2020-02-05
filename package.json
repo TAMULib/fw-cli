@@ -17,11 +17,11 @@
     "axios": "0.19.2",
     "chalk": "3.0.0",
     "clear": "0.1.0",
-    "commander": "4.1.0",
+    "commander": "4.1.1",
     "conf": "6.2.0",
     "core-js": "3.6.4",
     "figlet": "1.2.4",
-    "handlebars": "4.7.2",
+    "handlebars": "4.7.3",
     "handlebars-loader": "1.7.1",
     "path": "0.12.7",
     "request": "2.88.0"
@@ -29,7 +29,7 @@
   "devDependencies": {
     "@types/commander": "2.12.2",
     "@types/core-js": "2.5.2",
-    "@types/node": "13.5.2",
+    "@types/node": "13.7.0",
     "ts-node": "8.6.2",
     "tslint": "6.0.0",
     "typescript": "3.7.5"
