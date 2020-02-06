@@ -11,6 +11,11 @@ const schema = {
     format: 'uri',
     default: 'http://localhost:9130'
   },
+  'okapi-internal': {
+    type: 'string',
+    format: 'uri',
+    default: 'http://localhost:9130'
+  },
   tenant: {
     type: 'string',
     default: 'diku'
