@@ -29,7 +29,7 @@ mvn clean spring-boot:run
 
 > if `mod-source-record-manager` is required, use `vagrant up snapshot`
 
-> `mod-data-extractor` requires installing Oracle JDBC drivers and configuring credentials for database connections.
+> `mod-data-extractor` requires configuring credentials for database connections.
 
 > `mod-workflow` has configuration URL to mod-camunda deployment. If using FOLIO vagrant need to set this to http://localhost:9000
 

@@ -61,17 +61,7 @@ class OkapiService extends RestService {
 
   public createReferenceData(request: { path: string, config?: string, data: any[] }): Promise<any> {
     return request.data.map((data: any) => {
-      return () => {
-        const promise = this.post(`${config.get('okapi')}/${request.path}`, data);
-        if (request.config) {
-          promise.then((res) => {
-            // NOTE: adding id response into config only supports single reference data
-            const jobExecutionId = res.jobExecutions[0].id;
-            config.set(request.config, jobExecutionId);
-          });
-        }
-        return promise;
-      };
+      return () => this.post(`${config.get('okapi')}/${request.path}`, data);
     }).reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
   }
 

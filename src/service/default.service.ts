@@ -18,11 +18,37 @@ class DefaultService {
     return {
       id: uuid(),
       name: '',
+      description: '',
+      versionTag: '1.0',
+      historyTimeToLive: 0,
       deploymentId: null,
-      processDefinitionIds: [],
       active: false,
-      tasks: [],
-      startTrigger: ''
+      setup: {
+        asyncBefore: false,
+        asyncAfter: false
+      },
+      nodes: [],
+      initialContext: {}
+    };
+  }
+
+  public startEvent(): any {
+    return {
+      id: uuid(),
+      name: 'Start',
+      description: '',
+      type: 'MESSAGE_CORRELATION',
+      deserializeAs: 'StartEvent',
+      expression: ''
+    };
+  }
+
+  public endEvent(): any {
+    return {
+      id: uuid(),
+      name: 'End',
+      description: '',
+      deserializeAs: 'EndEvent'
     };
   }
 
@@ -30,7 +56,8 @@ class DefaultService {
     return {
       id: uuid(),
       name,
-      query: `${name}.sql`,
+      description: '',
+      queryTemplate: `${name}.sql`,
       type: 'VOYAGER'
     };
   }
@@ -39,11 +66,18 @@ class DefaultService {
     return {
       id: uuid(),
       name,
-      delegate: 'streamingProcessDelegate',
+      description: '',
       deserializeAs: 'ProcessorTask',
-      streaming: false,
-      script: `${name}.js`,
-      scriptType: 'JS'
+      processor: {
+        functionName: name,
+        scriptType: 'JS',
+        code: `${name}.js`
+      },
+      inputVariables: [],
+      outputVariable: {
+        key: 'output',
+        type: 'PROCESS'
+      }
     };
   }
 

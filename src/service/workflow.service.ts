@@ -15,8 +15,8 @@ class WorkflowService extends RestService implements Enhancer {
     return this.post(`${config.get('mod-workflow')}/triggers`, extractor);
   }
 
-  public createTask(task: any): Promise<any> {
-    return this.post(`${config.get('mod-workflow')}/tasks`, task);
+  public createNode(node: any): Promise<any> {
+    return this.post(`${config.get('mod-workflow')}/nodes`, node);
   }
 
   public createWorkflow(workflow: any): Promise<any> {
@@ -45,10 +45,12 @@ class WorkflowService extends RestService implements Enhancer {
     fileService.createFile(`${path}/referenceData/.gitkeep`);
     fileService.createDirectory(`${path}/referenceLinkTypes`);
     fileService.createFile(`${path}/referenceLinkTypes/.gitkeep`);
-    fileService.createDirectory(`${path}/tasks`);
-    fileService.createFile(`${path}/tasks/.gitkeep`);
-    fileService.createDirectory(`${path}/tasks/js`);
-    fileService.createFile(`${path}/tasks/js/.gitkeep`);
+    fileService.createDirectory(`${path}/nodes`);
+    fileService.createFile(`${path}/nodes/.gitkeep`);
+    fileService.createDirectory(`${path}/nodes/js`);
+    fileService.createFile(`${path}/nodes/js/.gitkeep`);
+    fileService.createFile(`${path}/nodes/start.json`, defaultService.startEvent());
+    fileService.createFile(`${path}/nodes/end.json`, defaultService.endEvent());
     fileService.createDirectory(`${path}/triggers`);
     fileService.createFile(`${path}/triggers/.gitkeep`);
     fileService.createFile(`${path}/triggers/startTrigger.json`, defaultService.trigger());
@@ -66,7 +68,7 @@ class WorkflowService extends RestService implements Enhancer {
         () => this.createReferenceLinkTypes(name),
         () => this.createExtractors(name),
         () => this.createTriggers(name),
-        () => this.createTasks(name),
+        () => this.createNodes(name),
         () => this.finalize(name)
       ].reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
     }
@@ -120,20 +122,31 @@ class WorkflowService extends RestService implements Enhancer {
 
   public enhance(path: string, json: any): any {
     const obj = JSON.parse(json);
-    if (obj.script) {
-      if (fileService.exists(`${path}/js/${obj.script}`)) {
-        const scriptJson = fileService.read(`${path}/js/${obj.script}`).trim();
-        obj.script = templateService.template(scriptJson)
-          // remove all endline characters
-          .replace(/(\r\n|\n|\r)/gm, '')
-          // remove all extraneous double spaces
-          .replace(/\s\s+/g, ' ')
-          // replace all double quotes with single quotes
-          .replace(/"/g, '\'');
+    if (obj.deserializeAs === 'ScriptTask') {
+      this.script(path, obj, 'code');
+    }
+    if (obj.deserializeAs === 'ProcessorTask' && obj.processor) {
+      this.script(path, obj.processor, 'code');
+    }
+    if (obj.deserializeAs === 'StreamingExtractTransformLoadTask' && obj.processors) {
+      for (const processor of obj.processors) {
+        this.script(path, processor, 'code');
       }
-
     }
     return JSON.stringify(obj);
+  }
+
+  private script(path: string, obj: any, prop: string): void {
+    if (fileService.exists(`${path}/js/${obj[prop]}`)) {
+      const script = fileService.read(`${path}/js/${obj[prop]}`).trim();
+      obj[prop] = templateService.template(script)
+        // remove all endline characters
+        .replace(/(\r\n|\n|\r)/gm, '')
+        // remove all extraneous double spaces
+        .replace(/\s\s+/g, ' ')
+        // replace all double quotes with single quotes
+        .replace(/"/g, '\'');
+    }
   }
 
   private setup(name: string): Promise<any> {
@@ -210,17 +223,42 @@ class WorkflowService extends RestService implements Enhancer {
     return Promise.reject(`cannot find triggers at ${path}`);
   }
 
-  private createTasks(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}/tasks`;
+  private createNodes(name: string): Promise<any> {
+    const path = `${config.get('wd')}/${name}/nodes`;
     if (fileService.exists(path)) {
-      return fileService.readAll(path, '.json')
+      const nodes = fileService.readAll(path, '.json')
         .map((json: any) => modWorkflow.enhance(path, json))
         .map((json: any) => templateService.template(json))
-        .map((json: any) => JSON.parse(json))
-        .map((data: any) => () => modWorkflow.createTask(data))
+        .map((json: any) => JSON.parse(json));
+      return this.sort(nodes)
+        .map((data: any) => () => modWorkflow.createNode(data))
         .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
     }
-    return Promise.reject(`cannot find tasks at ${path}`);
+    return Promise.reject(`cannot find nodes at ${path}`);
+  }
+
+  private sort(nodes: any[]): any[] {
+    const sorted: any[] = [];
+    let i = 0;
+    while (nodes.length) {
+      if (i >= nodes.length) {
+        i = 0;
+      }
+      const node = nodes[i];
+      if (node.nodes && node.nodes.length) {
+        if (node.nodes.filter((url: string) => {
+          return sorted.filter((sn) => {
+            return url.endsWith(sn.id);
+          }).length > 0;
+        }).length === node.nodes.length) {
+          sorted.push(nodes.splice(i, 1)[0]);
+        }
+      } else {
+        sorted.push(nodes.splice(i, 1)[0]);
+      }
+      i++;
+    }
+    return sorted;
   }
 
   private finalize(name: string): Promise<any> {

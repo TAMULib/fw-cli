@@ -11,16 +11,16 @@ class DataExtractorService extends RestService implements Enhancer {
   }
 
   public enhance(path: string, json: any): any {
-    const obj = JSON.parse(json);
-    if (obj.query) {
-      if (fileService.exists(`${path}/sql/${obj.query}`)) {
-        obj.query = fileService.read(`${path}/sql/${obj.query}`).trim();
-        if (obj.query.endsWith(';')) {
-          obj.query = obj.query.slice(0, -1);
+    const extractor = JSON.parse(json);
+    if (extractor.queryTemplate) {
+      if (fileService.exists(`${path}/sql/${extractor.queryTemplate}`)) {
+        extractor.queryTemplate = fileService.read(`${path}/sql/${extractor.queryTemplate}`).trim();
+        if (extractor.queryTemplate.endsWith(';')) {
+          extractor.queryTemplate = extractor.queryTemplate.slice(0, -1);
         }
       }
     }
-    return JSON.stringify(obj);
+    return JSON.stringify(extractor);
   }
 
 }

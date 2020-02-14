@@ -155,8 +155,8 @@ program
           console.log(`new ${name} ${type} added to ${workflow}`);
           break;
         case 'processor':
-          fileService.createFile(`${workflowPath}/tasks/${name}.json`, defaultService.processor(name));
-          fileService.createFile(`${workflowPath}/tasks/js/${name}.js`);
+          fileService.createFile(`${workflowPath}/nodes/${name}.json`, defaultService.processor(name));
+          fileService.createFile(`${workflowPath}/nodes/js/${name}.js`);
           console.log(`new ${name} ${type} added to ${workflow}`);
           break;
         case 'references':
