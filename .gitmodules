@@ -16,3 +16,6 @@
 [submodule "fm-workflows"]
 	path = fm-workflows
 	url = https://github.com/TAMULib/fm-workflows.git
+[submodule "mod-data-migration"]
+	path = mod-data-migration
+	url = https://github.com/TAMULib/mod-data-migration.git
