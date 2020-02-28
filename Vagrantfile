@@ -9,6 +9,7 @@ end
 
 def backend_port_mapping(config)
   # config.vm.network "forwarded_port", guest: 8000, host: 8130
+  config.vm.network "forwarded_port", guest: 5432, host: 5433
   config.vm.network "forwarded_port", guest: 9130, host: 9130
 
   config.vm.network "forwarded_port", guest: 9131, host: 9131
