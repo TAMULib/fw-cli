@@ -102,8 +102,8 @@ Vagrant.configure(2) do |config|
   # Give us a little headroom
   # Note that provisioning a Stripes webpack requires more RAM
   config.vm.provider "virtualbox" do |vb|
-    vb.memory = 12388
-    vb.cpus = 4
+    vb.memory = 16384
+    vb.cpus = 6
   end
 
   # https://app.vagrantup.com/folio/boxes/snapshot-backend-core
@@ -137,6 +137,13 @@ Vagrant.configure(2) do |config|
     testing.vm.box = "folio/testing"
     frontend_port_mapping(testing)
     backend_port_mapping(testing)
+  end
+
+  # https://app.vagrantup.com/folio/boxes/release
+  config.vm.define "release", autostart: false do |release|
+    release.vm.box = "folio/release"
+    frontend_port_mapping(release)
+    backend_port_mapping(release)
   end
 
   if Vagrant::Util::Platform.windows?
