@@ -10,7 +10,7 @@ npm install -g ./
 
 fm
 
-vagrant up testing
+vagrant up release
 
 cd mod-workflow
 mvn clean install
