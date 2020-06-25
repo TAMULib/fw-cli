@@ -25,7 +25,10 @@ class ReferenceDataService extends RestService {
         // create reference data
         () => references
           .map((json: any) => templateService.template(json))
-          .map((json: any) => JSON.parse(json))
+          .map((json: any) => {
+            console.log('loading', json);
+            return JSON.parse(json);
+          })
           .map((data: any) => () => okapi.createReferenceData(data))
           .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve())
       ].reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
