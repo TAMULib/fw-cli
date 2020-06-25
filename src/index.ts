@@ -10,6 +10,8 @@ import { config } from './config';
 import { modWorkflow } from './service/workflow.service';
 import { fileService } from './service/file.service';
 import { defaultService } from './service/default.service';
+import { referenceData } from './service/reference-data.service';
+import { referenceLinks } from './service/reference-links.service';
 
 const CONF_DIR = 'configs';
 
@@ -173,39 +175,25 @@ program
   });
 
 program
-  .command('load <workflow> <name> <path>')
-  .description('load reference data from path into references with name of workflow')
-  .action((workflow: string, name: string, path: string) => {
-    if (!fileService.exists(path)) {
-      console.log(`${path} does not exist`);
-      return;
-    }
+  .command('load <workflow> <type> ')
+  .description('load reference data/links for an existing workflow')
+  .action((workflow: string, type: 'data' | 'links') => {
+    console.log(`load reference ${type} for ${workflow}`);
     const workflowPath = `${config.get('wd')}/${workflow}`;
     if (fileService.exists(workflowPath)) {
-      const referencesPath = `${workflowPath}/referenceData/${name}.json`;
-      if (fileService.exists(referencesPath)) {
-        console.log(`adding to ${name} references of ${workflow}`);
-      } else {
-        fileService.createFile(referencesPath, defaultService.references());
-        console.log(`new ${name} references added to ${workflow}`);
+      switch (type) {
+        case 'data':
+          referenceData.createReferenceData(workflow);
+          console.log(`reference ${type} loading for ${workflow}`);
+          break;
+        case 'links':
+          referenceLinks.createReferenceLinkTypes(workflow);
+          console.log(`reference ${type} loaded for ${workflow}`);
+          break;
+        default:
+          console.log(`reference ${type} not supported. <data/links>`);
+          return;
       }
-      const references = JSON.parse(fileService.read(referencesPath));
-      fileService.readAll(path, '.json')
-        .map((data: any) => JSON.parse(data))
-        .filter((referenceData: any) => {
-          for (const data of references.data) {
-            if (data.id === referenceData.id) {
-              console.log(`reference data with id ${referenceData.id} already exists`);
-              return false;
-            }
-          }
-          return true;
-        }).forEach((referenceData: any) => {
-          references.data.push(referenceData);
-          console.log('added', referenceData);
-        });
-      fileService.save(referencesPath, references);
-      console.log(`${referencesPath} updated`);
     } else {
       console.log(`${workflow} workflow does not exist`);
     }
