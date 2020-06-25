@@ -12,10 +12,7 @@ class ReferenceLinksService extends RestService {
     if (fileService.exists(path)) {
       return fileService.readAll(path, '.json')
         .map((json: any) => templateService.template(json))
-        .map((json: any) => {
-          console.log('loading', json);
-          return JSON.parse(json);
-        })
+        .map((json: any) => JSON.parse(json))
         .map((data: any) => () => modExternalReferenceResolver.createReferenceLinkType(data))
         .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
     }
