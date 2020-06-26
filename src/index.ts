@@ -12,6 +12,8 @@ import { fileService } from './service/file.service';
 import { defaultService } from './service/default.service';
 import { referenceData } from './service/reference-data.service';
 import { referenceLinks } from './service/reference-links.service';
+import { pathToFileURL } from 'url';
+import { mappingRules } from './service/mapping-rules.service';
 
 const CONF_DIR = 'configs';
 
@@ -175,7 +177,7 @@ program
   });
 
 program
-  .command('load <workflow> <type> ')
+  .command('load <workflow> <type>')
   .description('load reference data/links for an existing workflow')
   .action((workflow: string, type: 'data' | 'links') => {
     console.log(`load reference ${type} for ${workflow}`);
@@ -183,12 +185,14 @@ program
     if (fileService.exists(workflowPath)) {
       switch (type) {
         case 'data':
-          referenceData.createReferenceData(workflow);
-          console.log(`reference ${type} loading for ${workflow}`);
+          referenceData.createReferenceData(workflow).then(() => {
+            console.log(`reference ${type} loaded for ${workflow}`);
+          });
           break;
         case 'links':
-          referenceLinks.createReferenceLinkTypes(workflow);
-          console.log(`reference ${type} loaded for ${workflow}`);
+          referenceLinks.createReferenceLinkTypes(workflow).then(() => {
+            console.log(`reference ${type} loaded for ${workflow}`);
+          });
           break;
         default:
           console.log(`reference ${type} not supported. <data/links>`);
@@ -196,6 +200,28 @@ program
       }
     } else {
       console.log(`${workflow} workflow does not exist`);
+    }
+  });
+
+program
+  .command('rules <type> [path]')
+  .description('update mapping rules for instances with optional path')
+  .action((type: 'instances', path: string) => {
+    const file = path === undefined ? `${config.get('wd')}/instance_mapping_rules.json` : path;
+    console.log(`update ${type} mapping rules ${file}`);
+    if (fileService.exists(file)) {
+      switch (type) {
+        case 'instances':
+          mappingRules.update(file).then(() => {
+            console.log(`${type} rules updated from ${file}`);
+          });
+          break;
+        default:
+          console.log(`${type} rules not supported. <instances>`);
+          return;
+      }
+    } else {
+      console.log(`${file} does not exist`);
     }
   });
 
