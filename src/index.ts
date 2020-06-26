@@ -12,8 +12,8 @@ import { fileService } from './service/file.service';
 import { defaultService } from './service/default.service';
 import { referenceData } from './service/reference-data.service';
 import { referenceLinks } from './service/reference-links.service';
-import { pathToFileURL } from 'url';
 import { mappingRules } from './service/mapping-rules.service';
+import { exit } from 'process';
 
 const CONF_DIR = 'configs';
 
@@ -24,8 +24,10 @@ if (!fileService.exists(CONF_DIR)) {
 program
   .version('0.0.2')
   .usage('[options]')
+  .allowUnknownOption(false)
   .option('-c, --config', 'show current configuration', () => {
     console.log(JSON.stringify(config.store, null, 2));
+    exit();
   })
   .option('-w, --workflows', 'list workflows', () => {
     modWorkflow.list().then((workflows: string[]) => {
@@ -35,6 +37,7 @@ program
         }, () => console.log(` - ${workflow}`));
       }
     }, console.log);
+    exit();
   })
   .description('A CLI for building and running FOLIO migration workflows');
 
@@ -253,11 +256,10 @@ program
     modWorkflow.run(name).then(console.log, console.log);
   });
 
-program
-  .parse(process.argv);
-
 if (process.argv.length === 2) {
   clear();
   console.log(chalk.red(figlet.textSync('folio-migration-cli', { horizontalLayout: 'full' })));
-  program.outputHelp();
 }
+
+program
+  .parse(process.argv);
