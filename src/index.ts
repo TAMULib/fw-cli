@@ -12,6 +12,8 @@ import { fileService } from './service/file.service';
 import { defaultService } from './service/default.service';
 import { referenceData } from './service/reference-data.service';
 import { referenceLinks } from './service/reference-links.service';
+import { mappingRules } from './service/mapping-rules.service';
+import { exit } from 'process';
 
 const CONF_DIR = 'configs';
 
@@ -22,8 +24,10 @@ if (!fileService.exists(CONF_DIR)) {
 program
   .version('0.0.2')
   .usage('[options]')
+  .allowUnknownOption(false)
   .option('-c, --config', 'show current configuration', () => {
     console.log(JSON.stringify(config.store, null, 2));
+    exit();
   })
   .option('-w, --workflows', 'list workflows', () => {
     modWorkflow.list().then((workflows: string[]) => {
@@ -33,6 +37,7 @@ program
         }, () => console.log(` - ${workflow}`));
       }
     }, console.log);
+    exit();
   })
   .description('A CLI for building and running FOLIO migration workflows');
 
@@ -175,7 +180,7 @@ program
   });
 
 program
-  .command('load <workflow> <type> ')
+  .command('load <workflow> <type>')
   .description('load reference data/links for an existing workflow')
   .action((workflow: string, type: 'data' | 'links') => {
     console.log(`load reference ${type} for ${workflow}`);
@@ -183,12 +188,14 @@ program
     if (fileService.exists(workflowPath)) {
       switch (type) {
         case 'data':
-          referenceData.createReferenceData(workflow);
-          console.log(`reference ${type} loading for ${workflow}`);
+          referenceData.createReferenceData(workflow).then(() => {
+            console.log(`reference ${type} loaded for ${workflow}`);
+          });
           break;
         case 'links':
-          referenceLinks.createReferenceLinkTypes(workflow);
-          console.log(`reference ${type} loaded for ${workflow}`);
+          referenceLinks.createReferenceLinkTypes(workflow).then(() => {
+            console.log(`reference ${type} loaded for ${workflow}`);
+          });
           break;
         default:
           console.log(`reference ${type} not supported. <data/links>`);
@@ -196,6 +203,28 @@ program
       }
     } else {
       console.log(`${workflow} workflow does not exist`);
+    }
+  });
+
+program
+  .command('rules <type> [path]')
+  .description('update mapping rules for instances with optional path')
+  .action((type: 'instances', path: string) => {
+    const file = path === undefined ? `${config.get('wd')}/instance_mapping_rules.json` : path;
+    console.log(`update ${type} mapping rules ${file}`);
+    if (fileService.exists(file)) {
+      switch (type) {
+        case 'instances':
+          mappingRules.update(file).then(() => {
+            console.log(`${type} rules updated from ${file}`);
+          });
+          break;
+        default:
+          console.log(`${type} rules not supported. <instances>`);
+          return;
+      }
+    } else {
+      console.log(`${file} does not exist`);
     }
   });
 
@@ -227,11 +256,10 @@ program
     modWorkflow.run(name).then(console.log, console.log);
   });
 
-program
-  .parse(process.argv);
-
 if (process.argv.length === 2) {
   clear();
   console.log(chalk.red(figlet.textSync('folio-migration-cli', { horizontalLayout: 'full' })));
-  program.outputHelp();
 }
+
+program
+  .parse(process.argv);

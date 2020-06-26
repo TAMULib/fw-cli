@@ -147,7 +147,7 @@ Vagrant.configure(2) do |config|
   end
 
   if Vagrant::Util::Platform.windows?
-    config.vm.synced_folder ".", "/vagrant", type: "smb", mount_options: ["vers=3.02"]
+    config.vm.synced_folder ".", "/vagrant", disabled: "true"
   end
 
 end
