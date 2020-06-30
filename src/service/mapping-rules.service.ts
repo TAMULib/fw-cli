@@ -9,7 +9,6 @@ class MappingRulesService extends RestService {
   public update(path: string, endpoint: string = 'mapping-rules'): Promise<any> {
     if (fileService.exists(path)) {
       const rules = fileService.read(path);
-      console.log(rules);
       if (rules.length === 0) {
         return Promise.resolve();
       }
