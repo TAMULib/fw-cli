@@ -10,6 +10,8 @@ npm install -g ./
 
 fm
 
+vagrant plugin install vagrant-disksize
+
 vagrant up release
 
 cd mod-workflow

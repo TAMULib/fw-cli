@@ -15,6 +15,13 @@ end
 
 Vagrant.configure(2) do |config|
 
+  # Install vagrant-disksize to allow resizing the vagrant box disk.
+  unless Vagrant.has_plugin?("vagrant-disksize")
+    raise  Vagrant::Errors::VagrantError.new, "vagrant-disksize plugin is missing. Please install it using 'vagrant plugin install vagrant-disksize' and rerun 'vagrant up'"
+  end
+  
+  config.disksize.size = "40GB"
+
   # Give us a little headroom
   # Note that provisioning a Stripes webpack requires more RAM
   config.vm.provider "virtualbox" do |vb|
