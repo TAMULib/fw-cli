@@ -18,7 +18,7 @@
     "chalk": "4.1.0",
     "clear": "0.1.0",
     "commander": "5.1.0",
-    "conf": "6.2.4",
+    "conf": "7.0.1",
     "core-js": "3.6.5",
     "figlet": "1.4.0",
     "handlebars": "4.7.6",
@@ -29,7 +29,7 @@
   "devDependencies": {
     "@types/commander": "2.12.2",
     "@types/core-js": "2.5.3",
-    "@types/node": "14.0.14",
+    "@types/node": "14.0.18",
     "ts-node": "8.10.2",
     "tslint": "6.1.2",
     "typescript": "3.9.6"
