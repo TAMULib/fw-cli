@@ -2,12 +2,12 @@ import { RestService } from './rest.service';
 import { Enhancer } from './enhancer.interface';
 
 import { config } from '../config';
-import { modExternalReferenceResolver } from './external-reference.service';
 import { modDataExtractor } from './data-extractor.service';
 import { fileService } from './file.service';
 import { templateService } from './template.service';
-import { okapi } from './okapi.service';
 import { defaultService } from './default.service';
+import { referenceData } from './reference-data.service';
+import { referenceLinks } from './reference-links.service';
 
 class WorkflowService extends RestService implements Enhancer {
 
@@ -64,8 +64,8 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       return [
         () => this.setup(name),
-        () => this.createReferenceData(name),
-        () => this.createReferenceLinkTypes(name),
+        () => referenceData.createReferenceData(name),
+        () => referenceLinks.createReferenceLinkTypes(name),
         () => this.createExtractors(name),
         () => this.createTriggers(name),
         () => this.createNodes(name),
@@ -157,44 +157,6 @@ class WorkflowService extends RestService implements Enhancer {
       return Promise.resolve(setup);
     }
     return Promise.reject(`cannot find setup.json at ${path}`);
-  }
-
-  private createReferenceData(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}/referenceData`;
-    if (fileService.exists(path)) {
-      const references = fileService.readAll(path);
-      if (references.length === 0) {
-        return Promise.resolve();
-      }
-      return [
-        () => okapi.login(),
-        () => okapi.getUser(),
-        // clear reference data, iterate in reverse
-        () => references.slice().reverse()
-          .map((json: any) => JSON.parse(json))
-          .map((reference: any) => () => okapi.deleteReferenceData(reference))
-          .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve()),
-        // create reference data
-        () => references
-          .map((json: any) => templateService.template(json))
-          .map((json: any) => JSON.parse(json))
-          .map((data: any) => () => okapi.createReferenceData(data))
-          .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve())
-      ].reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
-    }
-    return Promise.reject(`cannot find reference data at ${path}`);
-  }
-
-  private createReferenceLinkTypes(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}/referenceLinkTypes`;
-    if (fileService.exists(path)) {
-      return fileService.readAll(path, '.json')
-        .map((json: any) => templateService.template(json))
-        .map((json: any) => JSON.parse(json))
-        .map((data: any) => () => modExternalReferenceResolver.createReferenceLinkType(data))
-        .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
-    }
-    return Promise.reject(`cannot find reference link types at ${path}`);
   }
 
   private createExtractors(name: string): Promise<any> {

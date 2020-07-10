@@ -10,7 +10,9 @@ npm install -g ./
 
 fm
 
-vagrant up testing
+vagrant plugin install vagrant-disksize
+
+vagrant up release
 
 cd mod-workflow
 mvn clean install
@@ -33,4 +35,4 @@ mvn clean spring-boot:run
 
 > `mod-workflow` has configuration URL to mod-camunda deployment. If using FOLIO vagrant need to set this to http://localhost:9000
 
-> remember to update your config working directory and moducle urls, `fm -c`
+> remember to update your config working directory and module urls, `fm -c`
