@@ -6,7 +6,6 @@ git submodule update --init --recursive
 
 yarn install
 yarn build
-npm install -g ./
 
 fm
 
