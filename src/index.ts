@@ -37,7 +37,7 @@ program
     }, console.log);
     exit();
   })
-  .description('A CLI for building and running FOLIO migration workflows');
+  .description('A CLI for building and running FOLIO workflows');
 
 program
   .command('config <action> [property/name] [value]')
@@ -149,27 +149,18 @@ program
 
 program
   .command('add <workflow> <type> <name>')
-  .description('add new extractor/processor/references with name to an existing workflow')
-  .action((workflow: string, type: 'extractor' | 'processor' | 'references', name: string) => {
+  .description('add new processor with name to an existing workflow')
+  .action((workflow: string, type: 'processor', name: string) => {
     const workflowPath = `${config.get('wd')}/${workflow}`;
     if (fileService.exists(workflowPath)) {
       switch (type) {
-        case 'extractor':
-          fileService.createFile(`${workflowPath}/extractors/${name}.json`, defaultService.extractor(name));
-          fileService.createFile(`${workflowPath}/extractors/sql/${name}.sql`);
-          console.log(`new ${name} ${type} added to ${workflow}`);
-          break;
         case 'processor':
           fileService.createFile(`${workflowPath}/nodes/${name}.json`, defaultService.processor(name));
           fileService.createFile(`${workflowPath}/nodes/js/${name}.js`);
           console.log(`new ${name} ${type} added to ${workflow}`);
           break;
-        case 'references':
-          fileService.createFile(`${workflowPath}/referenceData/${name}.json`, defaultService.references());
-          console.log(`new ${name} ${type} added to ${workflow}`);
-          break;
         default:
-          console.log(`${type} not supported. <extractor/processor>`);
+          console.log(`${type} not supported. <processor>`);
           break;
       }
     } else {
@@ -207,7 +198,7 @@ program
 
 if (process.argv.length === 2) {
   clear();
-  console.log(chalk.red(figlet.textSync('folio-migration-cli', { horizontalLayout: 'full' })));
+  console.log(chalk.red(figlet.textSync('folio-workflow-cli', { horizontalLayout: 'full' })));
 }
 
 program
