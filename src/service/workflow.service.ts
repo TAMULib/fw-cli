@@ -6,8 +6,6 @@ import { modDataExtractor } from './data-extractor.service';
 import { fileService } from './file.service';
 import { templateService } from './template.service';
 import { defaultService } from './default.service';
-import { referenceData } from './reference-data.service';
-import { referenceLinks } from './reference-links.service';
 
 class WorkflowService extends RestService implements Enhancer {
 
@@ -64,8 +62,6 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       return [
         () => this.setup(name),
-        () => referenceData.createReferenceData(name),
-        () => referenceLinks.createReferenceLinkTypes(name),
         () => this.createExtractors(name),
         () => this.createTriggers(name),
         () => this.createNodes(name),

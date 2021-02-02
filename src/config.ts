@@ -56,45 +56,10 @@ const schema = {
     type: 'string',
     format: 'uri',
     default: 'http://localhost:9001'
-  },
-  'mod-data-extractor': {
-    type: 'string',
-    format: 'uri',
-    default: 'http://localhost:9002'
-  },
-  'mod-data-extractor-internal': {
-    type: 'string',
-    format: 'uri',
-    default: 'http://localhost:9002'
-  },
-  'mod-external-reference-resolver': {
-    type: 'string',
-    format: 'uri',
-    default: 'http://localhost:9003'
-  },
-  'mod-external-reference-resolver-internal': {
-    type: 'string',
-    format: 'uri',
-    default: 'http://localhost:9003'
-  },
-  'mod-inventory-storage': {
-    type: 'string',
-    format: 'uri',
-    default: 'http://localhost:9157'
-  },
-  'mod-organizations-storage': {
-    type: 'string',
-    format: 'uri',
-    default: 'http://localhost:9174'
-  },
-  'mod-source-record-manager': {
-    type: 'string',
-    format: 'uri',
-    default: 'http://localhost:9160'
   }
 };
 
-export const projectName = 'fmcli';
+export const projectName = 'fwcli';
 
 export const config = new Conf({
   projectName,
