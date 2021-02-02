@@ -1,0 +1,9 @@
+[submodule "fw-registry"]
+	path = fw-registry
+	url = git@github.com:TAMULib/fw-registry.git
+[submodule "mod-workflow"]
+	path = mod-workflow
+	url = git@github.com:TAMULib/mod-workflow.git
+[submodule "mod-camunda"]
+	path = mod-camunda
+	url = git@github.com:TAMULib/mod-camunda.git
