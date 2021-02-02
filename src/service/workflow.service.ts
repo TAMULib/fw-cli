@@ -34,14 +34,6 @@ class WorkflowService extends RestService implements Enhancer {
       return Promise.reject(`cannot find workflow at ${path}`);
     }
     fileService.createDirectory(path);
-    fileService.createDirectory(`${path}/extractors`);
-    fileService.createFile(`${path}/extractors/.gitkeep`);
-    fileService.createDirectory(`${path}/extractors/sql`);
-    fileService.createFile(`${path}/extractors/sql/.gitkeep`);
-    fileService.createDirectory(`${path}/referenceData`);
-    fileService.createFile(`${path}/referenceData/.gitkeep`);
-    fileService.createDirectory(`${path}/referenceLinkTypes`);
-    fileService.createFile(`${path}/referenceLinkTypes/.gitkeep`);
     fileService.createDirectory(`${path}/nodes`);
     fileService.createFile(`${path}/nodes/.gitkeep`);
     fileService.createDirectory(`${path}/nodes/js`);
