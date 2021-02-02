@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const pkg = require('../package.json');
 const chalk = require('chalk');
 const clear = require('clear');
 const figlet = require('figlet');
@@ -22,7 +23,7 @@ if (!fileService.exists(CONF_DIR)) {
 }
 
 program
-  .version('0.0.2')
+  .version(pkg.version)
   .usage('[options]')
   .allowUnknownOption(false)
   .option('-c, --config', 'show current configuration', () => {
