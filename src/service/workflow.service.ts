@@ -2,7 +2,6 @@ import { RestService } from './rest.service';
 import { Enhancer } from './enhancer.interface';
 
 import { config } from '../config';
-import { modDataExtractor } from './data-extractor.service';
 import { fileService } from './file.service';
 import { templateService } from './template.service';
 import { defaultService } from './default.service';
@@ -62,7 +61,6 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       return [
         () => this.setup(name),
-        () => this.createExtractors(name),
         () => this.createTriggers(name),
         () => this.createNodes(name),
         () => this.finalize(name)
@@ -153,19 +151,6 @@ class WorkflowService extends RestService implements Enhancer {
       return Promise.resolve(setup);
     }
     return Promise.reject(`cannot find setup.json at ${path}`);
-  }
-
-  private createExtractors(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}/extractors`;
-    if (fileService.exists(path)) {
-      return fileService.readAll(path, '.json')
-        .map((json: any) => modDataExtractor.enhance(path, json))
-        .map((json: any) => templateService.template(json))
-        .map((json: any) => JSON.parse(json))
-        .map((data: any) => () => modDataExtractor.createExtractor(data))
-        .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
-    }
-    return Promise.reject(`cannot find extractors at ${path}`);
   }
 
   private createTriggers(name: string): Promise<any> {
