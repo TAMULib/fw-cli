@@ -8,12 +8,10 @@ const schema = {
   },
   okapi: {
     type: 'string',
-    format: 'uri',
     default: 'http://localhost:9130'
   },
   'okapi-internal': {
     type: 'string',
-    format: 'uri',
     default: 'http://localhost:9130'
   },
   tenant: {
@@ -34,27 +32,22 @@ const schema = {
   },
   userId: {
     type: 'string',
-    format: 'uuid',
     default: 'ad6d42d1-1239-526b-a997-6b96888f7719'
   },
   'mod-camunda': {
     type: 'string',
-    format: 'uri',
     default: 'http://localhost:9000'
   },
   'mod-camunda-internal': {
     type: 'string',
-    format: 'uri',
     default: 'http://localhost:9000'
   },
   'mod-workflow': {
     type: 'string',
-    format: 'uri',
     default: 'http://localhost:9001'
   },
   'mod-workflow-internal': {
     type: 'string',
-    format: 'uri',
     default: 'http://localhost:9001'
   }
 };
