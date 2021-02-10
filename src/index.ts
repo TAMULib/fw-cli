@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const pkg = require('../package.json');
 const chalk = require('chalk');
 const clear = require('clear');
 const figlet = require('figlet');
@@ -10,9 +11,6 @@ import { config } from './config';
 import { modWorkflow } from './service/workflow.service';
 import { fileService } from './service/file.service';
 import { defaultService } from './service/default.service';
-import { referenceData } from './service/reference-data.service';
-import { referenceLinks } from './service/reference-links.service';
-import { mappingRules } from './service/mapping-rules.service';
 import { exit } from 'process';
 
 const CONF_DIR = 'configs';
@@ -22,7 +20,7 @@ if (!fileService.exists(CONF_DIR)) {
 }
 
 program
-  .version('0.0.2')
+  .version(pkg.version)
   .usage('[options]')
   .allowUnknownOption(false)
   .option('-c, --config', 'show current configuration', () => {
@@ -39,7 +37,7 @@ program
     }, console.log);
     exit();
   })
-  .description('A CLI for building and running FOLIO migration workflows');
+  .description('A CLI for building and running FOLIO workflows');
 
 program
   .command('config <action> [property/name] [value]')
@@ -151,80 +149,22 @@ program
 
 program
   .command('add <workflow> <type> <name>')
-  .description('add new extractor/processor/references with name to an existing workflow')
-  .action((workflow: string, type: 'extractor' | 'processor' | 'references', name: string) => {
+  .description('add new processor with name to an existing workflow')
+  .action((workflow: string, type: 'processor', name: string) => {
     const workflowPath = `${config.get('wd')}/${workflow}`;
     if (fileService.exists(workflowPath)) {
       switch (type) {
-        case 'extractor':
-          fileService.createFile(`${workflowPath}/extractors/${name}.json`, defaultService.extractor(name));
-          fileService.createFile(`${workflowPath}/extractors/sql/${name}.sql`);
-          console.log(`new ${name} ${type} added to ${workflow}`);
-          break;
         case 'processor':
           fileService.createFile(`${workflowPath}/nodes/${name}.json`, defaultService.processor(name));
           fileService.createFile(`${workflowPath}/nodes/js/${name}.js`);
           console.log(`new ${name} ${type} added to ${workflow}`);
           break;
-        case 'references':
-          fileService.createFile(`${workflowPath}/referenceData/${name}.json`, defaultService.references());
-          console.log(`new ${name} ${type} added to ${workflow}`);
-          break;
         default:
-          console.log(`${type} not supported. <extractor/processor>`);
+          console.log(`${type} not supported. <processor>`);
           break;
       }
     } else {
       console.log(`${workflow} workflow does not exist`);
-    }
-  });
-
-program
-  .command('load <workflow> <type>')
-  .description('load reference data/links for an existing workflow')
-  .action((workflow: string, type: 'data' | 'links') => {
-    console.log(`load reference ${type} for ${workflow}`);
-    const workflowPath = `${config.get('wd')}/${workflow}`;
-    if (fileService.exists(workflowPath)) {
-      switch (type) {
-        case 'data':
-          referenceData.createReferenceData(workflow).then(() => {
-            console.log(`reference ${type} loaded for ${workflow}`);
-          });
-          break;
-        case 'links':
-          referenceLinks.createReferenceLinkTypes(workflow).then(() => {
-            console.log(`reference ${type} loaded for ${workflow}`);
-          });
-          break;
-        default:
-          console.log(`reference ${type} not supported. <data/links>`);
-          return;
-      }
-    } else {
-      console.log(`${workflow} workflow does not exist`);
-    }
-  });
-
-program
-  .command('rules <type> [path]')
-  .description('update mapping rules for instances with optional path')
-  .action((type: 'instances', path: string) => {
-    const file = path === undefined ? `${config.get('wd')}/instance_mapping_rules.json` : path;
-    console.log(`update ${type} mapping rules ${file}`);
-    if (fileService.exists(file)) {
-      switch (type) {
-        case 'instances':
-          mappingRules.update(file).then(() => {
-            console.log(`${type} rules updated from ${file}`);
-          });
-          break;
-        default:
-          console.log(`${type} rules not supported. <instances>`);
-          return;
-      }
-    } else {
-      console.log(`${file} does not exist`);
     }
   });
 
@@ -258,7 +198,7 @@ program
 
 if (process.argv.length === 2) {
   clear();
-  console.log(chalk.red(figlet.textSync('folio-migration-cli', { horizontalLayout: 'full' })));
+  console.log(chalk.red(figlet.textSync('folio-workflow-cli', { horizontalLayout: 'full' })));
 }
 
 program

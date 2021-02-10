@@ -2,12 +2,9 @@ import { RestService } from './rest.service';
 import { Enhancer } from './enhancer.interface';
 
 import { config } from '../config';
-import { modDataExtractor } from './data-extractor.service';
 import { fileService } from './file.service';
 import { templateService } from './template.service';
 import { defaultService } from './default.service';
-import { referenceData } from './reference-data.service';
-import { referenceLinks } from './reference-links.service';
 
 class WorkflowService extends RestService implements Enhancer {
 
@@ -37,14 +34,6 @@ class WorkflowService extends RestService implements Enhancer {
       return Promise.reject(`cannot find workflow at ${path}`);
     }
     fileService.createDirectory(path);
-    fileService.createDirectory(`${path}/extractors`);
-    fileService.createFile(`${path}/extractors/.gitkeep`);
-    fileService.createDirectory(`${path}/extractors/sql`);
-    fileService.createFile(`${path}/extractors/sql/.gitkeep`);
-    fileService.createDirectory(`${path}/referenceData`);
-    fileService.createFile(`${path}/referenceData/.gitkeep`);
-    fileService.createDirectory(`${path}/referenceLinkTypes`);
-    fileService.createFile(`${path}/referenceLinkTypes/.gitkeep`);
     fileService.createDirectory(`${path}/nodes`);
     fileService.createFile(`${path}/nodes/.gitkeep`);
     fileService.createDirectory(`${path}/nodes/js`);
@@ -64,9 +53,6 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       return [
         () => this.setup(name),
-        () => referenceData.createReferenceData(name),
-        () => referenceLinks.createReferenceLinkTypes(name),
-        () => this.createExtractors(name),
         () => this.createTriggers(name),
         () => this.createNodes(name),
         () => this.finalize(name)
@@ -115,7 +101,7 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/triggers/startTrigger.json`);
       const startTrigger = JSON.parse(templateService.template(json));
-      return this.post(`${config.get('mod-workflow')}/${startTrigger.pathPattern}`, {});
+      return this.post(`${config.get('mod-workflow')}${startTrigger.pathPattern}`, {});
     }
     return Promise.reject(`cannot find workflow at ${path}`);
   }
@@ -157,19 +143,6 @@ class WorkflowService extends RestService implements Enhancer {
       return Promise.resolve(setup);
     }
     return Promise.reject(`cannot find setup.json at ${path}`);
-  }
-
-  private createExtractors(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}/extractors`;
-    if (fileService.exists(path)) {
-      return fileService.readAll(path, '.json')
-        .map((json: any) => modDataExtractor.enhance(path, json))
-        .map((json: any) => templateService.template(json))
-        .map((json: any) => JSON.parse(json))
-        .map((data: any) => () => modDataExtractor.createExtractor(data))
-        .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
-    }
-    return Promise.reject(`cannot find extractors at ${path}`);
   }
 
   private createTriggers(name: string): Promise<any> {

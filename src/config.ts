@@ -4,16 +4,14 @@ const Conf = require('conf');
 const schema = {
   wd: {
     type: 'string',
-    default: './fm-workflows'
+    default: './fw-registry'
   },
   okapi: {
     type: 'string',
-    format: 'uri',
     default: 'http://localhost:9130'
   },
   'okapi-internal': {
     type: 'string',
-    format: 'uri',
     default: 'http://localhost:9130'
   },
   tenant: {
@@ -34,67 +32,27 @@ const schema = {
   },
   userId: {
     type: 'string',
-    format: 'uuid',
     default: 'ad6d42d1-1239-526b-a997-6b96888f7719'
   },
   'mod-camunda': {
     type: 'string',
-    format: 'uri',
     default: 'http://localhost:9000'
   },
   'mod-camunda-internal': {
     type: 'string',
-    format: 'uri',
     default: 'http://localhost:9000'
   },
   'mod-workflow': {
     type: 'string',
-    format: 'uri',
     default: 'http://localhost:9001'
   },
   'mod-workflow-internal': {
     type: 'string',
-    format: 'uri',
     default: 'http://localhost:9001'
-  },
-  'mod-data-extractor': {
-    type: 'string',
-    format: 'uri',
-    default: 'http://localhost:9002'
-  },
-  'mod-data-extractor-internal': {
-    type: 'string',
-    format: 'uri',
-    default: 'http://localhost:9002'
-  },
-  'mod-external-reference-resolver': {
-    type: 'string',
-    format: 'uri',
-    default: 'http://localhost:9003'
-  },
-  'mod-external-reference-resolver-internal': {
-    type: 'string',
-    format: 'uri',
-    default: 'http://localhost:9003'
-  },
-  'mod-inventory-storage': {
-    type: 'string',
-    format: 'uri',
-    default: 'http://localhost:9157'
-  },
-  'mod-organizations-storage': {
-    type: 'string',
-    format: 'uri',
-    default: 'http://localhost:9174'
-  },
-  'mod-source-record-manager': {
-    type: 'string',
-    format: 'uri',
-    default: 'http://localhost:9160'
   }
 };
 
-export const projectName = 'fmcli';
+export const projectName = 'fwcli';
 
 export const config = new Conf({
   projectName,

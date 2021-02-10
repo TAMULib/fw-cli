@@ -1,21 +1,9 @@
+[submodule "fw-registry"]
+	path = fw-registry
+	url = git@github.com:TAMULib/fw-registry.git
 [submodule "mod-workflow"]
 	path = mod-workflow
-	url = https://github.com/TAMULib/mod-workflow.git
+	url = git@github.com:TAMULib/mod-workflow.git
 [submodule "mod-camunda"]
 	path = mod-camunda
-	url = https://github.com/TAMULib/mod-camunda.git
-[submodule "mod-data-extractor"]
-	path = mod-data-extractor
-	url = https://github.com/TAMULib/mod-data-extractor.git
-[submodule "mod-external-reference-resolver"]
-	path = mod-external-reference-resolver
-	url = https://github.com/TAMULib/mod-external-reference-resolver.git
-[submodule "spring-module-core"]
-	path = spring-module-core
-	url = https://github.com/folio-org/spring-module-core.git
-[submodule "fm-workflows"]
-	path = fm-workflows
-	url = https://github.com/TAMULib/fm-workflows.git
-[submodule "mod-data-migration"]
-	path = mod-data-migration
-	url = https://github.com/TAMULib/mod-data-migration.git
+	url = git@github.com:TAMULib/mod-camunda.git

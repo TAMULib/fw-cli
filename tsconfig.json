@@ -8,7 +8,7 @@
       "dom"
     ],
     "declaration": true,
-    "outDir": "lib",
+    "outDir": "bin",
     "rootDir": "src",
     "strict": true,
     "types": [
