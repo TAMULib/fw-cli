@@ -28,13 +28,9 @@ program
     exit();
   })
   .option('-w, --workflows', 'list workflows', () => {
-    modWorkflow.list().then((workflows: string[]) => {
-      for (const workflow of workflows) {
-        modWorkflow.isActive(workflow).then((isActive: boolean) => {
-          console.log(` - ${workflow} ${isActive ? 'ACTIVE' : ''}`);
-        }, () => console.log(` - ${workflow}`));
-      }
-    }, console.log);
+    for (const workflow of modWorkflow.list()) {
+      console.log(` - ${workflow}`);
+    }
     exit();
   })
   .description('A CLI for building and running FOLIO workflows');
