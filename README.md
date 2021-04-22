@@ -12,6 +12,14 @@ npm link
 fw
 ```
 
+## Running mock FOLIO
+
+Provides mock `/authn/login` and `/user-import`.
+
+```
+yarn okapi
+```
+
 ## Running FOLIO Locally
 
 ```
