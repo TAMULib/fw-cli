@@ -64,3 +64,7 @@ bin/
 folio/
 configs/
 .vagrant/
+
+yarn.lock
+
+package-lock.json
