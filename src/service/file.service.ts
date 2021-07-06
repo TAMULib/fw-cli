@@ -38,11 +38,17 @@ class FileService {
   }
 
   public createFile(path: string, data: any = ''): any {
-    return fs.writeFileSync(path, JSON.stringify(data, null, 2));
+    return fs.writeFileSync(path, this.stringify(data));
   }
 
   public save(path: string, data: any): any {
-    return fs.writeFileSync(path, JSON.stringify(data, null, 2));
+    return fs.writeFileSync(path, this.stringify(data));
+  }
+
+  private stringify(data: any = ''): any {
+    var str = JSON.stringify(data, null, 2);
+    if (!str.endsWith('\n')) str += '\n';
+    return str;
   }
 
 }
