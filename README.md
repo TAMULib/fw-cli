@@ -94,3 +94,7 @@ Manual triggered workflow to build ISBN report for GOBI.
 ### [e-resource](https://github.com/TAMULib/fw-registry/tree/main#e-resource)
 
 Manual triggered workflow to build e-resource views in central IT database.
+
+### [purchase-orders](https://github.com/TAMULib/fw-registry/tree/main#purchase-orders)
+
+Manual triggered workflow to create composite purchase orders and the inventory from MARC records.
