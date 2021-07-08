@@ -196,7 +196,7 @@ program
   .command('uuid [count]')
   .description('generate random UUIDs')
   .action((count = 1) => {
-    for (let c = 0; c < count; c++) {
+    while(count--) {
       console.log(defaultService.uuid());
     }
   });
