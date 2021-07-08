@@ -35,13 +35,10 @@ class WorkflowService extends RestService implements Enhancer {
     }
     fileService.createDirectory(path);
     fileService.createDirectory(`${path}/nodes`);
-    fileService.createFile(`${path}/nodes/.gitkeep`);
     fileService.createDirectory(`${path}/nodes/js`);
-    fileService.createFile(`${path}/nodes/js/.gitkeep`);
     fileService.createFile(`${path}/nodes/start.json`, defaultService.startEvent());
     fileService.createFile(`${path}/nodes/end.json`, defaultService.endEvent());
     fileService.createDirectory(`${path}/triggers`);
-    fileService.createFile(`${path}/triggers/.gitkeep`);
     fileService.createFile(`${path}/triggers/startTrigger.json`, defaultService.trigger());
     fileService.createFile(`${path}/workflow.json`, defaultService.workflow());
     fileService.createFile(`${path}/setup.json`, {});
