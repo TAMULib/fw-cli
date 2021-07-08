@@ -192,6 +192,15 @@ program
     modWorkflow.run(name).then(console.log, console.log);
   });
 
+program
+  .command('uuid [count]')
+  .description('generate random UUIDs')
+  .action((count = 1) => {
+    while(count--) {
+      console.log(defaultService.uuid());
+    }
+  });
+
 if (process.argv.length === 2) {
   clear();
   console.log(chalk.red(figlet.textSync('folio-workflow-cli', { horizontalLayout: 'full' })));

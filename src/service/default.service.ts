@@ -1,4 +1,4 @@
-const uuid = require('uuid/v1');
+const uuid = require('uuid/v4');
 
 class DefaultService {
 
@@ -86,6 +86,10 @@ class DefaultService {
       path: '',
       data: []
     };
+  }
+
+  public uuid(): string {
+    return uuid();
   }
 
 }
