@@ -101,4 +101,4 @@ Manual triggered workflow to create composite purchase orders and the inventory 
 
 ### [circ-fines](https://github.com/TAMULib/fw-registry/tree/main#circ-fines)
 
-Cron triggered workflow to build and email circulation fees/fins paid daily report.
+Cron triggered workflow to build and email circulation fees/fines paid daily report.
