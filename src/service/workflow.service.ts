@@ -81,9 +81,9 @@ class WorkflowService extends RestService implements Enhancer {
   public run(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}`;
     if (fileService.exists(path)) {
-      const json = fileService.read(`${path}/triggers/startTrigger.json`);
-      const startTrigger = JSON.parse(templateService.template(json));
-      return this.post(`${config.get('mod-workflow')}${startTrigger.pathPattern}`, {});
+      const json = fileService.read(`${path}/workflow.json`);
+      const worfklow = JSON.parse(templateService.template(json));
+      return this.post(`${config.get('mod-workflow')}/workflows/${worfklow.id}/start`, {});
     }
     return Promise.reject(`cannot find workflow at ${path}`);
   }
@@ -137,7 +137,7 @@ class WorkflowService extends RestService implements Enhancer {
         .map((data: any) => () => modWorkflow.createTrigger(data))
         .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
     }
-    return Promise.reject(`cannot find triggers at ${path}`);
+    return Promise.resolve([]);
   }
 
   private createNodes(name: string): Promise<any> {
