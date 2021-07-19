@@ -82,8 +82,8 @@ class WorkflowService extends RestService implements Enhancer {
     const path = `${config.get('wd')}/${name}`;
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
-      const worfklow = JSON.parse(templateService.template(json));
-      return this.post(`${config.get('mod-workflow')}/workflows/${worfklow.id}/start`, {});
+      const workflow = JSON.parse(templateService.template(json));
+      return this.post(`${config.get('mod-workflow')}/workflows/${workflow.id}/start`, {});
     }
     return Promise.reject(`cannot find workflow at ${path}`);
   }
