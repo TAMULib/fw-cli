@@ -102,3 +102,7 @@ Manual triggered workflow to create composite purchase orders and the inventory 
 ### [circ-fines](https://github.com/TAMULib/fw-registry/tree/main#circ-fines)
 
 Cron triggered workflow to build and email circulation fees/fines paid daily report.
+
+### [rapid-print-serials](https://github.com/TAMULib/fw-registry/tree/main#rapid-print-serials)
+
+Cron triggered workflow to build and gzip Rapid ILS monthly print serials report.
