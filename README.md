@@ -89,7 +89,7 @@ Manual triggered workflow to build orcid report for Scholars.
 
 ### [gobi](https://github.com/TAMULib/fw-registry/tree/main#gobi)
 
-Manual triggered workflow to build ISBN report for GOBI.
+Cron triggered workflow to build ISBN report for GOBI.
 
 ### [e-resource](https://github.com/TAMULib/fw-registry/tree/main#e-resource)
 
