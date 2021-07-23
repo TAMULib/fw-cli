@@ -106,3 +106,7 @@ Cron triggered workflow to build and email circulation fees/fines paid daily rep
 ### [rapid-print-serials](https://github.com/TAMULib/fw-registry/tree/main#rapid-print-serials)
 
 Cron triggered workflow to build and gzip Rapid ILS monthly print serials report.
+
+### [rapid-print-monos](https://github.com/TAMULib/fw-registry/tree/main#rapid-print-monos)
+
+Cron triggered workflow to build and gzip Rapid ILS monthly print monos report.
