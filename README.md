@@ -110,3 +110,7 @@ Cron triggered workflow to build and gzip Rapid ILS monthly print serials report
 ### [rapid-print-monos](https://github.com/TAMULib/fw-registry/tree/main#rapid-print-monos)
 
 Cron triggered workflow to build and gzip Rapid ILS monthly print monos report.
+
+### [coral-extract](https://github.com/TAMULib/fw-registry/tree/main#coral-extract)
+
+Cron triggered workflow to run coral extract to create/update instances and holdings in FOLIO.
