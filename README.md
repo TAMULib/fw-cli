@@ -114,3 +114,7 @@ Cron triggered workflow to build and gzip Rapid ILS monthly print monos report.
 ### [coral-extract](https://github.com/TAMULib/fw-registry/tree/main#coral-extract)
 
 Cron triggered workflow to run coral extract to create/update instances and holdings in FOLIO.
+
+### [hathitrust](https://github.com/TAMULib/fw-registry/tree/main#hathitrust)
+
+Manual triggered workflow to build multiple reports for HathiTrust upload.
