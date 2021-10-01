@@ -89,7 +89,7 @@ Manual triggered workflow to build orcid report for Scholars.
 
 ### [gobi](https://github.com/TAMULib/fw-registry/tree/main#gobi)
 
-Manual triggered workflow to build ISBN report for GOBI.
+Cron triggered workflow to build ISBN report for GOBI.
 
 ### [e-resource](https://github.com/TAMULib/fw-registry/tree/main#e-resource)
 
@@ -102,3 +102,23 @@ Manual triggered workflow to create composite purchase orders and the inventory 
 ### [circ-fines](https://github.com/TAMULib/fw-registry/tree/main#circ-fines)
 
 Cron triggered workflow to build and email circulation fees/fines paid daily report.
+
+### [rapid-print-serials](https://github.com/TAMULib/fw-registry/tree/main#rapid-print-serials)
+
+Cron triggered workflow to build and gzip Rapid ILS monthly print serials report.
+
+### [rapid-print-monos](https://github.com/TAMULib/fw-registry/tree/main#rapid-print-monos)
+
+Cron triggered workflow to build and gzip Rapid ILS monthly print monos report.
+
+### [rapid-electronic-serials](https://github.com/TAMULib/fw-registry/tree/rapid-electronic-serials)
+
+Cron triggered workflow to copy SFX Utility output and gzip Rapid ILS monthly electronic serials report.
+
+### [coral-extract](https://github.com/TAMULib/fw-registry/tree/main#coral-extract)
+
+Cron triggered workflow to run coral extract to create/update instances and holdings in FOLIO.
+
+### [hathitrust](https://github.com/TAMULib/fw-registry/tree/main#hathitrust)
+
+Manual triggered workflow to build multiple reports for HathiTrust upload.
