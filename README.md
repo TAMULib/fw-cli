@@ -123,6 +123,6 @@ Cron triggered workflow to run coral extract to create/update instances and hold
 
 Manual triggered workflow to build multiple reports for HathiTrust upload.
 
-### [tags](https://github.com/TAMULib/fw-registry/tree/main#tags)
+### [create-tags](https://github.com/TAMULib/fw-registry/tree/main#tags)
 
-Manual triggered workflow to manage the presence of Tags within FOLIO.
+Manual triggered workflow to create Tags within FOLIO.
