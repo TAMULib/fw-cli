@@ -130,3 +130,7 @@ Manual triggered workflow to create Tags within FOLIO.
 ### [shelflist-holdings](https://github.com/TAMULib/fw-registry/tree/main#shelflist-holdings)
 
 Manual triggered workflow to build, zip, and email shelflist (holdings level) report.
+
+### [item-history-update](https://github.com/TAMULib/fw-registry/tree/main/item-history-update)
+
+Cron triggered workflow to run update item history.
