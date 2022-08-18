@@ -70,3 +70,6 @@ yarn.lock
 package-lock.json
 
 .vscode
+
+*.md
+!README.md
