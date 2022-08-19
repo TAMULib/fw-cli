@@ -71,5 +71,7 @@ package-lock.json
 
 .vscode
 
+*.sh
 *.md
+
 !README.md
