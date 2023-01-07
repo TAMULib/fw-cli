@@ -20,7 +20,7 @@
     "clear": "0.1.0",
     "commander": "8.3.0",
     "compression": "1.7.4",
-    "conf": "10.1.1",
+    "conf": "10.2.0",
     "core-js": "3.20.3",
     "cors": "2.8.5",
     "express": "4.17.2",
