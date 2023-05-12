@@ -8,7 +8,7 @@ git submodule update --init --recursive
 
 yarn install
 yarn build
-npm link
+yarn link
 
 fw
 ```
@@ -31,10 +31,19 @@ vagrant up release
 
 ```
 cd mod-workflow
+
+cd components
 mvn clean install
+
+cd ..
 cd service
 mvn clean spring-boot:run
 
+```
+
+In another terminal from `fw-cli`.
+
+```
 cd mod-camunda
 mvn clean spring-boot:run
 ```

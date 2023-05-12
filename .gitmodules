@@ -7,3 +7,6 @@
 [submodule "mod-camunda"]
 	path = mod-camunda
 	url = git@github.com:TAMULib/mod-camunda.git
+[submodule "spring-module-core"]
+	path = spring-module-core
+	url = git@github.com:folio-org/spring-module-core.git
