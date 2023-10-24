@@ -143,3 +143,7 @@ Manual triggered workflow to build, zip, and email shelflist (holdings level) re
 ### [item-history-update](https://github.com/TAMULib/fw-registry/tree/main/item-history-update)
 
 Cron triggered workflow to run update item history.
+
+### [nbs-items-note](https://github.com/TAMULib/fw-registry/tree/main/nbs-items-note)
+
+Cron triggered workflow to run adding a special Note to New Bookshelf Items.
