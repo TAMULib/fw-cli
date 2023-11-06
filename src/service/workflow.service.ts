@@ -109,9 +109,7 @@ class WorkflowService extends RestService implements Enhancer {
       const script = fileService.read(`${path}/js/${obj[prop]}`).trim();
       obj[prop] = templateService.template(script)
         // remove all endline characters
-        .replace(/(\r\n|\n|\r)/gm, '')
-        // remove all extraneous double spaces
-        .replace(/\s\s+/g, ' ');
+        .replace(/(\r\n|\n|\r)/gm, '');
     }
   }
 
