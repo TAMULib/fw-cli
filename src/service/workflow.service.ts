@@ -111,9 +111,7 @@ class WorkflowService extends RestService implements Enhancer {
         // remove all endline characters
         .replace(/(\r\n|\n|\r)/gm, '')
         // remove all extraneous double spaces
-        .replace(/\s\s+/g, ' ')
-        // replace all double quotes with single quotes
-        .replace(/"/g, '\'');
+        .replace(/\s\s+/g, ' ');
     }
   }
 
