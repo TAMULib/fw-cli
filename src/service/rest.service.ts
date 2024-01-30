@@ -27,14 +27,7 @@ export class RestService {
         } else {
           const promise = this.redirectRecurse(url, json, contentType, accept, response, this.get, redirectCount + 1);
           if (promise) {
-            promise.then((result) => {
-              resolve(result);
-            })
-            .catch ((err) => {
-              reject(err);
-            });
-
-            return promise;
+            return this.resolveRedirectPromise(promise, resolve, reject);
           }
 
           // console.log('failed get', url);
@@ -64,14 +57,7 @@ export class RestService {
         } else {
           const promise = this.redirectRecurse(url, json, contentType, accept, response, this.post, redirectCount + 1);
           if (promise) {
-            promise.then((result) => {
-              resolve(result);
-            })
-            .catch ((err) => {
-              reject(err);
-            });
-
-            return promise;
+            return this.resolveRedirectPromise(promise, resolve, reject);
           }
 
           console.log('failed post', url, json);
@@ -101,14 +87,7 @@ export class RestService {
         } else {
           const promise = this.redirectRecurse(url, json, contentType, accept, response, this.put, redirectCount + 1);
           if (promise) {
-            promise.then((result) => {
-              resolve(result);
-            })
-            .catch ((err) => {
-              reject(err);
-            });
-
-            return promise;
+            return this.resolveRedirectPromise(promise, resolve, reject);
           }
 
           console.log('failed put', url, json);
@@ -137,14 +116,7 @@ export class RestService {
         } else {
           const promise = this.redirectRecurse(url, json, contentType, accept, response, this.delete, redirectCount + 1);
           if (promise) {
-            promise.then((result) => {
-              resolve(result);
-            })
-            .catch ((err) => {
-              reject(err);
-            });
-
-            return promise;
+            return this.resolveRedirectPromise(promise, resolve, reject);
           }
 
           // console.log('failed delete', url);
@@ -171,6 +143,17 @@ export class RestService {
     }
 
     return callback(response.headers.location, json, contentType, accept, redirectCount + 1);
+  }
+
+  private resolveRedirectPromise(promise: Promise<any>, resolve: any, reject: any): Promise<any> {
+    promise.then((result) => {
+      resolve(result);
+    })
+    .catch ((err) => {
+      reject(err);
+    });
+
+    return promise;
   }
 
 }
