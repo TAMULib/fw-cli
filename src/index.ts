@@ -119,6 +119,8 @@ program
   .description('logout to remove token from config')
   .action(() => {
     config.delete('token');
+    config.delete('folioAccessToken');
+    config.delete('folioRefreshToken');
     console.log('success');
   });
 
