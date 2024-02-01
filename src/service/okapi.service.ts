@@ -17,17 +17,18 @@ class OkapiService extends RestService {
     const json = { username, password };
 
     return new Promise((resolve, reject) => {
-      this.request({
-        url,
-        json,
+      this.request(url, {
         method: 'POST',
+        redirect: 'follow',
+        body: json,
         headers: {
           'X-Okapi-Tenant': config.get('tenant'),
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         }
-      }, (error: any, response: any, body: any) => {
-        if (response && response.statusCode >= 200 && response.statusCode <= 299) {
+      }).then(async (response: any) => {
+        if (response && response.status >= 200 && response.status <= 299) {
+          const body = await response.json();
           let accessToken;
           let refreshToken;
 
@@ -62,16 +63,16 @@ class OkapiService extends RestService {
             accessToken = Array.isArray(foundAccess) ? foundAccess[0] : undefined;
             refreshToken = Array.isArray(foundRefresh) ? foundRefresh[0] : undefined;
           } else {
-            if (!!response.body.okapiToken) {
-              accessToken = response.body.okapiToken;
+            if (!!body.okapiToken) {
+              accessToken = body.okapiToken;
             } else if (!!response.headers['x-okapi-token']) {
               accessToken = response.headers['x-okapi-token'];
             }
 
-            if (!!response.body.refreshToken) {
-              refreshToken = response.body.refreshToken;
-            } else if (!!response.body.folioRefreshToken) {
-              refreshToken = response.body.folioRefreshToken;
+            if (!!body.refreshToken) {
+              refreshToken = body.refreshToken;
+            } else if (!!body.folioRefreshToken) {
+              refreshToken = body.folioRefreshToken;
             }
           }
 
@@ -81,8 +82,20 @@ class OkapiService extends RestService {
 
           resolve(accessToken);
         } else {
+          let text = 'Response variable is undefined.';
+          if (!!response) {
+            if (!!response.headers && response.headers.get('content-type') == 'application/json') {
+              text = await response.json();
+            } else {
+              text = await response.text();
+              if (!!response.statusText) {
+                text += ' ' + response.statusText;
+              }
+            }
+          }
+
           console.log('failed login', url, { username, password });
-          reject(body);
+          reject(text);
         }
       });
     });
@@ -91,18 +104,19 @@ class OkapiService extends RestService {
   public getUser(username: string = config.get('username')): Promise<any> {
     const url = `${config.get('okapi')}/users?query=username==${username}`;
     return new Promise((resolve, reject) => {
-      this.request({
-        url,
+      this.request(url, {
         method: 'GET',
+        redirect: 'follow',
         headers: {
           'X-Okapi-Tenant': config.get('tenant'),
           'X-Okapi-Token': config.get('token'),
           'Accept': ['application/json', 'text/plain'],
           'Content-Type': 'application/json'
         }
-      }, (error: any, response: any, body: any) => {
-        if (response && response.statusCode >= 200 && response.statusCode <= 299) {
-          const users = JSON.parse(body).users;
+      }).then(async (response: any) => {
+        if (response && response.status >= 200 && response.status <= 299) {
+          const body = await response.json();
+          const users = body.users;
           if (users.length > 0) {
             const user = users[0]
             config.set('userId', user.id);
@@ -111,8 +125,20 @@ class OkapiService extends RestService {
             reject(`cannot find user ${username}`)
           }
         } else {
+          let text = 'Response variable is undefined.';
+          if (!!response) {
+            if (!!response.headers && response.headers.get('content-type') == 'application/json') {
+              text = await response.json();
+            } else {
+              text = await response.text();
+              if (!!response.statusText) {
+                text += ' ' + response.statusText;
+              }
+            }
+          }
+
           console.log('failed user lookup', url);
-          reject(body);
+          reject(text);
         }
       });
     });
