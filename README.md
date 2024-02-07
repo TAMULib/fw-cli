@@ -154,4 +154,4 @@ Cron triggered workflow to run adding a special Note to New Bookshelf Items.
 
 ### [books-call-number](https://github.com/TAMULib/fw-registry/tree/main#books-call-number)
 
-Manual triggered workflow to build, zip, and email list of checked out books by call number.
+Manual triggered workflow to build, zip, and email list of checked out books by given call number range.
