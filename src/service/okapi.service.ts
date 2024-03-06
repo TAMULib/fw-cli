@@ -5,8 +5,17 @@ class OkapiService extends RestService {
 
   public login(username: string = config.get('username'), password: string = config.get('password')): Promise<any> {
     config.delete('token');
-    const url = `${config.get('okapi')}/authn/login`;
+    config.delete('folioAccessToken');
+    config.delete('folioRefreshToken');
+
+    let okapi_login_path = config.get('okapi_login_path');
+    if (okapi_login_path === undefined) {
+      okapi_login_path = '/authn/login';
+    }
+
+    const url = `${config.get('okapi')}${okapi_login_path}`;
     const json = { username, password };
+
     return new Promise((resolve, reject) => {
       this.request({
         url,
@@ -14,13 +23,63 @@ class OkapiService extends RestService {
         method: 'POST',
         headers: {
           'X-Okapi-Tenant': config.get('tenant'),
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         }
       }, (error: any, response: any, body: any) => {
         if (response && response.statusCode >= 200 && response.statusCode <= 299) {
-          const token = response.headers['x-okapi-token'];
-          config.set('token', token);
-          resolve(token);
+          let accessToken;
+          let refreshToken;
+
+          if (!!response.headers['set-cookie']) {
+            const matchAccess = /folioAccessToken=([^;\s]*)/gi;
+            const matchRefresh = /folioRefreshToken=([^;\s]*)/gi;
+            const cookies = !!response.headers['set-cookie'] ? response.headers['set-cookie'] : undefined;
+            let foundAccess;
+            let foundRefresh;
+
+            if (Array.isArray(cookies)) {
+              let matched;
+
+              for (let i = 0; i < cookies.length; i++) {
+                matched = cookies[i].match(matchAccess);
+
+                if (!!matched) {
+                  foundAccess = matched;
+                } else {
+                  matched = cookies[i].match(matchRefresh);
+
+                  if (!!matched) {
+                    foundRefresh = matched;
+                  }
+                }
+              }
+            } else {
+              foundAccess = cookies.match(matchAccess);
+              foundRefresh = cookies.match(matchRefresh);
+            }
+
+            accessToken = Array.isArray(foundAccess) ? foundAccess[0] : undefined;
+            refreshToken = Array.isArray(foundRefresh) ? foundRefresh[0] : undefined;
+          } else {
+            if (!!response.body.okapiToken) {
+              accessToken = response.body.okapiToken;
+            } else if (!!response.headers['x-okapi-token']) {
+              accessToken = response.headers['x-okapi-token'];
+            }
+
+            if (!!response.body.refreshToken) {
+              refreshToken = response.body.refreshToken;
+            } else if (!!response.body.folioRefreshToken) {
+              refreshToken = response.body.folioRefreshToken;
+            }
+          }
+
+          config.set('token', accessToken);
+          config.set('folioAccessToken', accessToken);
+          config.set('folioRefreshToken', refreshToken);
+
+          resolve(accessToken);
         } else {
           console.log('failed login', url, { username, password });
           reject(body);
