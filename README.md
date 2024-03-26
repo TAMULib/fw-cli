@@ -156,3 +156,6 @@ Cron triggered workflow to run adding a special Note to New Bookshelf Items.
 
 Manual triggered workflow to build, zip, and email list of checked out books by call number.
 
+### [remove-books-from-nbs](https://github.com/TAMULib/fw-registry/tree/main/remove-books-from-nbs)
+
+Manual triggered workflow with CSV of call numbers input that updates corresponding items temporary location and temporary loan type effectively removing them from the new bookshelf.
