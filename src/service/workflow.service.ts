@@ -78,6 +78,16 @@ class WorkflowService extends RestService implements Enhancer {
     return Promise.reject(`cannot find workflow at ${path}`);
   }
 
+  public deleteWorkflow(name: string): Promise<any> {
+    const path = `${config.get('wd')}/${name}`;
+    if (fileService.exists(path)) {
+      const json = fileService.read(`${path}/workflow.json`);
+      const workflow = JSON.parse(templateService.template(json));
+      return this.delete(`${config.get('mod-workflow')}/workflows/${workflow.id}/delete`);
+    }
+    return Promise.reject(`cannot find workflow at ${path}`);
+  }
+
   public run(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}`;
     if (fileService.exists(path)) {

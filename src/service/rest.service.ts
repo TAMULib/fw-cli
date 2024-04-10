@@ -17,7 +17,7 @@ export class RestService {
           'X-Okapi-Token': config.get('token'),
           'Content-Type': contentType
         }
-      }, (error: any, response: any, body: any) => {
+      }, (error: any, response: any, body?: any) => {
         if (response && response.statusCode >= 200 && response.statusCode <= 299) {
           resolve(JSON.parse(body));
         } else if (error) {
@@ -41,7 +41,7 @@ export class RestService {
           'X-Okapi-Token': config.get('token'),
           'Content-Type': contentType
         }
-      }, (error: any, response: any, body: any) => {
+      }, (error: any, response: any, body?: any) => {
         if (response && response.statusCode >= 200 && response.statusCode <= 299) {
           resolve(body);
         } else if (error) {
@@ -65,7 +65,7 @@ export class RestService {
           'X-Okapi-Token': config.get('token'),
           'Content-Type': contentType
         }
-      }, (error: any, response: any, body: any) => {
+      }, (error: any, response: any, body?: any) => {
         if (response && response.statusCode >= 200 && response.statusCode <= 299) {
           resolve(body);
         } else if (error) {
@@ -89,14 +89,14 @@ export class RestService {
           'Content-Type': contentType,
           'Accept': accept
         }
-      }, (error: any, response: any, body: any) => {
+      }, (error: any, response: any, body?: any) => {
         if (response && response.statusCode >= 200 && response.statusCode <= 299) {
           resolve(body);
         } else if (error) {
-          // console.log('failed delete', url, error);
+          console.log('failed delete', url, error);
           reject(error);
         } else {
-          // console.log('failed delete', url);
+          console.log('failed delete', url);
           reject(body);
         }
       });
