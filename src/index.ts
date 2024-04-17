@@ -188,6 +188,13 @@ program
   });
 
 program
+  .command('delete <name>')
+  .description('delete workflow by name')
+  .action((name: string) => {
+    modWorkflow.deleteWorkflow(name).then(console.log, console.log);
+  });
+
+program
   .command('run <name>')
   .description('run workflow by name')
   .action((name: string) => {
