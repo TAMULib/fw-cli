@@ -1,6 +1,6 @@
 {
   "name": "fw-cli",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "description": "FOLIO Workflow CLI",
   "author": "William Welling <wwelling@library.tamu.edu>",
   "license": "MIT",
