@@ -159,3 +159,7 @@ Manual triggered workflow to build, zip, and email list of checked out books by 
 ### [remove-books-from-nbs](https://github.com/TAMULib/fw-registry/tree/main/remove-books-from-nbs)
 
 Manual triggered workflow with CSV of call numbers input that updates corresponding items temporary location and temporary loan type effectively removing them from the new bookshelf.
+
+### [evans-pres-repr](https://github.com/TAMULib/fw-registry/tree/main/evans-pres-repr)
+
+Cron triggered workflow to send monthly report to 'evansPresReprFrom' email. The report includes items having 'temporary location' set to "Eva Pres Repr".
