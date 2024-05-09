@@ -159,3 +159,7 @@ Manual triggered workflow to build, zip, and email list of checked out books by 
 ### [remove-books-from-nbs](https://github.com/TAMULib/fw-registry/tree/main/remove-books-from-nbs)
 
 Manual triggered workflow with CSV of call numbers input that updates corresponding items temporary location and temporary loan type effectively removing them from the new bookshelf.
+
+### [withdraw-items-by-barcode](https://github.com/TAMULib/fw-registry/tree/main/withdraw-items-by-barcode)
+
+Manual triggered workflow that updates item, holdings and instance information based on CSV of barcodes. Items are marked as withdrawn with temporary loan types, and holdings are suppressed with location set to 'Evans withdrawn'. A note input by the user is persisted. Then, corresponding instances are suppressed. Finally, an email is sent to inform recipients about these updates after the workflow finishes.
