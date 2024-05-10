@@ -162,4 +162,4 @@ Manual triggered workflow with CSV of call numbers input that updates correspond
 
 ### [evans-pres-repr](https://github.com/TAMULib/fw-registry/tree/main/evans-pres-repr)
 
-Cron triggered workflow to send monthly report to 'evansPresReprFrom' email. The report includes items having 'temporary location' set to "Eva Pres Repr".
+Cron triggered workflow to send monthly report to email specified by 'evansPresReprFrom' variable. The report includes items having 'temporary location' set to "Eva Pres Repr".
