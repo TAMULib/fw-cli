@@ -124,7 +124,7 @@ class WorkflowService extends RestService implements Enhancer {
         extension = 'py';
       } else if (obj.scriptFormat.toLowerCase() === 'ruby') {
         extension = 'rb';
-      } else if (typeof obj.scriptFormat === 'string') {
+      } else {
         // Fallback to using the lower case script format itself as the directory name.
         extension = obj.scriptFormat.toLowerCase().trim();
       }
