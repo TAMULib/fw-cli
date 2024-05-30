@@ -115,11 +115,28 @@ class WorkflowService extends RestService implements Enhancer {
   }
 
   private script(path: string, obj: any, prop: string): void {
-    if (fileService.exists(`${path}/js/${obj[prop]}`)) {
-      const script = fileService.read(`${path}/js/${obj[prop]}`).trim();
-      obj[prop] = templateService.template(script)
-        // remove all endline characters
-        .replace(/(\r\n|\n|\r)/gm, '');
+    if (!!obj && !!obj.scriptFormat && typeof obj.scriptFormat === 'string') {
+      let extension;
+
+      if (obj.scriptFormat.toLowerCase() === 'javascript') {
+        extension = 'js';
+      } else if (obj.scriptFormat.toLowerCase() === 'python') {
+        extension = 'py';
+      } else if (obj.scriptFormat.toLowerCase() === 'ruby') {
+        extension = 'rb';
+      } else {
+        // Fallback to using the lower case script format itself as the directory name.
+        extension = obj.scriptFormat.toLowerCase().trim();
+      }
+
+      if (!!extension) {
+        const scriptPath = `${path}/${extension}/${obj[prop]}`;
+
+        if (fileService.exists(scriptPath)) {
+          const script = fileService.read(scriptPath).trim();
+          obj[prop] = JSON.stringify(templateService.template(script));
+        }
+      }
     }
   }
 
