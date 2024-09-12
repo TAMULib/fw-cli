@@ -91,6 +91,7 @@ export class RestService {
         }
       }, (error: any, response: any, body?: any) => {
         if (response && response.statusCode >= 200 && response.statusCode <= 299) {
+          console.log('delete succeeded', url);
           resolve(body);
         } else if (error) {
           console.log('failed delete', url, error);
