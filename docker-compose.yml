@@ -1,0 +1,12 @@
+services:
+  pg:
+    image: postgres:${POSTGRES_VERSION:-latest}
+    container_name: ${PG_CONTAINER_NAME:-pg}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    volumes:
+      - ./pgdata:${PGDATA_PATH:-/var/lib/postgresql/data}
+      - ./initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - "${HOST_PORT:-5432}:5432"
