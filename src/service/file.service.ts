@@ -46,7 +46,7 @@ class FileService {
   }
 
   private stringify(data: any = ''): any {
-    var str = JSON.stringify(data, null, 2);
+    let str = JSON.stringify(data, null, 2);
     if (!str.endsWith('\n')) str += '\n';
     return str;
   }

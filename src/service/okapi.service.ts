@@ -8,12 +8,12 @@ class OkapiService extends RestService {
     config.delete('folioAccessToken');
     config.delete('folioRefreshToken');
 
-    let okapi_login_path = config.get('okapi_login_path');
-    if (okapi_login_path === undefined) {
-      okapi_login_path = '/authn/login';
+    let okapiLoginPath = config.get('okapi_login_path');
+    if (okapiLoginPath === undefined) {
+      okapiLoginPath = '/authn/login';
     }
 
-    const url = `${config.get('okapi')}${okapi_login_path}`;
+    const url = `${config.get('okapi')}${okapiLoginPath}`;
     const json = { username, password };
 
     return new Promise((resolve, reject) => {
@@ -41,15 +41,15 @@ class OkapiService extends RestService {
             if (Array.isArray(cookies)) {
               let matched;
 
-              for (let i = 0; i < cookies.length; i++) {
-                matched = cookies[i].match(matchAccess);
+              for (const cookie of cookies) {
+                matched = cookie.match(matchAccess);
 
-                if (!!matched) {
+                if (matched) {
                   foundAccess = matched;
                 } else {
-                  matched = cookies[i].match(matchRefresh);
+                  matched = cookie.match(matchRefresh);
 
-                  if (!!matched) {
+                  if (matched) {
                     foundRefresh = matched;
                   }
                 }
