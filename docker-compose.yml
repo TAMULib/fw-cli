@@ -1,4 +1,5 @@
 services:
+
   pg:
     image: postgres:${POSTGRES_VERSION:-latest}
     container_name: ${PG_CONTAINER_NAME:-pg}
@@ -15,4 +16,4 @@ services:
     image: adminer:latest
     container_name: adminer
     ports:
-      - "8082:8080"
+      - 8082:8080
