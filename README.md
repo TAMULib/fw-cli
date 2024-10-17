@@ -81,9 +81,9 @@ docker build -t docker.ci.folio.org/mod-workflow:1.2.0-SNAPSHOT .
 
 cd ../mod-camunda
 docker build -t docker.ci.folio.org/mod-camunda:1.2.0-SNAPSHOT .
-``
+```
 
-> ***Update versions according to pom.xml***
+> ***Update versions according to corresponding pom.xml***
 
 
 ## Running Workflow Modules Locally
