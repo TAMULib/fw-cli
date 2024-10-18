@@ -10,7 +10,7 @@ class OkapiService extends RestService {
 
     let okapiLoginPath = config.get('okapi_login_path');
     if (okapiLoginPath === undefined) {
-      okapiLoginPath = '/authn/login';
+      okapiLoginPath = '/bl-users/login-with-expiry?expandPermissions=true&fullPermissions=true';
     }
 
     const url = `${config.get('okapi')}${okapiLoginPath}`;
