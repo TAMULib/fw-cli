@@ -10,7 +10,7 @@ class OkapiService extends RestService {
 
     let okapi_login_path = config.get('okapi_login_path');
     if (okapi_login_path === undefined) {
-      okapi_login_path = '/authn/login';
+      okapi_login_path = '/bl-users/login-with-expiry?expandPermissions=true&fullPermissions=true';
     }
 
     const url = `${config.get('okapi')}${okapi_login_path}`;
@@ -31,36 +31,18 @@ class OkapiService extends RestService {
           let accessToken;
           let refreshToken;
 
-          if (!!response.headers['set-cookie']) {
-            const matchAccess = /folioAccessToken=([^;\s]*)/gi;
-            const matchRefresh = /folioRefreshToken=([^;\s]*)/gi;
-            const cookies = !!response.headers['set-cookie'] ? response.headers['set-cookie'] : undefined;
-            let foundAccess;
-            let foundRefresh;
+          if (!!response.headers['set-cookie'] && Array.isArray(response.headers['set-cookie'])) {
+            const get = (token: string) => {
+              const maybe = response.headers['set-cookie'].filter((cookie: string) => cookie.startsWith(token));
 
-            if (Array.isArray(cookies)) {
-              let matched;
-
-              for (let i = 0; i < cookies.length; i++) {
-                matched = cookies[i].match(matchAccess);
-
-                if (!!matched) {
-                  foundAccess = matched;
-                } else {
-                  matched = cookies[i].match(matchRefresh);
-
-                  if (!!matched) {
-                    foundRefresh = matched;
-                  }
-                }
+              if (maybe.length > 0) {
+                return maybe[0].substring(token.length + 1, maybe[0].indexOf(';'));
               }
-            } else {
-              foundAccess = cookies.match(matchAccess);
-              foundRefresh = cookies.match(matchRefresh);
-            }
+            };
 
-            accessToken = Array.isArray(foundAccess) ? foundAccess[0] : undefined;
-            refreshToken = Array.isArray(foundRefresh) ? foundRefresh[0] : undefined;
+            accessToken = get('folioAccessToken');
+            refreshToken = get('folioRefreshToken');
+
           } else {
             if (!!response.body.okapiToken) {
               accessToken = response.body.okapiToken;
