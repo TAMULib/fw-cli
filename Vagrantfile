@@ -28,6 +28,15 @@ Vagrant.configure(2) do |config|
     snapshot.vm.network "forwarded_port", guest: 8000, host: 8130
     # postgres
     snapshot.vm.network "forwarded_port", guest: 5432, host: 5432
+    # kafka
+    # snapshot.vm.network "forwarded_port", guest: 9092, host: 9092
+    # kafka
+    # snapshot.vm.network "forwarded_port", guest: 29092, host: 29092
+    # zookeeper
+    # snapshot.vm.network "forwarded_port", guest: 2181, host: 2181
+    #
+    # snapshot.vm.network "forwarded_port", guest: 9001, host: 9001
+    # snapshot.vm.network "forwarded_port", guest: 9002, host: 9002
   end
 
   # https://app.vagrantup.com/folio/boxes/release
@@ -44,6 +53,15 @@ Vagrant.configure(2) do |config|
     release.vm.network "forwarded_port", guest: 8000, host: 8130
     # postgres
     release.vm.network "forwarded_port", guest: 5432, host: 5432
+    # kafka
+    # release.vm.network "forwarded_port", guest: 9092, host: 9092
+    # kafka
+    # release.vm.network "forwarded_port", guest: 29092, host: 29092
+    # zookeeper
+    # release.vm.network "forwarded_port", guest: 2181, host: 2181
+    #
+    # release.vm.network "forwarded_port", guest: 9001, host: 9001
+    # release.vm.network "forwarded_port", guest: 9002, host: 9002
   end
 
 end
