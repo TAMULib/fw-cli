@@ -27,6 +27,70 @@ yarn okapi
 vagrant up release
 ```
 
+## Building images for deployment
+
+Update `Vagrantfile` with a synced directory to fw-cli for mod-workflow and mod-camunda development.
+
+```
+snapshot.vm.synced_folder "C:/Users/FOLIO/Development/work/FOLIO/fw-cli", "/home/vagrant/fw-cli", owner: "vagrant", group: "vagrant", mount_options: ["uid=1000", "gid=1000"]
+```
+> ***Be sure to update the host machine path.***
+
+## Running FOLIO Locally
+
+```
+vagrant up snapshot
+```
+
+Wait for Okapi to start all the modules.
+
+```
+vagrant ssh snapshot
+```
+
+Check to see if Okapi is ready.
+```
+docker logs okapi -n 100 -f
+```
+
+Goto http://localhost:3000 and login.
+
+
+## Build the jar file and descriptors on the host machine
+
+```
+cd spring-module-core
+# git checkout <branch>
+mvn clean package
+
+cd ../mod-workflow
+# git checkout <branch>
+mvn clean package
+
+cd ../mod-camunda
+# git checkout <branch>
+mvn clean package
+```
+
+## Build the docker images on the folio/snapshot vagrant docker client
+
+```
+vagrant ssh snapshot
+```
+
+From `/home/vagrant`:
+```
+cd fw-cli
+
+cd mod-workflow
+docker build -t docker.ci.folio.org/mod-workflow:1.2.0-SNAPSHOT .
+
+cd ../mod-camunda
+docker build -t docker.ci.folio.org/mod-camunda:1.2.0-SNAPSHOT .
+```
+
+> ***Update versions according to corresponding pom.xml***
+
 ## Running Workflow Modules Locally
 
 ```
