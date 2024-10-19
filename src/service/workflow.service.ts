@@ -9,15 +9,15 @@ import { defaultService } from './default.service';
 class WorkflowService extends RestService implements Enhancer {
 
   public createTrigger(extractor: any): Promise<any> {
-    return this.post(`${config.get('mod-workflow')}/triggers`, extractor);
+    return this.post(`${config.get('okapi')}/triggers`, extractor);
   }
 
   public createNode(node: any): Promise<any> {
-    return this.post(`${config.get('mod-workflow')}/nodes`, node);
+    return this.post(`${config.get('okapi')}/nodes`, node);
   }
 
   public createWorkflow(workflow: any): Promise<any> {
-    return this.post(`${config.get('mod-workflow')}/workflows`, workflow);
+    return this.post(`${config.get('okapi')}/workflows`, workflow);
   }
 
   public list(): string[] {
@@ -63,7 +63,7 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
-      return this.put(`${config.get('mod-workflow')}/workflows/${workflow.id}/activate`, {});
+      return this.put(`${config.get('okapi')}/workflows/${workflow.id}/activate`, {});
     }
     return Promise.reject(`cannot find workflow at ${path}`);
   }
@@ -73,7 +73,7 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
-      return this.put(`${config.get('mod-workflow')}/workflows/${workflow.id}/deactivate`, {});
+      return this.put(`${config.get('okapi')}/workflows/${workflow.id}/deactivate`, {});
     }
     return Promise.reject(`cannot find workflow at ${path}`);
   }
@@ -83,7 +83,7 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
-      return this.delete(`${config.get('mod-workflow')}/workflows/${workflow.id}/delete`);
+      return this.delete(`${config.get('okapi')}/workflows/${workflow.id}/delete`);
     }
     return Promise.reject(`cannot find workflow at ${path}`);
   }
@@ -93,7 +93,7 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
-      return this.post(`${config.get('mod-workflow')}/workflows/${workflow.id}/start`, {});
+      return this.post(`${config.get('okapi')}/workflows/${workflow.id}/start`, {});
     }
     return Promise.reject(`cannot find workflow at ${path}`);
   }
