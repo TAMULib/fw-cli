@@ -91,6 +91,16 @@ docker build -t docker.ci.folio.org/mod-camunda:1.2.0-SNAPSHOT .
 
 > ***Update versions according to corresponding pom.xml***
 
+
+## Run mod-workflow and mod-camunda with folio/snapshot
+
+A bare minimum setup script `setup.js` is available to perform the necessary requests to run the modules with Okapi. This requires the previous steps of building jar files and module descriptors on the host and building the Docker images on the Vagrant VM.
+
+From `/home/vagrant/fw-cli`:
+```
+node ./setup.js
+```
+
 ## Running Workflow Modules Locally
 
 ```
