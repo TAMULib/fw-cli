@@ -101,6 +101,8 @@ From `/home/vagrant/fw-cli`:
 node ./setup.js
 ```
 
+> ***still experimental***
+
 ## Update user permissions for mod-workflow and mod-camunda
 
 The following permissions are required. There is additional ui-workflow permissions required when bundling and running ui-workflow with stripes. This is not yet available in folio/snapshot and is not provided here.
