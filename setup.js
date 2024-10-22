@@ -98,6 +98,7 @@ async function enableModule(descriptor, tenant) {
 };
 
 function readModuleDescriptor(path) {
+  console.log(`Reading module descriptor at ${path}`);
   return new Promise((resolve, reject) => {
     fs.readFile(path, 'utf8', (err, data) => {
       if (err) {
