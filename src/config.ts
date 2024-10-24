@@ -10,10 +10,6 @@ const schema = {
     type: 'string',
     default: 'http://localhost:9130'
   },
-  'okapi-internal': {
-    type: 'string',
-    default: 'http://localhost:9130'
-  },
   tenant: {
     type: 'string',
     default: 'diku'
@@ -32,21 +28,9 @@ const schema = {
   },
   userId: {
     type: 'string',
-    default: 'ad6d42d1-1239-526b-a997-6b96888f7719'
-  },
-  'mod-camunda': {
-    type: 'string',
-    default: 'http://localhost:9000'
-  },
-  'mod-camunda-internal': {
-    type: 'string',
-    default: 'http://localhost:9000'
+    default: 'e4252f55-cc7e-5e1e-a17e-7bfc16706a77'
   },
   'mod-workflow': {
-    type: 'string',
-    default: 'http://localhost:9001'
-  },
-  'mod-workflow-internal': {
     type: 'string',
     default: 'http://localhost:9001'
   }
