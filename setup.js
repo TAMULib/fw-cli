@@ -143,7 +143,7 @@ async function main() {
   console.log('watch mod workflow logs\n: docker container ls | grep workflow');
   console.log(': docker logs <container id> -n 100 -f');
   console.log(await deployModule(modCamundaDescriptor, nodeId));
-  console.log('watch mod workflow logs\n: docker container ls | grep camunda');
+  console.log('watch mod camunda logs\n: docker container ls | grep camunda');
   console.log(': docker logs <container id> -n 100 -f');
 
   console.log(await enableModule(modWorkflowDescriptor, tenant));
