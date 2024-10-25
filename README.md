@@ -128,6 +128,8 @@ The following permissions are required. There is additional ui-workflow permissi
 docker run -d --name kafka-ui --user 1000:1000 -p 8080:8080 -e KAFKA_CLUSTERS_0_NAME=folio -e KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=10.0.2.15:9092 -e KAFKA_CLUSTERS_0_ZOOKEEPER=10.0.2.15:2181 provectuslabs/kafka-ui:latest
 ```
 
+Open http://localhost:8080 in the browser to see the kafka-ui interface.
+
 ## Running Workflow Modules Locally
 
 ```
