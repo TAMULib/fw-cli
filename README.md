@@ -101,8 +101,6 @@ From `/home/vagrant/fw-cli`:
 node ./setup.js
 ```
 
-> ***still experimental***
-
 ## Update user permissions for mod-workflow and mod-camunda
 
 The following permissions are required. There is additional ui-workflow permissions required when bundling and running ui-workflow with stripes. This is not yet available in folio/snapshot and is not provided here.
@@ -122,6 +120,12 @@ The following permissions are required. There is additional ui-workflow permissi
 "camunda.decision-definition.all",
 "camunda.task.all",
 "camunda.workflow-engine.workflows.all"
+```
+
+## Watch Kafka broker
+
+```
+docker run -d --name kafka-ui --user 1000:1000 -p 8080:8080 -e KAFKA_CLUSTERS_0_NAME=folio -e KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=10.0.2.15:9092 -e KAFKA_CLUSTERS_0_ZOOKEEPER=10.0.2.15:2181 provectuslabs/kafka-ui:latest
 ```
 
 ## Running Workflow Modules Locally

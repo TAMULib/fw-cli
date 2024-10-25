@@ -26,6 +26,8 @@ Vagrant.configure(2) do |config|
     snapshot.vm.network "forwarded_port", guest: 3000, host: 3000
     # 
     snapshot.vm.network "forwarded_port", guest: 8000, host: 8130
+    # kafka-ui
+    snapshot.vm.network "forwarded_port", guest: 8080, host: 8080
     # postgres
     snapshot.vm.network "forwarded_port", guest: 5432, host: 5432
     # kafka
@@ -51,6 +53,8 @@ Vagrant.configure(2) do |config|
     release.vm.network "forwarded_port", guest: 3000, host: 3000
     # 
     release.vm.network "forwarded_port", guest: 8000, host: 8130
+    # kafka-ui
+    release.vm.network "forwarded_port", guest: 8080, host: 8080
     # postgres
     release.vm.network "forwarded_port", guest: 5432, host: 5432
     # kafka
