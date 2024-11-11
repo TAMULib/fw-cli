@@ -18,7 +18,7 @@ Vagrant.configure(2) do |config|
   config.vm.define "snapshot", autostart: false do |snapshot|
     snapshot.vm.box = "folio/snapshot"
 
-    snapshot.vm.synced_folder "C:/Users/William/Development/work/FOLIO/fw-cli", "/home/vagrant/fw-cli", owner: "vagrant", group: "vagrant", mount_options: ["uid=1000", "gid=1000"]
+    snapshot.vm.synced_folder "C:/Users/FOLIO/fw-cli", "/home/vagrant/fw-cli", owner: "vagrant", group: "vagrant", mount_options: ["uid=1000", "gid=1000"]
 
     # okapi
     snapshot.vm.network "forwarded_port", guest: 9130, host: 9130
@@ -45,7 +45,7 @@ Vagrant.configure(2) do |config|
   config.vm.define "release", autostart: false do |release|
     release.vm.box = "folio/release"
 
-    release.vm.synced_folder "C:/Users/William/Development/work/FOLIO/fw-cli", "/home/vagrant/fw-cli", owner: "vagrant", group: "vagrant", mount_options: ["uid=1000", "gid=1000"]
+    release.vm.synced_folder "C:/Users/FOLIO/fw-cli", "/home/vagrant/fw-cli", owner: "vagrant", group: "vagrant", mount_options: ["uid=1000", "gid=1000"]
 
     # okapi
     release.vm.network "forwarded_port", guest: 9130, host: 9130
