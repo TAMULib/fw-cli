@@ -27,18 +27,19 @@ class OkapiService extends RestService {
           'Accept': 'application/json'
         }
       }, (error: any, response: any, body: any) => {
-        if (response && response.statusCode >= 200 && response.statusCode <= 299) {
+        if (!!response && response?.statusCode >= 200 && response?.statusCode <= 299) {
           let accessToken;
           let refreshToken;
+          const headers = !!response?.headers ? response?.headers : undefined;
 
-          if (!!response.headers['set-cookie']) {
+          if (!!headers['set-cookie']) {
             const matchAccess = /folioAccessToken=([^;\s]*)/gi;
             const matchRefresh = /folioRefreshToken=([^;\s]*)/gi;
-            const cookies = !!response.headers['set-cookie'] ? response.headers['set-cookie'] : undefined;
+            const cookies = !!headers['set-cookie'] ? headers['set-cookie'] : undefined;
             let foundAccess;
             let foundRefresh;
 
-            if (Array.isArray(cookies)) {
+            if (!!cookies && Array.isArray(cookies)) {
               let matched;
 
               for (let i = 0; i < cookies.length; i++) {
@@ -62,27 +63,31 @@ class OkapiService extends RestService {
             accessToken = Array.isArray(foundAccess) ? foundAccess[0] : undefined;
             refreshToken = Array.isArray(foundRefresh) ? foundRefresh[0] : undefined;
           } else {
-            if (!!response.body.okapiToken) {
+            if (!!response?.body?.okapiToken) {
               accessToken = response.body.okapiToken;
-            } else if (!!response.headers['x-okapi-token']) {
-              accessToken = response.headers['x-okapi-token'];
+            } else if (!!headers['x-okapi-token']) {
+              accessToken = headers['x-okapi-token'];
             }
 
-            if (!!response.body.refreshToken) {
+            if (!!response?.body?.refreshToken) {
               refreshToken = response.body.refreshToken;
             } else if (!!response.body.folioRefreshToken) {
               refreshToken = response.body.folioRefreshToken;
             }
           }
 
-          config.set('token', accessToken);
-          config.set('folioAccessToken', accessToken);
-          config.set('folioRefreshToken', refreshToken);
+          if (!!accessToken) {
+            config.set('token', accessToken);
+            config.set('folioAccessToken', accessToken);
+          }
 
-          resolve(accessToken);
+          if (!!refreshToken) {
+            config.set('folioRefreshToken', refreshToken);
+          }
+
+          resolve({ status: `Login succeeded for user '${username}'.`, accessToken, refreshToken });
         } else {
-          console.log('failed login', url, { username, password });
-          reject(body);
+          reject({ status: `Login failed for user '${username}'.`, body });
         }
       });
     });
