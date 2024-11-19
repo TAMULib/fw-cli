@@ -36,9 +36,11 @@ class OkapiService extends RestService {
             const get = (token: string) => {
               const maybe = response.headers['set-cookie'].filter((cookie: string) => cookie.startsWith(token));
 
-              if (maybe.length > 0) {
+              if (maybe.length > 0 && maybe[0].indexOf(';') >= 0) {
                 return maybe[0].substring(token.length + 1, maybe[0].indexOf(';'));
               }
+
+              throw new Error('Invalid cookie');
             };
 
             accessToken = get('folioAccessToken');
