@@ -33,6 +33,10 @@ const schema = {
   'mod-workflow': {
     type: 'string',
     default: 'http://localhost:9001'
+  },
+  'access': {
+    type: 'string',
+    default: 'mod-workflow'
   }
 };
 
