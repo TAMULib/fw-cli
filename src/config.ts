@@ -36,6 +36,7 @@ const schema = {
   },
   'access': {
     type: 'string',
+    enum: ['okapi', 'mod-workflow'],
     default: 'mod-workflow'
   }
 };
