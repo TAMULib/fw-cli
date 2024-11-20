@@ -34,7 +34,7 @@ class OkapiService extends RestService {
             const extractCookieValue = (token: string) => {
               const cookie = headers['set-cookie'].find((c: string) => c.startsWith(token));
 
-              if (cookie) {
+              if (!!cookie) {
                 const valueStartIndex = cookie.indexOf('=') + 1;
                 const valueEndIndex = cookie.indexOf(';', valueStartIndex);
 
