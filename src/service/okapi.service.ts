@@ -9,9 +9,6 @@ class OkapiService extends RestService {
     config.delete('folioRefreshToken');
 
     let okapi_login_path = config.get('okapi_login_path');
-    if (okapi_login_path === undefined) {
-      okapi_login_path = '/bl-users/login-with-expiry?expandPermissions=true&fullPermissions=true';
-    }
 
     const url = `${config.get('okapi')}${okapi_login_path}`;
     const json = { username, password };

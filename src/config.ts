@@ -10,6 +10,10 @@ const schema = {
     type: 'string',
     default: 'http://localhost:9130'
   },
+  okapi_login_path: {
+    type: 'string',
+    default: '/authn/login'
+  },
   tenant: {
     type: 'string',
     default: 'diku'
