@@ -1,5 +1,6 @@
-import { RestService } from './rest.service';
 import { config } from '../config';
+import { parseCookie } from './cookie.utility';
+import { RestService } from './rest.service';
 
 class OkapiService extends RestService {
 
@@ -31,17 +32,10 @@ class OkapiService extends RestService {
           if (!!headers?.['set-cookie'] && Array.isArray(headers['set-cookie'])) {
             const extractCookieValue = (token: string) => {
               const cookie = headers['set-cookie'].find((c: string) => c.startsWith(token));
-
-              if (!!cookie) {
-                const valueStartIndex = cookie.indexOf('=') + 1;
-                const valueEndIndex = cookie.indexOf(';', valueStartIndex);
-
-                if (valueStartIndex > 0 && valueEndIndex > valueStartIndex) {
-                  return cookie.substring(valueStartIndex, valueEndIndex);
-                }
+              const cookieMap = parseCookie(cookie);
+              if (cookieMap.has(token)) {
+                return cookieMap.get(token);
               }
-
-              throw new Error('Invalid cookie');
             };
 
             accessToken = extractCookieValue('folioAccessToken');
