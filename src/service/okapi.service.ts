@@ -30,7 +30,7 @@ class OkapiService extends RestService {
 
           const headers = response?.headers;
 
-          if (headers?.['set-cookie'] && Array.isArray(headers['set-cookie'])) {
+          if (!!headers?.['set-cookie'] && Array.isArray(headers['set-cookie'])) {
             const extractCookieValue = (token: string) => {
               const cookie = headers['set-cookie'].find((c: string) => c.startsWith(token));
 
@@ -50,25 +50,25 @@ class OkapiService extends RestService {
             refreshToken = extractCookieValue('folioRefreshToken');
 
           } else {
-            if (response?.body?.okapiToken) {
+            if (!!response?.body?.okapiToken) {
               accessToken = response.body.okapiToken;
             } else if (headers?.['x-okapi-token']) {
               accessToken = headers['x-okapi-token'];
             }
 
-            if (response?.body?.refreshToken) {
+            if (!!response?.body?.refreshToken) {
               refreshToken = response.body.refreshToken;
             } else if (response.body?.folioRefreshToken) {
               refreshToken = response.body.folioRefreshToken;
             }
           }
 
-          if (accessToken) {
+          if (!!accessToken) {
             config.set('token', accessToken);
             config.set('folioAccessToken', accessToken);
           }
 
-          if (refreshToken) {
+          if (!!refreshToken) {
             config.set('folioRefreshToken', refreshToken);
           }
 
