@@ -30,7 +30,7 @@ class OkapiService extends RestService {
 
           const headers = response?.headers;
 
-          if (headers?.['set-cookie'] && Array.isArray(headers['set-cookie'])) {
+          if (!!headers?.['set-cookie'] && Array.isArray(headers['set-cookie'])) {
             const extractCookieValue = (token: string) => {
               const cookie = headers['set-cookie'].find((c: string) => c.startsWith(token));
 
