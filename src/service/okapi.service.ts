@@ -8,9 +8,7 @@ class OkapiService extends RestService {
     config.delete('folioAccessToken');
     config.delete('folioRefreshToken');
 
-    let okapi_login_path = config.get('okapi_login_path');
-
-    const url = `${config.get('okapi')}${okapi_login_path}`;
+    const url = `${config.get('okapi')}${config.get('okapi_login_path')}`;
     const json = { username, password };
 
     return new Promise((resolve, reject) => {
