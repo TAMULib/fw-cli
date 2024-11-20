@@ -36,8 +36,13 @@ class OkapiService extends RestService {
             const get = (token: string) => {
               const maybe = response.headers['set-cookie'].filter((cookie: string) => cookie.startsWith(token));
 
-              if (maybe.length > 0 && maybe[0].indexOf(';') >= 0) {
-                return maybe[0].substring(token.length + 1, maybe[0].indexOf(';'));
+              if (maybe.length > 0) {
+                const equalsIndex = maybe[0].indexOf('=');
+                const semicolonIndex = maybe[0].indexOf(';');
+
+                if (equalsIndex > token.length && semicolonIndex > equalsIndex) {
+                  return maybe[0].substring(token.length + 1, maybe[0].indexOf(';'));
+                }
               }
 
               throw new Error('Invalid cookie');
