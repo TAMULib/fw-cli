@@ -58,7 +58,7 @@ class OkapiService extends RestService {
 
             if (!!response?.body?.refreshToken) {
               refreshToken = response.body.refreshToken;
-            } else if (response.body?.folioRefreshToken) {
+            } else if (!!response.body?.folioRefreshToken) {
               refreshToken = response.body.folioRefreshToken;
             }
           }
