@@ -28,7 +28,7 @@ const schema = {
   },
   userId: {
     type: 'string',
-    default: 'e4252f55-cc7e-5e1e-a17e-7bfc16706a77'
+    default: ''
   },
   'mod-workflow': {
     type: 'string',
