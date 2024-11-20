@@ -52,7 +52,7 @@ class OkapiService extends RestService {
           } else {
             if (!!response?.body?.okapiToken) {
               accessToken = response.body.okapiToken;
-            } else if (headers?.['x-okapi-token']) {
+            } else if (!!headers?.['x-okapi-token']) {
               accessToken = headers['x-okapi-token'];
             }
 
