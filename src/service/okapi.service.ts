@@ -30,47 +30,48 @@ class OkapiService extends RestService {
         if (!!response && response?.statusCode >= 200 && response?.statusCode <= 299) {
           let accessToken;
           let refreshToken;
-          const headers = !!response?.headers ? response?.headers : undefined;
 
-          if (!!response.headers['set-cookie'] && Array.isArray(response.headers['set-cookie'])) {
-            const get = (token: string) => {
-              const maybe = response.headers['set-cookie'].filter((cookie: string) => cookie.startsWith(token));
+          const headers = response?.headers;
 
-              if (maybe.length > 0) {
-                const equalsIndex = maybe[0].indexOf('=');
-                const semicolonIndex = maybe[0].indexOf(';');
+          if (headers?.['set-cookie'] && Array.isArray(headers['set-cookie'])) {
+            const extractCookieValue = (token: string) => {
+              const cookie = headers['set-cookie'].find((c: string) => c.startsWith(token));
 
-                if (equalsIndex > token.length && semicolonIndex > equalsIndex) {
-                  return maybe[0].substring(token.length + 1, maybe[0].indexOf(';'));
+              if (cookie) {
+                const valueStartIndex = cookie.indexOf('=') + 1;
+                const valueEndIndex = cookie.indexOf(';', valueStartIndex);
+
+                if (valueStartIndex > 0 && valueEndIndex > valueStartIndex) {
+                  return cookie.substring(valueStartIndex, valueEndIndex);
                 }
               }
 
               throw new Error('Invalid cookie');
             };
 
-            accessToken = get('folioAccessToken');
-            refreshToken = get('folioRefreshToken');
+            accessToken = extractCookieValue('folioAccessToken');
+            refreshToken = extractCookieValue('folioRefreshToken');
 
           } else {
-            if (!!response?.body?.okapiToken) {
+            if (response?.body?.okapiToken) {
               accessToken = response.body.okapiToken;
-            } else if (!!headers['x-okapi-token']) {
+            } else if (headers?.['x-okapi-token']) {
               accessToken = headers['x-okapi-token'];
             }
 
-            if (!!response?.body?.refreshToken) {
+            if (response?.body?.refreshToken) {
               refreshToken = response.body.refreshToken;
-            } else if (!!response.body.folioRefreshToken) {
+            } else if (response.body?.folioRefreshToken) {
               refreshToken = response.body.folioRefreshToken;
             }
           }
 
-          if (!!accessToken) {
+          if (accessToken) {
             config.set('token', accessToken);
             config.set('folioAccessToken', accessToken);
           }
 
-          if (!!refreshToken) {
+          if (refreshToken) {
             config.set('folioRefreshToken', refreshToken);
           }
 
