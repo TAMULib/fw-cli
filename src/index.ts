@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /*
-  Copyright (C) 2024  William Stanley Welling
+  Copyright (C) 2024  Texas A&M University Libraries
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
