@@ -25,15 +25,15 @@ import { defaultService } from './default.service';
 class WorkflowService extends RestService implements Enhancer {
 
   public createTrigger(extractor: any): Promise<any> {
-    return this.post(`${config.get('mod-workflow')}/triggers`, extractor);
+    return this.post(`${this.getAccess()}/triggers`, extractor);
   }
 
   public createNode(node: any): Promise<any> {
-    return this.post(`${config.get('mod-workflow')}/nodes`, node);
+    return this.post(`${this.getAccess()}/nodes`, node);
   }
 
   public createWorkflow(workflow: any): Promise<any> {
-    return this.post(`${config.get('mod-workflow')}/workflows`, workflow);
+    return this.post(`${this.getAccess()}/workflows`, workflow);
   }
 
   public list(): string[] {
@@ -79,7 +79,7 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
-      return this.put(`${config.get('mod-workflow')}/workflows/${workflow.id}/activate`, {});
+      return this.put(`${this.getAccess()}/workflows/${workflow.id}/activate`, {});
     }
     return Promise.reject(`cannot find workflow at ${path}`);
   }
@@ -89,7 +89,7 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
-      return this.put(`${config.get('mod-workflow')}/workflows/${workflow.id}/deactivate`, {});
+      return this.put(`${this.getAccess()}/workflows/${workflow.id}/deactivate`, {});
     }
     return Promise.reject(`cannot find workflow at ${path}`);
   }
@@ -99,7 +99,7 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
-      return this.delete(`${config.get('mod-workflow')}/workflows/${workflow.id}/delete`);
+      return this.delete(`${this.getAccess()}/workflows/${workflow.id}/delete`);
     }
     return Promise.reject(`cannot find workflow at ${path}`);
   }
@@ -109,7 +109,7 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
-      return this.post(`${config.get('mod-workflow')}/workflows/${workflow.id}/start`, {});
+      return this.post(`${this.getAccess()}/workflows/${workflow.id}/start`, {});
     }
     return Promise.reject(`cannot find workflow at ${path}`);
   }
@@ -225,6 +225,11 @@ class WorkflowService extends RestService implements Enhancer {
       return this.createWorkflow(JSON.parse(workflow));
     }
     return Promise.reject(`cannot find workflow.json at ${path}`);
+  }
+
+  private getAccess(): string {
+    const access = config.get('access');
+    return config.get(access);
   }
 
 }

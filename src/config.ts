@@ -26,9 +26,9 @@ const schema = {
     type: 'string',
     default: 'http://localhost:9130'
   },
-  'okapi-internal': {
+  okapi_login_path: {
     type: 'string',
-    default: 'http://localhost:9130'
+    default: '/authn/login'
   },
   tenant: {
     type: 'string',
@@ -48,23 +48,16 @@ const schema = {
   },
   userId: {
     type: 'string',
-    default: 'ad6d42d1-1239-526b-a997-6b96888f7719'
-  },
-  'mod-camunda': {
-    type: 'string',
-    default: 'http://localhost:9000'
-  },
-  'mod-camunda-internal': {
-    type: 'string',
-    default: 'http://localhost:9000'
+    default: ''
   },
   'mod-workflow': {
     type: 'string',
     default: 'http://localhost:9001'
   },
-  'mod-workflow-internal': {
+  'access': {
     type: 'string',
-    default: 'http://localhost:9001'
+    enum: ['okapi', 'mod-workflow'],
+    default: 'mod-workflow'
   }
 };
 

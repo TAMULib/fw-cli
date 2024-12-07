@@ -14,8 +14,9 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-import { RestService } from './rest.service';
 import { config } from '../config';
+import { parseCookie } from './cookie.utility';
+import { RestService } from './rest.service';
 
 class OkapiService extends RestService {
 
@@ -24,12 +25,7 @@ class OkapiService extends RestService {
     config.delete('folioAccessToken');
     config.delete('folioRefreshToken');
 
-    let okapi_login_path = config.get('okapi_login_path');
-    if (okapi_login_path === undefined) {
-      okapi_login_path = '/authn/login';
-    }
-
-    const url = `${config.get('okapi')}${okapi_login_path}`;
+    const url = `${config.get('okapi')}${config.get('okapi_login_path')}`;
     const json = { username, password };
 
     return new Promise((resolve, reject) => {
@@ -46,48 +42,31 @@ class OkapiService extends RestService {
         if (!!response && response?.statusCode >= 200 && response?.statusCode <= 299) {
           let accessToken;
           let refreshToken;
-          const headers = !!response?.headers ? response?.headers : undefined;
 
-          if (!!headers['set-cookie']) {
-            const matchAccess = /folioAccessToken=([^;\s]*)/gi;
-            const matchRefresh = /folioRefreshToken=([^;\s]*)/gi;
-            const cookies = !!headers['set-cookie'] ? headers['set-cookie'] : undefined;
-            let foundAccess;
-            let foundRefresh;
+          const headers = response?.headers;
 
-            if (!!cookies && Array.isArray(cookies)) {
-              let matched;
-
-              for (let i = 0; i < cookies.length; i++) {
-                matched = cookies[i].match(matchAccess);
-
-                if (!!matched) {
-                  foundAccess = matched;
-                } else {
-                  matched = cookies[i].match(matchRefresh);
-
-                  if (!!matched) {
-                    foundRefresh = matched;
-                  }
-                }
+          if (!!headers?.['set-cookie'] && Array.isArray(headers['set-cookie'])) {
+            const extractCookieValue = (token: string) => {
+              const cookie = headers['set-cookie'].find((c: string) => c.startsWith(token));
+              const cookieMap = parseCookie(cookie);
+              if (cookieMap.has(token)) {
+                return cookieMap.get(token);
               }
-            } else {
-              foundAccess = cookies.match(matchAccess);
-              foundRefresh = cookies.match(matchRefresh);
-            }
+            };
 
-            accessToken = Array.isArray(foundAccess) ? foundAccess[0] : undefined;
-            refreshToken = Array.isArray(foundRefresh) ? foundRefresh[0] : undefined;
+            accessToken = extractCookieValue('folioAccessToken');
+            refreshToken = extractCookieValue('folioRefreshToken');
+
           } else {
             if (!!response?.body?.okapiToken) {
               accessToken = response.body.okapiToken;
-            } else if (!!headers['x-okapi-token']) {
+            } else if (!!headers?.['x-okapi-token']) {
               accessToken = headers['x-okapi-token'];
             }
 
             if (!!response?.body?.refreshToken) {
               refreshToken = response.body.refreshToken;
-            } else if (!!response.body.folioRefreshToken) {
+            } else if (!!response?.body?.folioRefreshToken) {
               refreshToken = response.body.folioRefreshToken;
             }
           }
