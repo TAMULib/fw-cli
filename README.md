@@ -167,8 +167,7 @@ fw -c
   "tenant": "tamu",
   "username": "tamu_admin",
   "password": "***",
-  "mod-camunda": "https://folio-edge.library.tamu.edu/mod-camunda",
-  "mod-workflow": "https://folio-edge.library.tamu.edu/mod-workflow"
+  "mod-camunda": "https://folio-edge.library.tamu.edu/mod-camunda"
 }
 ```
 
