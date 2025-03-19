@@ -269,3 +269,7 @@ Cron triggered workflow to send monthly report to email specified by 'evansPresR
 ### [duplicate-instance-report](https://github.com/TAMULib/fw-registry/tree/main/duplicate-instance-report)
 
 Cron triggered workflow to email quarterly instance duplication report.
+
+### [hegis-purchase-order](https://github.com/TAMULib/fw-registry/tree/main/hegis-po)
+
+Manual triggered workflow to build, zip, and email hegis purchase order report.
