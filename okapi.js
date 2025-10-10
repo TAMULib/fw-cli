@@ -29,7 +29,7 @@ const PORT = 9130;
 const HOST = 'localhost';
 const BASE_HREF = '/';
 
-server.post('/authn/login', function (req, res) {
+server.post('/authn/login-with-expiry', function (req, res) {
   console.log(JSON.stringify(req.body));
   console.log(req.headers);
   res.setHeader('Content-Type', 'application/json');

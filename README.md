@@ -15,7 +15,7 @@ fw
 
 ## Running mock FOLIO
 
-Provides mock `/authn/login` and `/user-import`.
+Provides mock `/authn/login-with-expiry` and `/user-import`.
 
 ```
 yarn okapi
