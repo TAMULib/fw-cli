@@ -28,7 +28,7 @@ const schema = {
   },
   okapi_login_path: {
     type: 'string',
-    default: '/authn/login'
+    default: '/authn/login-with-expiry'
   },
   tenant: {
     type: 'string',
