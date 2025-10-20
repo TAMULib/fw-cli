@@ -184,6 +184,9 @@ class OkapiService extends RestService {
   /**
    * Extract the cookie and its parts from a string to an object.
    *
+   * This sets the key value pair to TRUE if there is no value to allow for easy boolean tests.
+   * This is particularly important for token processing logic.
+   *
    * @param cookie - The cookie to parse.
    *
    * @return An object representing the cookie.
