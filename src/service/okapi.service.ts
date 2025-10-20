@@ -15,7 +15,6 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 import { config } from '../config';
-import { parseCookie } from './cookie.utility';
 import { RestService } from './rest.service';
 
 class OkapiService extends RestService {
@@ -44,27 +43,11 @@ class OkapiService extends RestService {
           let refreshToken: Record<string, any> = {};
 
           if (!!resp?.headers['set-cookie'] && Array.isArray(resp?.headers['set-cookie'])) {
-            resp.headers['set-cookie'].forEach((cookie: any) => {
+            resp.headers['set-cookie'].forEach((cookie: string) => {
               if (cookie.match(matchAccess)) {
-                accessToken = {};
-
-                cookie.split(';').forEach((fields: any) => {
-                  const parts = fields.split('=');
-
-                  if (parts.length > 0 && parts.length < 3) {
-                    accessToken[parts[0].trim()] = parts[1] ?? true;
-                  }
-                });
+                accessToken = this.cookieToObject(cookie);
               } else if (cookie.match(matchRefresh)) {
-                refreshToken = {};
-
-                cookie.split(';').forEach((fields: any) => {
-                  const parts: string[] = fields.split('=');
-
-                  if (parts.length > 0 && parts.length < 3) {
-                    refreshToken[parts[0].trim()] = parts[1] ?? true;
-                  }
-                });
+                refreshToken = this.cookieToObject(cookie);
               }
             });
           } else {
@@ -196,6 +179,30 @@ class OkapiService extends RestService {
       body,
       resp
     );
+  }
+
+  /**
+   * Extract the cookie and its parts from a string to an object.
+   *
+   * This sets the key value pair to TRUE if there is no value to allow for easy boolean tests.
+   * This is particularly important for token processing logic.
+   *
+   * @param cookie - The cookie to parse.
+   *
+   * @return An object representing the cookie.
+   */
+  protected cookieToObject(cookie: string): Record<string, any> {
+    const result: Record<string, any> = {};
+
+    cookie.split(';').forEach((fields: any) => {
+      const parts = fields.split('=');
+
+      if (parts.length > 0 && parts.length < 3) {
+        result[parts[0].trim()] = parts[1] ?? true;
+      }
+    });
+
+    return result;
   }
 
 }
