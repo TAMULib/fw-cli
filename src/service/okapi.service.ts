@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2024  Texas A&M University Libraries
+  Copyright (C) 2024-2025 Texas A&M University Libraries
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -15,74 +15,83 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 import { config } from '../config';
-import { parseCookie } from './cookie.utility';
 import { RestService } from './rest.service';
 
 class OkapiService extends RestService {
 
   public login(username: string = config.get('username'), password: string = config.get('password')): Promise<any> {
     config.delete('token');
-    config.delete('folioAccessToken');
-    config.delete('folioRefreshToken');
-
-    const url = `${config.get('okapi')}${config.get('okapi_login_path')}`;
-    const json = { username, password };
+    config.delete('accessToken');
+    config.delete('refreshToken');
 
     return new Promise((resolve, reject) => {
       this.request({
-        url,
-        json,
+        url: `${config.get('okapi')}${config.get('okapiLoginPath')}`,
+        json: { username, password },
         method: 'POST',
         headers: {
           'X-Okapi-Tenant': config.get('tenant'),
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         }
-      }, (error: any, response: any, body: any) => {
-        if (!!response && response?.statusCode >= 200 && response?.statusCode <= 299) {
-          let accessToken;
-          let refreshToken;
+      }, (error: any, resp: any, body: any) => {
+        if (resp?.statusCode >= 200 && resp?.statusCode <= 299) {
+          const matchAccess = /folioAccessToken=([^;\s]*)/i;
+          const matchRefresh = /folioRefreshToken=([^;\s]*)/i;
 
-          const headers = response?.headers;
+          let accessToken: Record<string, any> = {};
+          let refreshToken: Record<string, any> = {};
 
-          if (!!headers?.['set-cookie'] && Array.isArray(headers['set-cookie'])) {
-            const extractCookieValue = (token: string) => {
-              const cookie = headers['set-cookie'].find((c: string) => c.startsWith(token));
-              const cookieMap = parseCookie(cookie);
-              if (cookieMap.has(token)) {
-                return cookieMap.get(token);
+          if (!!resp?.headers['set-cookie'] && Array.isArray(resp?.headers['set-cookie'])) {
+            resp.headers['set-cookie'].forEach((cookie: string) => {
+              if (cookie.match(matchAccess)) {
+                accessToken = this.cookieToObject(cookie);
+              } else if (cookie.match(matchRefresh)) {
+                refreshToken = this.cookieToObject(cookie);
               }
-            };
-
-            accessToken = extractCookieValue('folioAccessToken');
-            refreshToken = extractCookieValue('folioRefreshToken');
-
+            });
           } else {
-            if (!!response?.body?.okapiToken) {
-              accessToken = response.body.okapiToken;
-            } else if (!!headers?.['x-okapi-token']) {
-              accessToken = headers['x-okapi-token'];
+            if (!!resp?.body?.okapiToken) {
+              accessToken = { folioAccessToken: resp.body.okapiToken };
+            } else if (!!resp.headers['x-okapi-token']) {
+              accessToken = { folioAccessToken: resp.headers['x-okapi-token'] };
             }
 
-            if (!!response?.body?.refreshToken) {
-              refreshToken = response.body.refreshToken;
-            } else if (!!response?.body?.folioRefreshToken) {
-              refreshToken = response.body.folioRefreshToken;
+            if (!!resp.body?.refreshToken) {
+              refreshToken = { folioRefreshToken: resp.body.refreshToken };
+            } else if (!!resp.body?.folioRefreshToken) {
+              refreshToken = { folioRefreshToken: resp.body.folioRefreshToken };
             }
           }
 
-          if (!!accessToken) {
-            config.set('token', accessToken);
-            config.set('folioAccessToken', accessToken);
-          }
+          // This preserves `token` for backwards compatibility and for simple script expansion in the registry scripts.
+          // The `accessToken` and `refreshToken` provide complete objects to use on HTTP requests.
+          // If the `refreshToken` is an empty Object, then this must be a non-RTR access, so `accessToken.folioAccessToken` represents the `X-Okapi-Token`.
+          if (!!accessToken?.folioAccessToken) {
+            config.set('token', accessToken.folioAccessToken);
+            config.set('accessToken', accessToken);
 
-          if (!!refreshToken) {
-            config.set('folioRefreshToken', refreshToken);
-          }
+            if (!!refreshToken?.folioRefreshToken) {
+              config.set('refreshToken', refreshToken);
+            }
 
-          resolve({ status: `Login succeeded for user '${username}'.`, accessToken, refreshToken });
+            resolve({
+              status: `Login succeeded for user '${username}'.`,
+              http: {
+                code: resp?.statusCode,
+                message: resp?.statusMessage,
+              },
+              tokens: {
+                accessToken,
+                refreshToken,
+                token: accessToken?.folioAccessToken,
+              },
+            });
+          } else {
+            this.loginError(username, reject, body, resp);
+          }
         } else {
-          reject({ status: `Login failed for user '${username}'.`, body });
+          this.loginError(username, reject, body, resp);
         }
       });
     });
@@ -90,29 +99,31 @@ class OkapiService extends RestService {
 
   public getUser(username: string = config.get('username')): Promise<any> {
     const url = `${config.get('okapi')}/users?query=username==${username}`;
+
     return new Promise((resolve, reject) => {
       this.request({
         url,
         method: 'GET',
         headers: {
-          'X-Okapi-Tenant': config.get('tenant'),
-          'X-Okapi-Token': config.get('token'),
           'Accept': ['application/json', 'text/plain'],
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-Okapi-Tenant': config.get('tenant'),
+          ...this.buildAccessHeaders(),
         }
-      }, (error: any, response: any, body: any) => {
-        if (response && response.statusCode >= 200 && response.statusCode <= 299) {
+      }, (error: any, resp: any, body: any) => {
+        if (resp?.statusCode >= 200 && resp?.statusCode <= 299) {
           const users = JSON.parse(body).users;
+
           if (users.length > 0) {
             const user = users[0]
             config.set('userId', user.id);
+
             resolve(user);
           } else {
-            reject(`cannot find user ${username}`)
+            this.serviceError(`Cannot find user ${username}.`, url, reject, body, resp);
           }
         } else {
-          console.log('failed user lookup', url);
-          reject(body);
+          this.serviceError(`Failed to lookup user ${username}.`, url, reject, !!error ? error : body, resp);
         }
       });
     });
@@ -143,11 +154,55 @@ class OkapiService extends RestService {
         for (const module of modules) {
           if (module.srvcId.startsWith(name) || module.srvcId.startsWith(`mod-${name}`)) {
             resolve(module.url);
+
+            return;
           }
         }
+
         reject(`${name} not found`);
-      });
+      }).catch(reject);
     });
+  }
+
+  /**
+   * Helper function for rejecting the login failure.
+   *
+   * @param user   - The user name.
+   * @param reject - The promise reject callback.
+   * @param body   - The exception or an error message.
+   * @param [resp] - The response data.
+   */
+  protected loginError(user: string, reject: any, body: any, resp?: any) {
+    this.serviceError(`Login failed for user '${user}'.`,
+      `${config.get('okapi')}${config.get('okapiLoginPath')}`,
+      reject,
+      body,
+      resp
+    );
+  }
+
+  /**
+   * Extract the cookie and its parts from a string to an object.
+   *
+   * This sets the key value pair to TRUE if there is no value to allow for easy boolean tests.
+   * This is particularly important for token processing logic.
+   *
+   * @param cookie - The cookie to parse.
+   *
+   * @return An object representing the cookie.
+   */
+  protected cookieToObject(cookie: string): Record<string, any> {
+    const result: Record<string, any> = {};
+
+    cookie.split(';').forEach((fields: any) => {
+      const parts = fields.split('=');
+
+      if (parts.length > 0 && parts.length < 3) {
+        result[parts[0].trim()] = parts[1] ?? true;
+      }
+    });
+
+    return result;
   }
 
 }

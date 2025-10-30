@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2024  Texas A&M University Libraries
+  Copyright (C) 2024-2025 Texas A&M University Libraries
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -18,17 +18,34 @@ const Conf = require('conf');
 
 // tslint:disable: object-literal-key-quotes
 const schema = {
-  wd: {
+  access: {
     type: 'string',
-    default: './fw-registry'
+    enum: ['okapi', 'mod-workflow'],
+    default: 'mod-workflow',
+  },
+  accessToken: {
+    type: 'object',
+    default: {},
   },
   okapi: {
     type: 'string',
-    default: 'http://localhost:9130'
+    default: 'http://localhost:9130',
   },
-  okapi_login_path: {
+  okapiLoginPath: {
     type: 'string',
-    default: '/authn/login'
+    default: '/authn/login-with-expiry',
+  },
+  'mod-workflow': {
+    type: 'string',
+    default: 'http://localhost:9001',
+  },
+  password: {
+    type: 'string',
+    default: 'admin',
+  },
+  refreshToken: {
+    type: 'object',
+    default: {},
   },
   tenant: {
     type: 'string',
@@ -36,28 +53,19 @@ const schema = {
   },
   token: {
     type: 'string',
-    default: ''
+    default: '',
   },
   username: {
     type: 'string',
-    default: 'diku_admin'
-  },
-  password: {
-    type: 'string',
-    default: 'admin'
+    default: 'diku_admin',
   },
   userId: {
     type: 'string',
-    default: ''
+    default: '',
   },
-  'mod-workflow': {
+  wd: {
     type: 'string',
-    default: 'http://localhost:9001'
-  },
-  'access': {
-    type: 'string',
-    enum: ['okapi', 'mod-workflow'],
-    default: 'mod-workflow'
+    default: './fw-registry',
   }
 };
 

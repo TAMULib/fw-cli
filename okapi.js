@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2024  Texas A&M University Libraries
+  Copyright (C) 2024-2025 Texas A&M University Libraries
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -14,11 +14,11 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-var compression = require('compression');
-var cors = require('cors');
-var express = require('express');
+const compression = require('compression');
+const cors = require('cors');
+const express = require('express');
 
-var server = express();
+const server = express();
 server.use(cors());
 server.use(compression());
 
@@ -29,11 +29,35 @@ const PORT = 9130;
 const HOST = 'localhost';
 const BASE_HREF = '/';
 
-server.post('/authn/login', function (req, res) {
+const oneDay = new Date();
+const oneWeek = new Date(oneDay);
+oneDay.setDate(oneDay.getDate() + 1);
+oneWeek.setDate(oneWeek.getDate() + 7);
+
+server.post('/authn/login-with-expiry', function (req, res) {
   console.log(JSON.stringify(req.body));
   console.log(req.headers);
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('X-Okapi-Token', 'TOKEN');
+  res.setHeader('set-cookie', [ {
+      folioAccessToken: 'TOKEN',
+      'Max-Age': '86400',
+      Expires: oneDay.getUTCDate(),
+      Path: '/',
+      Secure: true,
+      HTTPOnly: true,
+      SameSite: 'Lax'
+    },
+    {
+      folioRefreshToken: 'REFRESH_TOKEN',
+      'Max-Age': '604800',
+      Expires: oneWeek.getUTCDate(),
+      Path: '/',
+      Secure: true,
+      HTTPOnly: true,
+      SameSite: 'Lax'
+    }
+  );
   res.send({});
 });
 

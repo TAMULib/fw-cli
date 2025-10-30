@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /*
-  Copyright (C) 2024  Texas A&M University Libraries
+  Copyright (C) 2024-2025 Texas A&M University Libraries
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -126,45 +126,45 @@ program
 
 program
   .command('login [username] [password]')
-  .description('login to acquire token')
+  .description('Login to acquire authentication tokens.')
   .action((username?: string, password?: string) => {
     okapi.login(username, password).then(console.log, console.log);
   });
 
 program
   .command('logout')
-  .description('logout to remove token from config')
+  .description('Logout to remove authentication tokens.')
   .action(() => {
     config.delete('token');
-    config.delete('folioAccessToken');
-    config.delete('folioRefreshToken');
+    config.delete('accessToken');
+    config.delete('refreshToken');
     console.log('success');
   });
 
 program
   .command('user [username]')
-  .description('lookup user')
+  .description('Lookup user.')
   .action((username?: string) => {
     okapi.getUser(username).then(console.log, console.log);
   });
 
 program
   .command('lookup <module>')
-  .description('lookup module, matching name starting with')
+  .description('Lookup module, matching name starting with.')
   .action((name: string) => {
     okapi.getDiscoveryModuleURL(name).then(console.log, console.log);
   });
 
 program
   .command('new <name>')
-  .description('scaffold new workflow with name')
+  .description('Scaffold new workflow with name.')
   .action((name: string) => {
     modWorkflow.scaffold(name).then(console.log, console.log);
   });
 
 program
   .command('add <workflow> <type> <name>')
-  .description('add new processor with name to an existing workflow')
+  .description('Add new processor with name to an existing workflow.')
   .action((workflow: string, type: 'processor', name: string) => {
     const workflowPath = `${config.get('wd')}/${workflow}`;
     if (fileService.exists(workflowPath)) {
@@ -185,42 +185,42 @@ program
 
 program
   .command('build <name>')
-  .description('build workflow by name')
+  .description('Build workflow by name.')
   .action((name: string) => {
     modWorkflow.build(name).then(console.log, console.log);
   });
 
 program
   .command('activate <name>')
-  .description('activate workflow by name')
+  .description('Activate workflow by name.')
   .action((name: string) => {
     modWorkflow.activate(name).then(console.log, console.log);
   });
 
 program
   .command('deactivate <name>')
-  .description('deactivate workflow by name')
+  .description('Deactivate workflow by name.')
   .action((name: string) => {
     modWorkflow.deactivate(name).then(console.log, console.log);
   });
 
 program
   .command('delete <name>')
-  .description('delete workflow by name')
+  .description('Delete workflow by name.')
   .action((name: string) => {
     modWorkflow.deleteWorkflow(name).then(console.log, console.log);
   });
 
 program
   .command('run <name>')
-  .description('run workflow by name')
+  .description('Run workflow by name.')
   .action((name: string) => {
     modWorkflow.run(name).then(console.log, console.log);
   });
 
 program
   .command('uuid [count]')
-  .description('generate random UUIDs')
+  .description('Generate random UUIDs.')
   .action((count = 1) => {
     while(count--) {
       console.log(defaultService.uuid());

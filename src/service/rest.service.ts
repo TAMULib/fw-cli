@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2024  Texas A&M University Libraries
+  Copyright (C) 2024-2025 Texas A&M University Libraries
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -20,6 +20,38 @@ import { config } from '../config';
 
 export class RestService {
 
+  /**
+   * Build the access headers.
+   *
+   * @return The built access headers.
+   */
+  public buildAccessHeaders(): Record<string, any> {
+    const auth: Record<string, any> = {};
+    const accessToken: Record<string, any> = config.get('accessToken');
+    const refreshToken: Record<string, any> = config.get('refreshToken');
+
+    if (!refreshToken?.folioRefreshToken) {
+      auth['X-Okapi-Token'] = accessToken?.folioAccessToken;
+    } else {
+      const cookie = [];
+
+      for (let key in accessToken) {
+        cookie.push(`${key}=${accessToken[key]}`);
+      }
+
+      auth['Cookie'] = cookie.join(';');
+    }
+
+    return auth;
+  }
+
+  /**
+   * A wrapper to the request module's request().
+   *
+   * Note that this does not return a Promise and therefore cannot utilize `.catch()`.
+   *
+   * @return The reslts of the request() call.
+   */
   public request(req: any, cb: any): any {
     return request(req, cb);
   }
@@ -29,19 +61,15 @@ export class RestService {
       request.get({
         url,
         headers: {
+          'Content-Type': contentType,
           'X-Okapi-Tenant': config.get('tenant'),
-          'X-Okapi-Token': config.get('token'),
-          'Content-Type': contentType
+          ...this.buildAccessHeaders(),
         }
-      }, (error: any, response: any, body?: any) => {
-        if (response && response.statusCode >= 200 && response.statusCode <= 299) {
+      }, (error: any, resp?: any, body?: any) => {
+        if (resp?.statusCode >= 200 && resp?.statusCode <= 299) {
           resolve(JSON.parse(body));
-        } else if (error) {
-          // console.log('failed get', url, error);
-          reject(error);
         } else {
-          // console.log('failed get', url);
-          reject(body);
+          this.serviceError('Failed to GET.', url, reject, !!error ? error : body, resp);
         }
       });
     });
@@ -53,19 +81,15 @@ export class RestService {
         url,
         json,
         headers: {
+          'Content-Type': contentType,
           'X-Okapi-Tenant': config.get('tenant'),
-          'X-Okapi-Token': config.get('token'),
-          'Content-Type': contentType
+          ...this.buildAccessHeaders(),
         }
-      }, (error: any, response: any, body?: any) => {
-        if (response && response.statusCode >= 200 && response.statusCode <= 299) {
+      }, (error: any, resp?: any, body?: any) => {
+        if (resp?.statusCode >= 200 && resp?.statusCode <= 299) {
           resolve(body);
-        } else if (error) {
-          console.log('failed post', url, error);
-          reject(error);
         } else {
-          console.log('failed post', url, json);
-          reject(body);
+          this.serviceError('Failed to POST.', url, reject, !!error ? error : body, resp, json);
         }
       });
     });
@@ -77,19 +101,15 @@ export class RestService {
         url,
         json,
         headers: {
+          'Content-Type': contentType,
           'X-Okapi-Tenant': config.get('tenant'),
-          'X-Okapi-Token': config.get('token'),
-          'Content-Type': contentType
+          ...this.buildAccessHeaders(),
         }
-      }, (error: any, response: any, body?: any) => {
-        if (response && response.statusCode >= 200 && response.statusCode <= 299) {
+      }, (error: any, resp: any, body?: any) => {
+        if (resp?.statusCode >= 200 && resp?.statusCode <= 299) {
           resolve(body);
-        } else if (error) {
-          console.log('failed put', url, error);
-          reject(error);
         } else {
-          console.log('failed put', url, json);
-          reject(body);
+          this.serviceError('Failed to PUT.', url, reject, !!error ? error : body, resp, json);
         }
       });
     });
@@ -97,26 +117,45 @@ export class RestService {
 
   public delete(url: string, contentType: string = 'application/json', accept: string = 'text/plain'): Promise<any> {
     return new Promise((resolve, reject) => {
-      request.delete({
+      const req = request.delete({
         url,
         headers: {
-          'X-Okapi-Tenant': config.get('tenant'),
-          'X-Okapi-Token': config.get('token'),
+          'Accept': accept,
           'Content-Type': contentType,
-          'Accept': accept
+          'X-Okapi-Tenant': config.get('tenant'),
+          ...this.buildAccessHeaders(),
         }
-      }, (error: any, response: any, body?: any) => {
-        if (response && response.statusCode >= 200 && response.statusCode <= 299) {
-          console.log('delete succeeded', url);
+      }, (error: any, resp?: any, body?: any) => {
+        if (!!resp && resp?.statusCode >= 200 && resp?.statusCode <= 299) {
+          console.log('Delete succeeded.', url);
           resolve(body);
-        } else if (error) {
-          console.log('failed delete', url, error);
-          reject(error);
         } else {
-          console.log('failed delete', url);
-          reject(body);
+          this.serviceError('Failed to DELETE.', url, reject, !!error ? error : body, resp);
         }
       });
+    });
+  }
+
+  /**
+   * Helper function for rejecting on request error.
+   *
+   * @param status - The status message.
+   * @param url    - The URL.
+   * @param reject - The promise reject callback.
+   * @param body   - The exception or an error message.
+   * @param [resp] - The response data.
+   * @param [json] - The JSON payload.
+   */
+  protected serviceError(status: string, url: string, reject: any, body: any, resp?: any, json?: any) {
+    reject({
+      status,
+      url,
+      payload: json,
+      http: {
+        code: resp?.statusCode,
+        message: resp?.statusMessage,
+      },
+      body,
     });
   }
 
