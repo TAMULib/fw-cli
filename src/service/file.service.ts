@@ -15,6 +15,7 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 const fs = require('fs');
+const process = require('node:process');
 
 class FileService {
 
@@ -22,7 +23,10 @@ class FileService {
     if (this.exists(path)) {
       return fs.readFileSync(path, 'utf8');
     }
-    throw new Error(`not found: ${path}`);
+
+    process.exitCode = 1;
+
+    throw new Error(`Error: File not found: ${path}`);
   }
 
   public readAll(path: string, endsWith: string = ''): any[] {
@@ -33,7 +37,10 @@ class FileService {
         return this.read(`${path}/${file}`);
       });
     }
-    throw new Error(`not found: ${path}`);
+
+    process.exitCode = 1;
+
+    throw new Error(`Error: File not found: ${path}`);
   }
 
   public listDirectories(path: string): string[] {
@@ -42,7 +49,10 @@ class FileService {
         return fs.lstatSync(`${path}/${file}`).isDirectory();
       });
     }
-    throw new Error(`not found: ${path}`);
+
+    process.exitCode = 1;
+
+    throw new Error(`Error: Path not found: ${path}`);
   }
 
   public exists(path: string): boolean {
@@ -62,7 +72,8 @@ class FileService {
   }
 
   private stringify(data: any = ''): any {
-    var str = JSON.stringify(data, null, 2);
+    let str = JSON.stringify(data, null, 2);
+
     if (!str.endsWith('\n')) str += '\n';
     return str;
   }

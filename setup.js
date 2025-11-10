@@ -1,7 +1,7 @@
+const fs = require('fs');
 const http = require('http');
 const https = require('https');
-
-const fs = require('fs');
+const process = require('node:process');
 
 function makeHttpRequest(options, data = undefined) {
   if (options.headers === undefined) {
@@ -16,6 +16,7 @@ function makeHttpRequest(options, data = undefined) {
     options.headers['Content-Type'] = 'application/json';
     options.headers['Content-Length'] = Buffer.byteLength(jsonData);
   }
+
   return new Promise((resolve, reject) => {
     const protocolModule = options.port === 443 ? https : http;
     const req = protocolModule.request(options, (res) => {
@@ -35,6 +36,8 @@ function makeHttpRequest(options, data = undefined) {
     });
 
     req.on('error', (error) => {
+      process.exitCode = 2;
+
       reject(error);
     });
 
@@ -58,6 +61,8 @@ async function addModule(descriptor) {
 
     return response.statusCode === 201 ? response.body : response;
   } catch (error) {
+    process.exitCode = 1;
+
     console.error('Error:', error.message);
   }
 };
@@ -77,6 +82,8 @@ async function deployModule(descriptor, nodeId) {
 
     return response.statusCode === 201 ? response.body : response;
   } catch (error) {
+    process.exitCode = 1;
+
     console.error('Error:', error.message);
   }
 };
@@ -93,6 +100,8 @@ async function enableModule(descriptor, tenant) {
 
     return response.statusCode === 201 ? response.body : response;
   } catch (error) {
+    process.exitCode = 1;
+
     console.error('Error:', error.message);
   }
 };
@@ -102,6 +111,8 @@ function readModuleDescriptor(path) {
   return new Promise((resolve, reject) => {
     fs.readFile(path, 'utf8', (err, data) => {
       if (err) {
+        process.exitCode = 2;
+
         reject(err);
       }
       resolve(JSON.parse(data));
@@ -125,29 +136,34 @@ async function main() {
   const modCamundaDescriptorPath = './mod-camunda/target/ModuleDescriptor.json';
 
   if (!fs.existsSync(modWorkflowDescriptorPath)) {
+    process.exitCode = 1;
+
     console.error(`mod-workflow module descriptor is required! ${modWorkflowDescriptorPath} not found`);
   }
 
   if (!fs.existsSync(modCamundaDescriptorPath)) {
+    process.exitCode = 1;
+
     console.error(`mod-camunda module descriptor is required! ${modCamundaDescriptorPath} not found`);
   }
 
   const modWorkflowDescriptor = await readModuleDescriptor(modWorkflowDescriptorPath);
   const modCamundaDescriptor = await readModuleDescriptor(modCamundaDescriptorPath);
 
-  console.log('watch okapi logs\n: docker logs okapi -n 100 -f');
-  console.log(await addModule(modWorkflowDescriptor));
-  console.log(await addModule(modCamundaDescriptor));
+  if (!process.exitCode) console.log('watch okapi logs\n: docker logs okapi -n 100 -f');
 
-  console.log(await deployModule(modWorkflowDescriptor, nodeId));
-  console.log('watch mod workflow logs\n: docker container ls | grep workflow');
-  console.log(': docker logs <container id> -n 100 -f');
-  console.log(await deployModule(modCamundaDescriptor, nodeId));
-  console.log('watch mod camunda logs\n: docker container ls | grep camunda');
-  console.log(': docker logs <container id> -n 100 -f');
+  if (!process.exitCode) console.log(await addModule(modWorkflowDescriptor));
+  if (!process.exitCode) console.log(await addModule(modCamundaDescriptor));
 
-  console.log(await enableModule(modWorkflowDescriptor, tenant));
-  console.log(await enableModule(modCamundaDescriptor, tenant));
+  if (!process.exitCode) console.log(await deployModule(modWorkflowDescriptor, nodeId));
+  if (!process.exitCode) console.log('watch mod workflow logs\n: docker container ls | grep workflow');
+  if (!process.exitCode) console.log(': docker logs <container id> -n 100 -f');
+  if (!process.exitCode) console.log(await deployModule(modCamundaDescriptor, nodeId));
+  if (!process.exitCode) console.log('watch mod camunda logs\n: docker container ls | grep camunda');
+  if (!process.exitCode) console.log(': docker logs <container id> -n 100 -f');
+
+  if (!process.exitCode) console.log(await enableModule(modWorkflowDescriptor, tenant));
+  if (!process.exitCode) console.log(await enableModule(modCamundaDescriptor, tenant));
 }
 
 main();
