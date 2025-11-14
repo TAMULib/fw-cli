@@ -14,6 +14,8 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+const process = require('node:process');
+
 import { config } from '../config';
 import { RestService } from './rest.service';
 
@@ -120,10 +122,10 @@ class OkapiService extends RestService {
 
             resolve(user);
           } else {
-            this.serviceError(`Cannot find user ${username}.`, url, reject, body, resp);
+            this.serviceError(`Error: Cannot find user ${username}.`, url, reject, body, resp);
           }
         } else {
-          this.serviceError(`Failed to lookup user ${username}.`, url, reject, !!error ? error : body, resp);
+          this.serviceError(`Error: Failed to lookup user ${username}.`, url, reject, !!error ? error : body, resp);
         }
       });
     });
@@ -159,7 +161,9 @@ class OkapiService extends RestService {
           }
         }
 
-        reject(`${name} not found`);
+        process.exitCode = 2;
+
+        reject(`Error: ${name} not found.`);
       }).catch(reject);
     });
   }
@@ -179,6 +183,8 @@ class OkapiService extends RestService {
       body,
       resp
     );
+
+    process.exitCode = 3;
   }
 
   /**

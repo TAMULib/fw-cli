@@ -21,6 +21,7 @@ const pkg = require('../package.json');
 const chalk = require('chalk');
 const clear = require('clear');
 const figlet = require('figlet');
+const process = require('node:process');
 const program = require('commander');
 
 import { okapi } from './service/okapi.service';
@@ -28,7 +29,6 @@ import { config } from './config';
 import { modWorkflow } from './service/workflow.service';
 import { fileService } from './service/file.service';
 import { defaultService } from './service/default.service';
-import { exit } from 'process';
 
 const CONF_DIR = 'configs';
 
@@ -42,13 +42,13 @@ program
   .allowUnknownOption(false)
   .option('-c, --config', 'show current configuration', () => {
     console.log(JSON.stringify(config.store, null, 2));
-    exit();
+    process.exit();
   })
   .option('-w, --workflows', 'list workflows', () => {
     for (const workflow of modWorkflow.list()) {
       console.log(` - ${workflow}`);
     }
-    exit();
+    process.exit();
   })
   .description('A CLI for building and running FOLIO workflows');
 
@@ -61,7 +61,9 @@ program
         if (property) {
           console.log(config.get(property));
         } else {
-          console.log('get requires a property');
+          console.error('Error: The get command requires a property.');
+
+          process.exit(1);
         }
         break;
       case 'set':
@@ -74,10 +76,14 @@ program
             }
             console.log(`set ${property} to ${value}`);
           } else {
-            console.log('set requires a value');
+            console.error('Error: The set command requires a value.');
+
+            process.exit(1);
           }
         } else {
-          console.log('set requires a property');
+          console.error('Error: The set command requires a property.');
+
+          process.exit(1);
         }
         break;
       case 'reset':
@@ -120,7 +126,9 @@ program
         }
         break;
       default:
-        console.log(`${action} not a valid action. <get/set/delete/reset>`);
+        console.log(`Error: ${action} not a valid action <get/set/delete/reset>.`);
+
+        process.exit(1);
     }
   });
 
@@ -167,11 +175,13 @@ program
   .description('Add new processor with name to an existing workflow.')
   .action((workflow: string, type: 'processor', name: string) => {
     const workflowPath = `${config.get('wd')}/${workflow}`;
+
     if (fileService.exists(workflowPath)) {
       switch (type) {
         case 'processor':
           fileService.createFile(`${workflowPath}/nodes/${name}.json`, defaultService.processor(name));
           fileService.createFile(`${workflowPath}/nodes/js/${name}.js`);
+
           console.log(`new ${name} ${type} added to ${workflow}`);
           break;
         default:
@@ -179,7 +189,8 @@ program
           break;
       }
     } else {
-      console.log(`${workflow} workflow does not exist`);
+      console.error(`Error: ${workflow} workflow does not exist.`);
+      process.exit(1);
     }
   });
 

@@ -14,6 +14,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+const process = require('node:process');
 const request = require('request');
 
 import { config } from '../config';
@@ -69,7 +70,7 @@ export class RestService {
         if (resp?.statusCode >= 200 && resp?.statusCode <= 299) {
           resolve(JSON.parse(body));
         } else {
-          this.serviceError('Failed to GET.', url, reject, !!error ? error : body, resp);
+          this.serviceError('Error: Failed to GET.', url, reject, !!error ? error : body, resp);
         }
       });
     });
@@ -89,7 +90,7 @@ export class RestService {
         if (resp?.statusCode >= 200 && resp?.statusCode <= 299) {
           resolve(body);
         } else {
-          this.serviceError('Failed to POST.', url, reject, !!error ? error : body, resp, json);
+          this.serviceError('Error: Failed to POST.', url, reject, !!error ? error : body, resp, json);
         }
       });
     });
@@ -109,7 +110,7 @@ export class RestService {
         if (resp?.statusCode >= 200 && resp?.statusCode <= 299) {
           resolve(body);
         } else {
-          this.serviceError('Failed to PUT.', url, reject, !!error ? error : body, resp, json);
+          this.serviceError('Error: Failed to PUT.', url, reject, !!error ? error : body, resp, json);
         }
       });
     });
@@ -130,7 +131,7 @@ export class RestService {
           console.log('Delete succeeded.', url);
           resolve(body);
         } else {
-          this.serviceError('Failed to DELETE.', url, reject, !!error ? error : body, resp);
+          this.serviceError('Error: Failed to DELETE.', url, reject, !!error ? error : body, resp);
         }
       });
     });
@@ -147,6 +148,8 @@ export class RestService {
    * @param [json] - The JSON payload.
    */
   protected serviceError(status: string, url: string, reject: any, body: any, resp?: any, json?: any) {
+    process.exitCode = 2;
+
     reject({
       status,
       url,

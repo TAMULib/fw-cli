@@ -14,6 +14,8 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+const process = require('node:process');
+
 import { RestService } from './rest.service';
 import { Enhancer } from './enhancer.interface';
 
@@ -38,17 +40,24 @@ class WorkflowService extends RestService implements Enhancer {
 
   public list(): string[] {
     const path = `${config.get('wd')}`;
+
     if (fileService.exists(path)) {
       return fileService.listDirectories(path);
     }
-    throw new Error(`cannot find workflow directory at  ${path}`);
+
+    process.exitCode = 1;
+
+    throw new Error(`Error: Cannot find workflow directory at ${path}.`);
   }
 
   public scaffold(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}`;
     if (fileService.exists(path)) {
-      return Promise.reject(`cannot find workflow at ${path}`);
+      process.exitCode = 2;
+
+      return Promise.reject(`Error: Cannot find workflow at ${path}.`);
     }
+
     fileService.createDirectory(path);
     fileService.createDirectory(`${path}/nodes`);
     fileService.createDirectory(`${path}/nodes/js`);
@@ -58,11 +67,13 @@ class WorkflowService extends RestService implements Enhancer {
     fileService.createFile(`${path}/triggers/startTrigger.json`, defaultService.trigger());
     fileService.createFile(`${path}/workflow.json`, defaultService.workflow());
     fileService.createFile(`${path}/setup.json`, {});
+
     return Promise.resolve(`new workflow ${name} scaffold created`);
   }
 
   public build(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}`;
+
     if (fileService.exists(path)) {
       return [
         () => this.setup(name),
@@ -71,62 +82,89 @@ class WorkflowService extends RestService implements Enhancer {
         () => this.finalize(name)
       ].reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
     }
-    return Promise.reject(`cannot find workflow at ${path}`);
+
+    process.exitCode = 2;
+
+    return Promise.reject(`Error: Cannot find workflow at ${path}.`);
   }
 
   public activate(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}`;
+
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
+
       return this.put(`${this.getAccess()}/workflows/${workflow.id}/activate`, {});
     }
-    return Promise.reject(`cannot find workflow at ${path}`);
+
+    process.exitCode = 2;
+
+    return Promise.reject(`Error: Cannot find workflow at ${path}.`);
   }
 
   public deactivate(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}`;
+
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
+
       return this.put(`${this.getAccess()}/workflows/${workflow.id}/deactivate`, {});
     }
-    return Promise.reject(`cannot find workflow at ${path}`);
+
+    process.exitCode = 2;
+
+    return Promise.reject(`Error: Cannot find workflow at ${path}.`);
   }
 
   public deleteWorkflow(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}`;
+
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
+
       return this.delete(`${this.getAccess()}/workflows/${workflow.id}/delete`);
     }
-    return Promise.reject(`cannot find workflow at ${path}`);
+
+    process.exitCode = 2;
+
+    return Promise.reject(`Error: Cannot find workflow at ${path}.`);
   }
 
   public run(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}`;
+
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
+
       return this.post(`${this.getAccess()}/workflows/${workflow.id}/start`, {});
     }
-    return Promise.reject(`cannot find workflow at ${path}`);
+
+    process.exitCode = 2;
+
+    return Promise.reject(`Error: Cannot find workflow at ${path}.`);
   }
 
   public enhance(path: string, json: any): any {
     const obj = JSON.parse(json);
+
     if (obj.deserializeAs === 'ScriptTask') {
       this.script(path, obj, 'code');
     }
+
     if (obj.deserializeAs === 'ProcessorTask' && obj.processor) {
       this.script(path, obj.processor, 'code');
     }
+
     if (obj.deserializeAs === 'StreamingExtractTransformLoadTask' && obj.processors) {
       for (const processor of obj.processors) {
         this.script(path, processor, 'code');
       }
     }
+
     return JSON.stringify(obj);
   }
 
@@ -158,16 +196,22 @@ class WorkflowService extends RestService implements Enhancer {
 
   private setup(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/setup.json`;
+
     if (fileService.exists(path)) {
       const setup = JSON.parse(fileService.read(path));
+
       // nothing to do here
       return Promise.resolve(setup);
     }
-    return Promise.reject(`cannot find setup.json at ${path}`);
+
+    process.exitCode = 2;
+
+    return Promise.reject(`Error: Cannot find setup.json at ${path}.`);
   }
 
   private createTriggers(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/triggers`;
+
     if (fileService.exists(path)) {
       return fileService.readAll(path, '.json')
         .map((json: any) => modWorkflow.enhance(path, json))
@@ -176,31 +220,40 @@ class WorkflowService extends RestService implements Enhancer {
         .map((data: any) => () => modWorkflow.createTrigger(data))
         .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
     }
+
     return Promise.resolve([]);
   }
 
   private createNodes(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/nodes`;
+
     if (fileService.exists(path)) {
       const nodes = fileService.readAll(path, '.json')
         .map((json: any) => modWorkflow.enhance(path, json))
         .map((json: any) => templateService.template(json))
         .map((json: any) => JSON.parse(json));
+
       return this.sort(nodes)
         .map((data: any) => () => modWorkflow.createNode(data))
         .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
     }
-    return Promise.reject(`cannot find nodes at ${path}`);
+
+    process.exitCode = 2;
+
+    return Promise.reject(`Error: Cannot find nodes at ${path}.`);
   }
 
   private sort(nodes: any[]): any[] {
     const sorted: any[] = [];
     let i = 0;
+
     while (nodes.length) {
       if (i >= nodes.length) {
         i = 0;
       }
+
       const node = nodes[i];
+
       if (node.nodes && node.nodes.length) {
         if (node.nodes.filter((url: string) => {
           return sorted.filter((sn) => {
@@ -212,23 +265,31 @@ class WorkflowService extends RestService implements Enhancer {
       } else {
         sorted.push(nodes.splice(i, 1)[0]);
       }
+
       i++;
     }
+
     return sorted;
   }
 
   private finalize(name: string): Promise<any> {
     const path = `${config.get('wd')}/${name}/workflow.json`;
+
     if (fileService.exists(path)) {
       const json = fileService.read(path);
       const workflow = templateService.template(json);
+
       return this.createWorkflow(JSON.parse(workflow));
     }
-    return Promise.reject(`cannot find workflow.json at ${path}`);
+
+    process.exitCode = 2;
+
+    return Promise.reject(`Error: Cannot find workflow.json at ${path}.`);
   }
 
   private getAccess(): string {
     const access = config.get('access');
+
     return config.get(access);
   }
 
