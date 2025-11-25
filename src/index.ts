@@ -36,6 +36,19 @@ if (!fileService.exists(CONF_DIR)) {
   fileService.createDirectory(CONF_DIR);
 }
 
+/**
+ * Perform console.log() or console.dir() call based on data type of value.
+ *
+ * @param value The string or object to log to the console.
+ */
+function logConsole(value: any) {
+  if (typeof value == 'string') {
+    console.log(value);
+  } else {
+    console.dir(value, { depth: null, colors: true });
+  }
+}
+
 program
   .version(pkg.version)
   .usage('[options]')
@@ -136,7 +149,7 @@ program
   .command('login [username] [password]')
   .description('Login to acquire authentication tokens.')
   .action((username?: string, password?: string) => {
-    okapi.login(username, password).then(console.log, console.log);
+    okapi.login(username, password).then(logConsole, logConsole);
   });
 
 program
@@ -153,21 +166,21 @@ program
   .command('user [username]')
   .description('Lookup user.')
   .action((username?: string) => {
-    okapi.getUser(username).then(console.log, console.log);
+    okapi.getUser(username).then(logConsole, logConsole);
   });
 
 program
   .command('lookup <module>')
   .description('Lookup module, matching name starting with.')
   .action((name: string) => {
-    okapi.getDiscoveryModuleURL(name).then(console.log, console.log);
+    okapi.getDiscoveryModuleURL(name).then(logConsole, logConsole);
   });
 
 program
   .command('new <name>')
   .description('Scaffold new workflow with name.')
   .action((name: string) => {
-    modWorkflow.scaffold(name).then(console.log, console.log);
+    modWorkflow.scaffold(name).then(logConsole, logConsole);
   });
 
 program
@@ -198,35 +211,35 @@ program
   .command('build <name>')
   .description('Build workflow by name.')
   .action((name: string) => {
-    modWorkflow.build(name).then(console.log, console.log);
+    modWorkflow.build(name).then(logConsole, logConsole);
   });
 
 program
   .command('activate <name>')
   .description('Activate workflow by name.')
   .action((name: string) => {
-    modWorkflow.activate(name).then(console.log, console.log);
+    modWorkflow.activate(name).then(logConsole, logConsole);
   });
 
 program
   .command('deactivate <name>')
   .description('Deactivate workflow by name.')
   .action((name: string) => {
-    modWorkflow.deactivate(name).then(console.log, console.log);
+    modWorkflow.deactivate(name).then(logConsole, logConsole);
   });
 
 program
   .command('delete <name>')
   .description('Delete workflow by name.')
   .action((name: string) => {
-    modWorkflow.deleteWorkflow(name).then(console.log, console.log);
+    modWorkflow.deleteWorkflow(name).then(logConsole, logConsole);
   });
 
 program
   .command('run <name>')
   .description('Run workflow by name.')
   .action((name: string) => {
-    modWorkflow.run(name).then(console.log, console.log);
+    modWorkflow.run(name).then(logConsole, logConsole);
   });
 
 program
