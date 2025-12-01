@@ -70,7 +70,7 @@ export class RestService {
         if (resp?.statusCode >= 200 && resp?.statusCode <= 299) {
           resolve(JSON.parse(body));
         } else {
-          this.serviceError('Error: Failed to GET.', url, reject, !!error ? error : body, resp);
+          this.serviceError('Error: Failed to GET.', url, reject, body, error, resp);
         }
       });
     });
@@ -90,7 +90,7 @@ export class RestService {
         if (resp?.statusCode >= 200 && resp?.statusCode <= 299) {
           resolve(body);
         } else {
-          this.serviceError('Error: Failed to POST.', url, reject, !!error ? error : body, resp, json);
+          this.serviceError('Error: Failed to POST.', url, reject, body, error, resp, json);
         }
       });
     });
@@ -110,7 +110,7 @@ export class RestService {
         if (resp?.statusCode >= 200 && resp?.statusCode <= 299) {
           resolve(body);
         } else {
-          this.serviceError('Error: Failed to PUT.', url, reject, !!error ? error : body, resp, json);
+          this.serviceError('Error: Failed to PUT.', url, reject, body, error, resp, json);
         }
       });
     });
@@ -131,7 +131,7 @@ export class RestService {
           console.log('Delete succeeded.', url);
           resolve(body);
         } else {
-          this.serviceError('Error: Failed to DELETE.', url, reject, !!error ? error : body, resp);
+          this.serviceError('Error: Failed to DELETE.', url, reject, body, error, resp);
         }
       });
     });
@@ -140,15 +140,18 @@ export class RestService {
   /**
    * Helper function for rejecting on request error.
    *
-   * @param status - The status message.
-   * @param url    - The URL.
-   * @param reject - The promise reject callback.
-   * @param body   - The exception or an error message.
-   * @param [resp] - The response data.
-   * @param [json] - The JSON payload.
+   * @param status  - The status message.
+   * @param url     - The URL.
+   * @param reject  - The promise reject callback.
+   * @param body    - The response body.
+   * @param [error] - The error message.
+   * @param [resp]  - The response data.
+   * @param [json]  - The JSON request payload.
    */
-  protected serviceError(status: string, url: string, reject: any, body: any, resp?: any, json?: any) {
+  protected serviceError(status: string, url: string, reject: any, body: any, error?: any, resp?: any, json?: any) {
     process.exitCode = 2;
+
+    const contentType = resp?.headers['content-type']?.toLowerCase();
 
     reject({
       status,
@@ -158,7 +161,11 @@ export class RestService {
         code: resp?.statusCode,
         message: resp?.statusMessage,
       },
-      body,
+      error: !!error
+        ? error
+        : contentType == 'application/json' && typeof body == 'string'
+          ? JSON.parse(body)
+          : body,
     });
   }
 

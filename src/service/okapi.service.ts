@@ -116,16 +116,16 @@ class OkapiService extends RestService {
         if (resp?.statusCode >= 200 && resp?.statusCode <= 299) {
           const users = JSON.parse(body).users;
 
-          if (users.length > 0) {
+          if (users?.length > 0) {
             const user = users[0]
             config.set('userId', user.id);
 
             resolve(user);
           } else {
-            this.serviceError(`Error: Cannot find user ${username}.`, url, reject, body, resp);
+            this.serviceError(`Error: Cannot find user ${username}.`, url, reject, body, error, resp);
           }
         } else {
-          this.serviceError(`Error: Failed to lookup user ${username}.`, url, reject, !!error ? error : body, resp);
+          this.serviceError(`Error: Failed to lookup user ${username}.`, url, reject, body, error, resp);
         }
       });
     });
@@ -181,6 +181,7 @@ class OkapiService extends RestService {
       `${config.get('okapi')}${config.get('okapiLoginPath')}`,
       reject,
       body,
+      null,
       resp
     );
 
