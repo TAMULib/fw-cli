@@ -32,10 +32,11 @@ class WorkflowService extends RestService implements Enhancer {
    * Use SHA256 in such a way that it matches what can be reproduced through manual hashing.
    *
    * This excludes the token data from the checksum.
+   * This excludes the wording directory data 'wd' from the checksum.
    *
    * This should produce an identical hash to the command:
    *   ```sh
-   *   jq -cM del(.token, .accessToken, .refreshToken) config.json | sha256sum
+   *   jq -cM 'del(.token, .accessToken, .refreshToken, .wd)' config.json | sha256sum
    *   ```
    * Where `config.json` is the configuration file.
    *
@@ -49,6 +50,7 @@ class WorkflowService extends RestService implements Enhancer {
     delete data?.token;
     delete data?.accessToken;
     delete data?.refreshToken;
+    delete data?.wd;
 
     const json = JSON.stringify(data) + '\n';
 
