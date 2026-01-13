@@ -57,6 +57,10 @@ program
     console.log(JSON.stringify(config.store, null, 2));
     process.exit();
   })
+  .option('-S, --checksum', 'print checksum of current workflow configuration (verify via: jq -cM . config.json | sha256sum).', () => {
+    console.log(`${modWorkflow.checksum()}  ${config?.path}\n`);
+    process.exit();
+  })
   .option('-w, --workflows', 'list workflows', () => {
     for (const workflow of modWorkflow.list()) {
       console.log(` - ${workflow}`);

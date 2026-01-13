@@ -16,6 +16,8 @@
 */
 const process = require('node:process');
 
+import sha256 from 'crypto-js/sha256';
+
 import { RestService } from './rest.service';
 import { Enhancer } from './enhancer.interface';
 
@@ -25,6 +27,25 @@ import { templateService } from './template.service';
 import { defaultService } from './default.service';
 
 class WorkflowService extends RestService implements Enhancer {
+
+  /**
+   * Use SHA256 in such a way that it matches what can be reproduced through manual hashing.
+   *
+   * This should produce an identical hash to the command:
+   *   ```sh
+   *   jq -cM . config.json | sha256sum
+   *   ```
+   * Where `config.json` is the configuration file.
+   *
+   * The trailing new line is necessary to produce a consistent valid hash in this manner.
+   *
+   * @return The configration hash string.
+   */
+  public checksum(): string {
+    const json = JSON.stringify(config.store) + '\n';
+
+    return sha256(json).toString();
+  }
 
   public createTrigger(extractor: any): Promise<any> {
     return this.post(`${this.getAccess()}/triggers`, extractor);
@@ -278,8 +299,11 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       const json = fileService.read(path);
       const workflow = templateService.template(json);
+      const parsed = JSON.parse(workflow);
 
-      return this.createWorkflow(JSON.parse(workflow));
+      parsed.checksum = modWorkflow.checksum();
+
+      return this.createWorkflow(parsed);
     }
 
     process.exitCode = 2;
