@@ -14,6 +14,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+const child_process = require('node:child_process');
 const process = require('node:process');
 
 import sha256 from 'crypto-js/sha256';
@@ -27,6 +28,8 @@ import { templateService } from './template.service';
 import { defaultService } from './default.service';
 
 class WorkflowService extends RestService implements Enhancer {
+
+  private gitHashVersion = false;
 
   /**
    * Use SHA256 in such a way that it matches what can be reproduced through manual hashing.
@@ -107,12 +110,15 @@ class WorkflowService extends RestService implements Enhancer {
     const path = `${config.get('wd')}/${name}`;
 
     if (fileService.exists(path)) {
-      return [
+
+      const workflow = [
         () => this.setup(name),
         () => this.createTriggers(name),
         () => this.createNodes(name),
         () => this.finalize(name)
       ].reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
+
+      return workflow;
     }
 
     process.exitCode = 2;
@@ -198,6 +204,22 @@ class WorkflowService extends RestService implements Enhancer {
     }
 
     return JSON.stringify(obj);
+  }
+
+  public enableGitHash() {
+    this.gitHashVersion = true;
+  }
+
+  public getGitHash() {
+    const data = config?.store;
+    const wd = data?.wd;
+
+    if (!wd) return false;
+
+    const command = "git rev-parse --short=12 HEAD";
+    const options = { "cwd": wd, encoding: 'utf8' };
+
+    return child_process.execSync(command, options)?.trimEnd();
   }
 
   private script(path: string, obj: any, prop: string): void {
@@ -313,6 +335,16 @@ class WorkflowService extends RestService implements Enhancer {
       const parsed = JSON.parse(workflow);
 
       parsed.checksum = modWorkflow.checksum();
+
+      if (this.gitHashVersion) {
+        const suffix = this.getGitHash();
+
+        if (suffix) {
+          parsed.versionTag += `-${suffix}`;
+        } else {
+          throw new Error("Git hash command returned no results in working directory (wd) path.");
+        }
+      }
 
       return this.createWorkflow(parsed);
     }
