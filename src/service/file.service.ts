@@ -46,7 +46,7 @@ class FileService {
   public listDirectories(path: string): string[] {
     if (this.exists(path)) {
       return fs.readdirSync(path).filter((file: string) => {
-        return fs.lstatSync(`${path}/${file}`).isDirectory();
+        return !file.startsWith('.') && fs.lstatSync(`${path}/${file}`).isDirectory() && fs.existsSync(`${path}/${file}/workflow.json`);
       });
     }
 
