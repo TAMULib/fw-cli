@@ -134,7 +134,18 @@ class OkapiService extends RestService {
   public createReferenceData(request: { path: string, config?: string, data: any[] }): Promise<any> {
     return request.data.map((data: any) => {
       return () => this.post(`${config.get('okapi')}/${request.path}`, data);
-    }).reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
+    }).reduce((chain, callback) => {
+      return chain.then(() =>
+        callback().then(response => {
+          return response;
+        })
+      );
+    }, Promise.resolve())
+    .catch((error) => {
+      process.exitCode = 2;
+
+      return Promise.reject(error);
+    });
   }
 
   public deleteReferenceData(request: { path: string, config?: string, data: any[] }): Promise<any> {
@@ -143,7 +154,18 @@ class OkapiService extends RestService {
         const id = request.config ? config.get(request.config) : data.id;
         return this.delete(`${config.get('okapi')}/${request.path}/${id}`);
       };
-    }).reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
+    }).reduce((chain, callback) => {
+      return chain.then(() =>
+        callback().then(response => {
+          return response;
+        })
+      );
+    }, Promise.resolve())
+    .catch((error) => {
+      process.exitCode = 2;
+
+      return Promise.reject(error);
+    });
   }
 
   public getDiscoveryModules(): Promise<any> {

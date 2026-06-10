@@ -80,7 +80,18 @@ class WorkflowService extends RestService implements Enhancer {
         () => this.createTriggers(name),
         () => this.createNodes(name),
         () => this.finalize(name)
-      ].reduce((prevPromise, process) => prevPromise.then(() => process()), Promise.resolve());
+      ].reduce((chain, callback) => {
+        return chain.then(() =>
+          callback().then(response => {
+            return response;
+          })
+        );
+      }, Promise.resolve())
+      .catch((error) => {
+        process.exitCode = 2;
+
+        return Promise.reject(error);
+      });
     }
 
     process.exitCode = 2;
@@ -218,7 +229,18 @@ class WorkflowService extends RestService implements Enhancer {
         .map((json: any) => templateService.template(json))
         .map((json: any) => JSON.parse(json))
         .map((data: any) => () => modWorkflow.createTrigger(data))
-        .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
+        .reduce((chain, callback) => {
+          return chain.then(() =>
+            callback().then(response => {
+              return response;
+            })
+          );
+        }, Promise.resolve())
+        .catch((error) => {
+          process.exitCode = 2;
+
+          return Promise.reject(error);
+        });
     }
 
     return Promise.resolve([]);
@@ -235,7 +257,18 @@ class WorkflowService extends RestService implements Enhancer {
 
       return this.sort(nodes)
         .map((data: any) => () => modWorkflow.createNode(data))
-        .reduce((prevPromise, process) => prevPromise.then(() => process(), () => process()), Promise.resolve());
+        .reduce((chain, callback) => {
+          return chain.then(() =>
+            callback().then(response => {
+              return response;
+            })
+          );
+        }, Promise.resolve())
+        .catch((error) => {
+          process.exitCode = 2;
+
+          return Promise.reject(error);
+        });
     }
 
     process.exitCode = 2;
