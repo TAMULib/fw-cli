@@ -14,7 +14,10 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+const child_process = require('node:child_process');
 const process = require('node:process');
+
+import sha256 from 'crypto-js/sha256';
 
 import { RestService } from './rest.service';
 import { Enhancer } from './enhancer.interface';
@@ -25,6 +28,38 @@ import { templateService } from './template.service';
 import { defaultService } from './default.service';
 
 class WorkflowService extends RestService implements Enhancer {
+
+  private gitHashVersion = false;
+
+  /**
+   * Use SHA256 in such a way that it matches what can be reproduced through manual hashing.
+   *
+   * This excludes the token data from the checksum.
+   * This excludes the wording directory data 'wd' and user id 'userId'from the checksum.
+   *
+   * This should produce an identical hash to the command:
+   *   ```sh
+   *   jq -cM 'del(.token, .accessToken, .refreshToken, .userId, .wd)' config.json | sha256sum
+   *   ```
+   * Where `config.json` is the configuration file.
+   *
+   * The trailing new line is necessary to produce a consistent valid hash in this manner.
+   *
+   * @return The configration hash string.
+   */
+  public checksum(): string {
+    const data = config.store;
+
+    delete data?.token;
+    delete data?.accessToken;
+    delete data?.refreshToken;
+    delete data?.userId;
+    delete data?.wd;
+
+    const json = JSON.stringify(data) + '\n';
+
+    return sha256(json).toString();
+  }
 
   public createTrigger(extractor: any): Promise<any> {
     return this.post(`${this.getAccess()}/triggers`, extractor);
@@ -75,7 +110,7 @@ class WorkflowService extends RestService implements Enhancer {
     const path = `${config.get('wd')}/${name}`;
 
     if (fileService.exists(path)) {
-      return [
+      const workflow = [
         () => this.setup(name),
         () => this.createTriggers(name),
         () => this.createNodes(name),
@@ -92,6 +127,8 @@ class WorkflowService extends RestService implements Enhancer {
 
         return Promise.reject(error);
       });
+
+      return workflow;
     }
 
     process.exitCode = 2;
@@ -177,6 +214,22 @@ class WorkflowService extends RestService implements Enhancer {
     }
 
     return JSON.stringify(obj);
+  }
+
+  public enableGitHash() {
+    this.gitHashVersion = true;
+  }
+
+  public getGitHash() {
+    const data = config?.store;
+    const wd = data?.wd;
+
+    if (!wd) return false;
+
+    const command = "git rev-parse --short=12 HEAD";
+    const options = { "cwd": wd, encoding: 'utf8' };
+
+    return child_process.execSync(command, options)?.trimEnd();
   }
 
   private script(path: string, obj: any, prop: string): void {
@@ -311,8 +364,21 @@ class WorkflowService extends RestService implements Enhancer {
     if (fileService.exists(path)) {
       const json = fileService.read(path);
       const workflow = templateService.template(json);
+      const parsed = JSON.parse(workflow);
 
-      return this.createWorkflow(JSON.parse(workflow));
+      parsed.checksum = modWorkflow.checksum();
+
+      if (this.gitHashVersion) {
+        const suffix = this.getGitHash();
+
+        if (suffix) {
+          parsed.versionTag += `-${suffix}`;
+        } else {
+          throw new Error("Git hash command returned no results in working directory (wd) path.");
+        }
+      }
+
+      return this.createWorkflow(parsed);
     }
 
     process.exitCode = 2;

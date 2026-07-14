@@ -37,6 +37,28 @@ These are some configuration settings with special meaning that are managed dire
 | `wd`               | The working directory that contains the `fw-registry` files (usually either `./fw-registry/` or `./fw-registry/examples`.
 
 
+### Checksum Support
+
+This supports build time checksum that represent the configuration used during the build.
+Most, but not all, configuration fields are used to generate a checksum.
+This allows for verifying that the current configuration exactly matches.
+
+The current configuration checksum may be printed using the `-S` or `--checksum` parameter.
+
+The following configuration fields are excluded when building the checksum:
+  - `accessToken`
+  - `refreshToken`
+  - `token`
+  - `userId`
+  - `wd` (working directory)
+
+
+### Git Hash Support
+
+A **Git** hash may be automatically appended onto **Workflow** versions when building.
+This functionality is not enabled by default and requires the `-g` or `--git` parameter to be passed.
+
+
 ## Running mock FOLIO
 
 Provides mock `/authn/login-with-expiry` and `/user-import`.
