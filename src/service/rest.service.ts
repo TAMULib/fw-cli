@@ -34,13 +34,9 @@ export class RestService {
     if (!refreshToken?.folioRefreshToken) {
       auth['X-Okapi-Token'] = accessToken?.folioAccessToken;
     } else {
-      const cookie = [];
-
-      for (let key in accessToken) {
-        cookie.push(`${key}=${accessToken[key]}`);
+      if (accessToken?.folioAccessToken) {
+        auth['Cookie'] = `folioAccessToken=${accessToken.folioAccessToken}`;
       }
-
-      auth['Cookie'] = cookie.join(';');
     }
 
     return auth;
