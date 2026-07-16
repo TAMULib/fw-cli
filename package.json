@@ -1,6 +1,6 @@
 {
   "name": "fw-cli",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "FOLIO Workflow CLI",
   "license": "MIT",
   "main": "index.js",
@@ -23,6 +23,7 @@
     "conf": "10.2.0",
     "core-js": "3.38.1",
     "cors": "2.8.5",
+    "crypto-js": "^4.2.0",
     "express": "4.21.0",
     "figlet": "1.7.0",
     "handlebars": "4.7.8",
