@@ -245,4 +245,4 @@ Lookup user.
 fw user diku_admin
 ```
 
-Follow configuration, build, activate and run commands for workflows as described in the [FW Registry Readme](fw-registry/README.md).
+Follow configuration, build, activate, deploy, and redeploy and run commands for workflows as described in the [FW Registry Readme](fw-registry/README.md).

@@ -236,6 +236,20 @@ program
   });
 
 program
+  .command('deploy <name>')
+  .description('Build and activate workflow by name.')
+  .action((name: string) => {
+    modWorkflow.deploy(name).then(logConsole, logConsole);
+  });
+
+program
+  .command('redeploy <name>')
+  .description('Delete, build, and activate workflow by name.')
+  .action((name: string) => {
+    modWorkflow.redeploy(name).then(logConsole, logConsole);
+  });
+
+program
   .command('delete <name>')
   .description('Delete workflow by name.')
   .action((name: string) => {
