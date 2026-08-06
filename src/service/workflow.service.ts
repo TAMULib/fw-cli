@@ -106,8 +106,12 @@ class WorkflowService extends RestService implements Enhancer {
     return Promise.resolve(`new workflow ${name} scaffold created`);
   }
 
-  public build(name: string): Promise<any> {
+  public build(name: string, header: boolean = false): Promise<any> {
     const path = `${config.get('wd')}/${name}`;
+
+    if (header) {
+      console.log(`\nBuilding Workflow ${name}:`);
+    }
 
     if (fileService.exists(path)) {
       const workflow = [
@@ -136,8 +140,12 @@ class WorkflowService extends RestService implements Enhancer {
     return Promise.reject(`Error: Cannot find workflow at ${path}.`);
   }
 
-  public activate(name: string): Promise<any> {
+  public activate(name: string, header: boolean = false): Promise<any> {
     const path = `${config.get('wd')}/${name}`;
+
+    if (header) {
+      console.log(`\nActivating Workflow ${name}:`);
+    }
 
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
@@ -166,8 +174,49 @@ class WorkflowService extends RestService implements Enhancer {
     return Promise.reject(`Error: Cannot find workflow at ${path}.`);
   }
 
-  public deleteWorkflow(name: string): Promise<any> {
+  public deploy(name: string): Promise<any> {
+    const service = this;
+
+    return service.build(name, true)?.then((result) => {
+      // Ensure the build response is printed.
+      if (result) console.log(result);
+
+      return service.activate(name, true);
+    });
+  }
+
+  public redeploy(name: string): Promise<any> {
+    const service = this;
+
+    const buildActivate = () => {
+      return service.build(name, true)?.then((result) => {
+        // Ensure the build response is printed.
+        if (result) console.log(result);
+
+        return service.activate(name, true);
+      });
+    }
+
+    return service.deleteWorkflow(name, true)?.then((result) => {
+      // Ensure the delete response is printed.
+      if (result) console.log(result);
+
+      return buildActivate();
+    }).catch(error => {
+      if (error?.http?.code === 404) {
+        console.log(`\nWorkflow ${name} does not exist, continuing on.`);
+      }
+
+      return buildActivate();
+    });
+  }
+
+  public deleteWorkflow(name: string, header: boolean = false): Promise<any> {
     const path = `${config.get('wd')}/${name}`;
+
+    if (header) {
+      console.log(`\nDeleting Workflow ${name}:`);
+    }
 
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
