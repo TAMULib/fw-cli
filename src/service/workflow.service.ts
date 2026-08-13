@@ -205,6 +205,9 @@ class WorkflowService extends RestService implements Enhancer {
     }).catch(error => {
       if (error?.http?.code === 404) {
         console.log(`\nWorkflow ${name} does not exist, continuing on.`);
+
+        // Reset the console error to avoid incorrectly return with error code on success.
+        process.exitCode = 0;
       }
 
       return buildActivate();
