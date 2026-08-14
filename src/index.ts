@@ -17,7 +17,6 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-const pkg = require('../package.json');
 const chalk = require('chalk');
 const clear = require('clear');
 const figlet = require('figlet');
@@ -50,7 +49,7 @@ function logConsole(value: any) {
 }
 
 program
-  .version(pkg.version)
+  .version('1.1.0')
   .usage('[options]')
   .allowUnknownOption(false)
   .option('-c, --config', 'show current configuration', () => {
