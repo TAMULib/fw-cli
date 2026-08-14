@@ -46,7 +46,10 @@ This allows for verifying that the current configuration exactly matches.
 The current configuration checksum may be printed using the `-S` or `--checksum` parameter.
 
 The following configuration fields are excluded when building the checksum:
+  - `access`
   - `accessToken`
+  - `mod-camunda`
+  - `mod-workflow`
   - `refreshToken`
   - `token`
   - `userId`
