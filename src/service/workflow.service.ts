@@ -39,7 +39,7 @@ class WorkflowService extends RestService implements Enhancer {
    *
    * This should produce an identical hash to the command:
    *   ```sh
-   *   jq -cM 'del(.token, .accessToken, .refreshToken, .userId, .wd)' config.json | sha256sum
+   *   jq --sort-keys -cM 'del(.access, .accessToken, ."mod-camunda", ."mod-workflow", .refreshToken, .token, .userId, .wd)' config.json | sha256sum
    *   ```
    * Where `config.json` is the configuration file.
    *
@@ -48,15 +48,24 @@ class WorkflowService extends RestService implements Enhancer {
    * @return The configration hash string.
    */
   public checksum(): string {
-    const data = config.store;
+    const toDelete = [
+      'access',
+      'accessToken',
+      'mod-camunda',
+      'mod-workflow',
+      'refreshToken',
+      'token',
+      'userId',
+      'wd'
+    ];
 
-    delete data?.token;
-    delete data?.accessToken;
-    delete data?.refreshToken;
-    delete data?.userId;
-    delete data?.wd;
-
-    const json = JSON.stringify(data) + '\n';
+    const json = JSON.stringify(
+      Object.fromEntries(
+        Object.entries(config.store)
+          .filter(([key]) => !toDelete.includes(key))
+          .sort(([left], [right]) => left.localeCompare(right))
+      )
+    ) + '\n';
 
     return sha256(json).toString();
   }
