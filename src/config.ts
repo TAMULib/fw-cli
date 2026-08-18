@@ -18,54 +18,66 @@ const Conf = require('conf');
 
 // tslint:disable: object-literal-key-quotes
 const schema = {
-  access: {
+  cliAccess: {
     type: 'string',
-    enum: ['okapi', 'mod-workflow'],
-    default: 'mod-workflow',
+    enum: ['gateway', 'direct'],
+    default: 'gateway',
   },
-  accessToken: {
-    type: 'object',
-    default: {},
-  },
-  okapi: {
-    type: 'string',
-    default: 'http://localhost:9130',
-  },
-  okapiLoginPath: {
-    type: 'string',
-    default: '/authn/login-with-expiry',
-  },
-  'mod-workflow': {
+  cliDirectUrl: {
     type: 'string',
     default: 'http://localhost:9001',
   },
-  password: {
-    type: 'string',
-    default: 'admin',
-  },
-  refreshToken: {
+  cliFolioAccessToken: {
     type: 'object',
     default: {},
   },
-  tenant: {
+  cliFolioLoginPath: {
+    type: 'string',
+    default: '/authn/login-with-expiry',
+  },
+  cliFolioPass: {
+    type: 'string',
+    default: 'admin',
+  },
+  cliFolioRefreshToken: {
+    type: 'object',
+    default: {},
+  },
+  cliFolioTenant: {
     type: 'string',
     default: 'diku'
   },
-  token: {
+  cliFolioToken: {
     type: 'string',
     default: '',
   },
-  username: {
+  cliFolioUser: {
     type: 'string',
     default: 'diku_admin',
   },
-  userId: {
+  cliGatewayUrl: {
+    type: 'string',
+    default: 'http://localhost:9130',
+  },
+  cliUserId: {
     type: 'string',
     default: '',
   },
-  wd: {
+  cliWd: {
     type: 'string',
     default: './fw-registry',
+  },
+  folioPass: {
+    type: 'string',
+    default: '',
+  },
+  folioUser: {
+    type: 'string',
+    default: '',
+  },
+  gatewayUrl: {
+    type: 'string',
+    default: 'http://localhost:9130',
   }
 };
 

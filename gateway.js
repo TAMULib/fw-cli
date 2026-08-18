@@ -69,5 +69,5 @@ server.post('/user-import', function (req, res) {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`Mock Okapi server listening on http://${HOST}:${PORT}${BASE_HREF}`);
+  console.log(`Mock Gateway server listening on http://${HOST}:${PORT}${BASE_HREF}`);
 });

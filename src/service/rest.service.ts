@@ -28,8 +28,8 @@ export class RestService {
    */
   public buildAccessHeaders(): Record<string, any> {
     const auth: Record<string, any> = {};
-    const accessToken: Record<string, any> = config.get('accessToken');
-    const refreshToken: Record<string, any> = config.get('refreshToken');
+    const accessToken: Record<string, any> = config.get('cliFolioAccessToken');
+    const refreshToken: Record<string, any> = config.get('cliFolioRefreshToken');
 
     if (!refreshToken?.folioRefreshToken) {
       auth['X-Okapi-Token'] = accessToken?.folioAccessToken;
@@ -59,7 +59,7 @@ export class RestService {
         url,
         headers: {
           'Content-Type': contentType,
-          'X-Okapi-Tenant': config.get('tenant'),
+          'X-Okapi-Tenant': config.get('cliFolioTenant'),
           ...this.buildAccessHeaders(),
         }
       }, (error: any, resp?: any, body?: any) => {
@@ -79,7 +79,7 @@ export class RestService {
         json,
         headers: {
           'Content-Type': contentType,
-          'X-Okapi-Tenant': config.get('tenant'),
+          'X-Okapi-Tenant': config.get('cliFolioTenant'),
           ...this.buildAccessHeaders(),
         }
       }, (error: any, resp?: any, body?: any) => {
@@ -99,7 +99,7 @@ export class RestService {
         json,
         headers: {
           'Content-Type': contentType,
-          'X-Okapi-Tenant': config.get('tenant'),
+          'X-Okapi-Tenant': config.get('cliFolioTenant'),
           ...this.buildAccessHeaders(),
         }
       }, (error: any, resp: any, body?: any) => {
@@ -119,12 +119,12 @@ export class RestService {
         headers: {
           'Accept': accept,
           'Content-Type': contentType,
-          'X-Okapi-Tenant': config.get('tenant'),
+          'X-Okapi-Tenant': config.get('cliFolioTenant'),
           ...this.buildAccessHeaders(),
         }
       }, (error: any, resp?: any, body?: any) => {
         if (!!resp && resp?.statusCode >= 200 && resp?.statusCode <= 299) {
-          console.log('Delete succeeded.', url);
+          console.log("Delete succeeded.\n", url);
           resolve(body);
         } else {
           this.serviceError('Error: Failed to DELETE.', url, reject, body, error, resp);
