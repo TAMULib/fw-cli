@@ -24,6 +24,7 @@ const process = require('node:process');
 const program = require('commander');
 
 import { gateway } from './service/gateway.service';
+import { cache } from './cache';
 import { config } from './config';
 import { modWorkflow } from './service/workflow.service';
 import { fileService } from './service/file.service';
@@ -41,7 +42,7 @@ if (!fileService.exists(CONF_DIR)) {
  * @param value The string or object to log to the console.
  */
 function logConsole(value: any) {
-  if (typeof value == 'string') {
+  if (typeof value === 'string') {
     console.log(value);
   } else {
     console.dir(value, { depth: null, colors: true });
@@ -54,6 +55,10 @@ program
   .allowUnknownOption(false)
   .option('-c, --config', 'show current configuration', () => {
     console.log(JSON.stringify(config.store, null, 2));
+    process.exit();
+  })
+  .option('-C, --cache', 'show current cache', () => {
+    console.log(JSON.stringify(cache.store, null, 2));
     process.exit();
   })
   .option('-g, --git', 'attempt to append the git hash to the Workflow version during build from within the cliWd directory.', () => {
@@ -152,6 +157,21 @@ program
   });
 
 program
+  .command('cache <action>')
+  .description('Manage cache, actions: clear.')
+  .action((action: 'clear', property?: string, value?: string) => {
+    switch (action) {
+      case 'clear':
+        cache.clear();
+        break;
+      default:
+        console.log(`Error: ${action} not a valid action <clear>.`);
+
+        process.exit(1);
+    }
+  });
+
+program
   .command('login [username] [password]')
   .description('Login to acquire authentication tokens.')
   .action((username?: string, password?: string) => {
@@ -162,9 +182,10 @@ program
   .command('logout')
   .description('Logout to remove authentication tokens.')
   .action(() => {
-    config.delete('cliFolioAccessToken');
-    config.delete('cliFolioRefreshToken');
-    config.delete('cliFolioToken');
+    cache.delete('cliFolioAccessToken');
+    cache.delete('cliFolioRefreshToken');
+    cache.delete('cliFolioToken');
+    cache.delete('cliUserId');
 
     console.log('success');
   });

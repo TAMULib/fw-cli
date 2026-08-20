@@ -17,56 +17,28 @@
 const Conf = require('conf');
 
 const schema = {
-  cliAccess: {
-    type: 'string',
-    enum: ['gateway', 'direct'],
-    default: 'gateway',
+  cliFolioAccessToken: {
+    type: 'object',
+    default: {},
   },
-  cliDirectUrl: {
-    type: 'string',
-    default: 'http://localhost:9001',
+  cliFolioRefreshToken: {
+    type: 'object',
+    default: {},
   },
-  cliFolioLoginPath: {
-    type: 'string',
-    default: '/authn/login-with-expiry',
-  },
-  cliFolioPass: {
-    type: 'string',
-    default: 'admin',
-  },
-  cliFolioTenant: {
-    type: 'string',
-    default: 'diku'
-  },
-  cliFolioUser: {
-    type: 'string',
-    default: 'diku_admin',
-  },
-  cliGatewayUrl: {
-    type: 'string',
-    default: 'http://localhost:9130',
-  },
-  cliWd: {
-    type: 'string',
-    default: './fw-registry',
-  },
-  folioPass: {
+  cliFolioToken: {
     type: 'string',
     default: '',
   },
-  folioUser: {
+  cliUserId: {
     type: 'string',
     default: '',
   },
-  gatewayUrl: {
-    type: 'string',
-    default: 'http://localhost:9130',
-  }
 };
 
 export const projectName = 'fwcli';
 
-export const config = new Conf({
+export const cache = new Conf({
+  configName: 'cache',
   projectName,
-  schema
+  schema,
 });

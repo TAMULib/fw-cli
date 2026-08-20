@@ -16,15 +16,16 @@
 */
 const process = require('node:process');
 
+import { cache } from '../cache';
 import { config } from '../config';
 import { RestService } from './rest.service';
 
 class OkapiService extends RestService {
 
   public login(username: string = config.get('cliFolioUser'), password: string = config.get('cliFolioPass')): Promise<any> {
-    config.delete('cliFolioToken');
-    config.delete('cliFolioAccessToken');
-    config.delete('cliFolioRefreshToken');
+    cache.delete('cliFolioToken');
+    cache.delete('cliFolioAccessToken');
+    cache.delete('cliFolioRefreshToken');
 
     return new Promise((resolve, reject) => {
       this.request({
@@ -70,11 +71,11 @@ class OkapiService extends RestService {
           // The `accessToken` and `refreshToken` provide complete objects to use on HTTP requests.
           // If the `refreshToken` is an empty Object, then this must be a non-RTR access, so `accessToken.folioAccessToken` represents the `X-Okapi-Token`.
           if (!!accessToken?.folioAccessToken) {
-            config.set('cliFolioToken', accessToken.folioAccessToken);
-            config.set('cliFolioAccessToken', accessToken);
+            cache.set('cliFolioToken', accessToken.folioAccessToken);
+            cache.set('cliFolioAccessToken', accessToken);
 
             if (!!refreshToken?.folioRefreshToken) {
-              config.set('cliFolioRefreshToken', refreshToken);
+              cache.set('cliFolioRefreshToken', refreshToken);
             }
 
             resolve({
@@ -118,7 +119,7 @@ class OkapiService extends RestService {
 
           if (users?.length > 0) {
             const user = users[0]
-            config.set('cliUserId', user.id);
+            cache.set('cliUserId', user.id);
 
             resolve(user);
           } else {
