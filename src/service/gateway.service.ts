@@ -99,7 +99,7 @@ class OkapiService extends RestService {
     });
   }
 
-  public getUser(username: string = config.get('username')): Promise<any> {
+  public getUser(username: string = config.get('cliFolioUser')): Promise<any> {
     const url = `${config.get('cliGatewayUrl')}/users?query=username==${username}`;
 
     return new Promise((resolve, reject) => {
