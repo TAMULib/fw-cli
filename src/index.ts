@@ -23,7 +23,7 @@ const figlet = require('figlet');
 const process = require('node:process');
 const program = require('commander');
 
-import { okapi } from './service/okapi.service';
+import { gateway } from './service/gateway.service';
 import { config } from './config';
 import { modWorkflow } from './service/workflow.service';
 import { fileService } from './service/file.service';
@@ -56,7 +56,7 @@ program
     console.log(JSON.stringify(config.store, null, 2));
     process.exit();
   })
-  .option('-g, --git', 'attempt to append the git hash to the Workflow version during build from within the wd directory.', () => {
+  .option('-g, --git', 'attempt to append the git hash to the Workflow version during build from within the cliWd directory.', () => {
     modWorkflow.enableGitHash();
   })
   .option('-S, --checksum', 'print checksum of current workflow configuration (verify via: jq -cM . config.json | sha256sum).', () => {
@@ -155,16 +155,17 @@ program
   .command('login [username] [password]')
   .description('Login to acquire authentication tokens.')
   .action((username?: string, password?: string) => {
-    okapi.login(username, password).then(logConsole, logConsole);
+    gateway.login(username, password).then(logConsole, logConsole);
   });
 
 program
   .command('logout')
   .description('Logout to remove authentication tokens.')
   .action(() => {
-    config.delete('token');
-    config.delete('accessToken');
-    config.delete('refreshToken');
+    config.delete('cliFolioAccessToken');
+    config.delete('cliFolioRefreshToken');
+    config.delete('cliFolioToken');
+
     console.log('success');
   });
 
@@ -172,14 +173,14 @@ program
   .command('user [username]')
   .description('Lookup user.')
   .action((username?: string) => {
-    okapi.getUser(username).then(logConsole, logConsole);
+    gateway.getUser(username).then(logConsole, logConsole);
   });
 
 program
   .command('lookup <module>')
   .description('Lookup module, matching name starting with.')
   .action((name: string) => {
-    okapi.getDiscoveryModuleURL(name).then(logConsole, logConsole);
+    gateway.getDiscoveryModuleURL(name).then(logConsole, logConsole);
   });
 
 program
@@ -193,7 +194,7 @@ program
   .command('add <workflow> <type> <name>')
   .description('Add new processor with name to an existing workflow.')
   .action((workflow: string, type: 'processor', name: string) => {
-    const workflowPath = `${config.get('wd')}/${workflow}`;
+    const workflowPath = `${modWorkflow.getWd()}${workflow}`;
 
     if (fileService.exists(workflowPath)) {
       switch (type) {
