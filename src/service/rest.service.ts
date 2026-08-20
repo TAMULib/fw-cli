@@ -17,6 +17,7 @@
 const process = require('node:process');
 const request = require('request');
 
+import { cache } from '../cache';
 import { config } from '../config';
 
 export class RestService {
@@ -28,14 +29,14 @@ export class RestService {
    */
   public buildAccessHeaders(): Record<string, any> {
     const auth: Record<string, any> = {};
-    const accessToken: Record<string, any> = config.get('cliFolioAccessToken');
-    const refreshToken: Record<string, any> = config.get('cliFolioRefreshToken');
+    const accessToken: Record<string, any> = cache.get('cliFolioAccessToken');
+    const refreshToken: Record<string, any> = cache.get('cliFolioRefreshToken');
 
     if (!refreshToken?.folioRefreshToken) {
       auth['X-Okapi-Token'] = accessToken?.folioAccessToken;
     } else {
       if (accessToken?.folioAccessToken) {
-        auth['Cookie'] = `folioAccessToken=${accessToken.folioAccessToken}`;
+        auth.Cookie = `folioAccessToken=${accessToken.folioAccessToken}`;
       }
     }
 
@@ -124,7 +125,7 @@ export class RestService {
         }
       }, (error: any, resp?: any, body?: any) => {
         if (!!resp && resp?.statusCode >= 200 && resp?.statusCode <= 299) {
-          console.log("Delete succeeded.\n", url);
+          console.log('Delete succeeded.\n', url);
           resolve(body);
         } else {
           this.serviceError('Error: Failed to DELETE.', url, reject, body, error, resp);
@@ -159,7 +160,7 @@ export class RestService {
       },
       error: !!error
         ? error
-        : contentType == 'application/json' && typeof body == 'string'
+        : contentType === 'application/json' && typeof body === 'string'
           ? JSON.parse(body)
           : body,
     });

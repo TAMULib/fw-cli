@@ -14,7 +14,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-const child_process = require('node:child_process');
+const childProcess = require('node:child_process');
 const process = require('node:process');
 
 import sha256 from 'crypto-js/sha256';
@@ -38,7 +38,7 @@ class WorkflowService extends RestService implements Enhancer {
    *
    * This should produce an identical hash to the command:
    *   ```sh
-   *   jq --sort-keys -cM 'del(.cliAccess, .cliDirectUrl, .cliFolioAccessToken, .cliFolioLoginPath, .cliFolioPass, .cliFolioRefreshToken, .cliFolioTenant, .cliFolioToken, .cliFolioUser, .cliGatewayUrl, .cliUserId, .cliWd)' config.json | sha256sum
+   *   jq --sort-keys -cM 'del(.cliAccess, .cliDirectUrl, .cliFolioLoginPath, .cliFolioPass, .cliFolioTenant, .cliFolioToken, .cliFolioUser, .cliGatewayUrl, .cliWd)' config.json | sha256sum
    *   ```
    * Where `config.json` is the configuration file.
    *
@@ -50,15 +50,11 @@ class WorkflowService extends RestService implements Enhancer {
     const toDelete = [
       'cliAccess',
       'cliDirectUrl',
-      'cliFolioAccessToken',
       'cliFolioLoginPath',
       'cliFolioPass',
-      'cliFolioRefreshToken',
       'cliFolioTenant',
-      'cliFolioToken',
       'cliFolioUser',
       'cliGatewayUrl',
-      'cliUserId',
       'cliWd`'
     ];
 
@@ -293,10 +289,10 @@ class WorkflowService extends RestService implements Enhancer {
 
     if (!cliWd) return false;
 
-    const command = "git rev-parse --short=12 HEAD";
-    const options = { "cwd": cliWd, encoding: 'utf8' };
+    const command = 'git rev-parse --short=12 HEAD';
+    const options = { 'cwd': cliWd, encoding: 'utf8' };
 
-    return child_process.execSync(command, options)?.trimEnd();
+    return childProcess.execSync(command, options)?.trimEnd();
   }
 
   /**
@@ -309,11 +305,11 @@ class WorkflowService extends RestService implements Enhancer {
   public getWd(): string {
     let wd = config.get('cliWd');
 
-    if (typeof wd != 'string') {
+    if (typeof wd !== 'string') {
       wd = '';
     }
 
-    if (wd == '') return './';
+    if (wd === '') return './';
 
     return wd.replace(/\/*$/, '/');
   }
@@ -460,7 +456,7 @@ class WorkflowService extends RestService implements Enhancer {
         if (suffix) {
           parsed.versionTag += `-${suffix}`;
         } else {
-          throw new Error("Git hash command returned no results in working directory (cliWd) path.");
+          throw new Error('Git hash command returned no results in working directory (cliWd) path.');
         }
       }
 
@@ -475,7 +471,7 @@ class WorkflowService extends RestService implements Enhancer {
   private getAccessUrl(): string {
     const access = config.get('cliAccess');
 
-    if (access == 'direct') {
+    if (access === 'direct') {
       return config.get('cliDirectUrl');
     }
 
