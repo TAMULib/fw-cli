@@ -142,7 +142,10 @@ program
         if (property) {
           const path = `${CONF_DIR}/${property}.conf`;
           const conf = JSON.parse(fileService.read(path));
+
+          config.clear();
           config.set(conf);
+
           console.log(`loaded config from ${path}`);
           console.log(JSON.stringify(config.store, null, 2));
         } else {
