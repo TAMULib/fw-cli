@@ -39,7 +39,8 @@ server.post('/authn/login-with-expiry', function (req, res) {
   console.log(req.headers);
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('X-Okapi-Token', 'TOKEN');
-  res.setHeader('set-cookie', [ {
+  res.setHeader('set-cookie', [
+    {
       folioAccessToken: 'TOKEN',
       'Max-Age': '86400',
       Expires: oneDay.getUTCDate(),
@@ -57,7 +58,7 @@ server.post('/authn/login-with-expiry', function (req, res) {
       HTTPOnly: true,
       SameSite: 'Lax'
     }
-  );
+  ]);
   res.send({});
 });
 

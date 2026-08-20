@@ -72,5 +72,5 @@ This functionality is not enabled by default and requires the `-g` or `--git` pa
 Provides mock `/authn/login-with-expiry` and `/user-import`.
 
 ```
-yarn okapi
+yarn gateway
 ```
