@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2024-2025 Texas A&M University Libraries
+  Copyright (C) 2024-2026 Texas A&M University Libraries
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -14,7 +14,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-const child_process = require('node:child_process');
+const childProcess = require('node:child_process');
 const process = require('node:process');
 
 import sha256 from 'crypto-js/sha256';
@@ -34,12 +34,11 @@ class WorkflowService extends RestService implements Enhancer {
   /**
    * Use SHA256 in such a way that it matches what can be reproduced through manual hashing.
    *
-   * This excludes the token data from the checksum.
-   * This excludes the wording directory data 'wd' and user id 'userId'from the checksum.
+   * This excludes all **CLI** specific variables.
    *
    * This should produce an identical hash to the command:
    *   ```sh
-   *   jq -cM 'del(.token, .accessToken, .refreshToken, .userId, .wd)' config.json | sha256sum
+   *   jq --sort-keys -cM 'del(.cliAccess, .cliDirectUrl, .cliFolioLoginPath, .cliFolioPass, .cliFolioTenant, .cliFolioToken, .cliFolioUser, .cliGatewayUrl, .cliWd)' config.json | sha256sum
    *   ```
    * Where `config.json` is the configuration file.
    *
@@ -48,33 +47,42 @@ class WorkflowService extends RestService implements Enhancer {
    * @return The configration hash string.
    */
   public checksum(): string {
-    const data = config.store;
+    const toDelete = [
+      'cliAccess',
+      'cliDirectUrl',
+      'cliFolioLoginPath',
+      'cliFolioPass',
+      'cliFolioTenant',
+      'cliFolioUser',
+      'cliGatewayUrl',
+      'cliWd`'
+    ];
 
-    delete data?.token;
-    delete data?.accessToken;
-    delete data?.refreshToken;
-    delete data?.userId;
-    delete data?.wd;
-
-    const json = JSON.stringify(data) + '\n';
+    const json = JSON.stringify(
+      Object.fromEntries(
+        Object.entries(config.store)
+          .filter(([key]) => !toDelete.includes(key))
+          .sort(([left], [right]) => left.localeCompare(right))
+      )
+    ) + '\n';
 
     return sha256(json).toString();
   }
 
   public createTrigger(extractor: any): Promise<any> {
-    return this.post(`${this.getAccess()}/triggers`, extractor);
+    return this.post(`${this.getAccessUrl()}/triggers`, extractor);
   }
 
   public createNode(node: any): Promise<any> {
-    return this.post(`${this.getAccess()}/nodes`, node);
+    return this.post(`${this.getAccessUrl()}/nodes`, node);
   }
 
   public createWorkflow(workflow: any): Promise<any> {
-    return this.post(`${this.getAccess()}/workflows`, workflow);
+    return this.post(`${this.getAccessUrl()}/workflows`, workflow);
   }
 
   public list(): string[] {
-    const path = `${config.get('wd')}`;
+    const path = this.getWd();
 
     if (fileService.exists(path)) {
       return fileService.listDirectories(path);
@@ -86,7 +94,7 @@ class WorkflowService extends RestService implements Enhancer {
   }
 
   public scaffold(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}`;
+    const path = `${this.getWd()}${name}`;
     if (fileService.exists(path)) {
       process.exitCode = 2;
 
@@ -106,8 +114,12 @@ class WorkflowService extends RestService implements Enhancer {
     return Promise.resolve(`new workflow ${name} scaffold created`);
   }
 
-  public build(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}`;
+  public build(name: string, header: boolean = false): Promise<any> {
+    const path = `${this.getWd()}${name}`;
+
+    if (header) {
+      console.log(`\nBuilding Workflow ${name}:`);
+    }
 
     if (fileService.exists(path)) {
       const workflow = [
@@ -136,14 +148,18 @@ class WorkflowService extends RestService implements Enhancer {
     return Promise.reject(`Error: Cannot find workflow at ${path}.`);
   }
 
-  public activate(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}`;
+  public activate(name: string, header: boolean = false): Promise<any> {
+    const path = `${this.getWd()}${name}`;
+
+    if (header) {
+      console.log(`\nActivating Workflow ${name}:`);
+    }
 
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
 
-      return this.put(`${this.getAccess()}/workflows/${workflow.id}/activate`, {});
+      return this.put(`${this.getAccessUrl()}/workflows/${workflow.id}/activate`, {});
     }
 
     process.exitCode = 2;
@@ -152,13 +168,13 @@ class WorkflowService extends RestService implements Enhancer {
   }
 
   public deactivate(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}`;
+    const path = `${this.getWd()}${name}`;
 
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
 
-      return this.put(`${this.getAccess()}/workflows/${workflow.id}/deactivate`, {});
+      return this.put(`${this.getAccessUrl()}/workflows/${workflow.id}/deactivate`, {});
     }
 
     process.exitCode = 2;
@@ -166,14 +182,61 @@ class WorkflowService extends RestService implements Enhancer {
     return Promise.reject(`Error: Cannot find workflow at ${path}.`);
   }
 
-  public deleteWorkflow(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}`;
+  public deploy(name: string): Promise<any> {
+    const service = this;
+
+    return service.build(name, true)?.then((result) => {
+      // Ensure the build response is printed.
+      if (result) console.log(result);
+
+      return service.activate(name, true);
+    });
+  }
+
+  public redeploy(name: string): Promise<any> {
+    const service = this;
+
+    const buildActivate = () => {
+      return service.build(name, true)?.then((result) => {
+        // Ensure the build response is printed.
+        if (result) console.log(result);
+
+        return service.activate(name, true);
+      });
+    }
+
+    return service.deleteWorkflow(name, true)?.then((result) => {
+      // Ensure the delete response is printed.
+      if (result) console.log(result);
+
+      return buildActivate();
+    }).catch(error => {
+      if (error?.http?.code === 404) {
+        console.log(error);
+        console.log(`\nWorkflow ${name} does not exist, continuing on.`);
+
+        // Reset the console error to avoid incorrectly return with error code on success.
+        process.exitCode = 0;
+
+        return buildActivate();
+      }
+
+      return Promise.reject(error);
+    });
+  }
+
+  public deleteWorkflow(name: string, header: boolean = false): Promise<any> {
+    const path = `${this.getWd()}${name}`;
+
+    if (header) {
+      console.log(`\nDeleting Workflow ${name}:`);
+    }
 
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
 
-      return this.delete(`${this.getAccess()}/workflows/${workflow.id}/delete`);
+      return this.delete(`${this.getAccessUrl()}/workflows/${workflow.id}/delete`);
     }
 
     process.exitCode = 2;
@@ -182,13 +245,13 @@ class WorkflowService extends RestService implements Enhancer {
   }
 
   public run(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}`;
+    const path = `${this.getWd()}${name}`;
 
     if (fileService.exists(path)) {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
 
-      return this.post(`${this.getAccess()}/workflows/${workflow.id}/start`, {});
+      return this.post(`${this.getAccessUrl()}/workflows/${workflow.id}/start`, {});
     }
 
     process.exitCode = 2;
@@ -222,14 +285,33 @@ class WorkflowService extends RestService implements Enhancer {
 
   public getGitHash() {
     const data = config?.store;
-    const wd = data?.wd;
+    const cliWd = data?.cliWd;
 
-    if (!wd) return false;
+    if (!cliWd) return false;
 
-    const command = "git rev-parse --short=12 HEAD";
-    const options = { "cwd": wd, encoding: 'utf8' };
+    const command = 'git rev-parse --short=12 HEAD';
+    const options = { 'cwd': cliWd, encoding: 'utf8' };
 
-    return child_process.execSync(command, options)?.trimEnd();
+    return childProcess.execSync(command, options)?.trimEnd();
+  }
+
+  /**
+   * Get the CLI working directory.
+   *
+   * This ensures a trailing slash always exists.
+   *
+   * @return The working directory with a trailing slash.
+   */
+  public getWd(): string {
+    let wd = config.get('cliWd');
+
+    if (typeof wd !== 'string') {
+      wd = '';
+    }
+
+    if (wd === '') return './';
+
+    return wd.replace(/\/*$/, '/');
   }
 
   private script(path: string, obj: any, prop: string): void {
@@ -259,7 +341,7 @@ class WorkflowService extends RestService implements Enhancer {
   }
 
   private setup(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}/setup.json`;
+    const path = `${this.getWd()}${name}/setup.json`;
 
     if (fileService.exists(path)) {
       const setup = JSON.parse(fileService.read(path));
@@ -274,7 +356,7 @@ class WorkflowService extends RestService implements Enhancer {
   }
 
   private createTriggers(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}/triggers`;
+    const path = `${this.getWd()}${name}/triggers`;
 
     if (fileService.exists(path)) {
       return fileService.readAll(path, '.json')
@@ -300,7 +382,7 @@ class WorkflowService extends RestService implements Enhancer {
   }
 
   private createNodes(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}/nodes`;
+    const path = `${this.getWd()}${name}/nodes`;
 
     if (fileService.exists(path)) {
       const nodes = fileService.readAll(path, '.json')
@@ -359,7 +441,7 @@ class WorkflowService extends RestService implements Enhancer {
   }
 
   private finalize(name: string): Promise<any> {
-    const path = `${config.get('wd')}/${name}/workflow.json`;
+    const path = `${this.getWd()}${name}/workflow.json`;
 
     if (fileService.exists(path)) {
       const json = fileService.read(path);
@@ -374,7 +456,7 @@ class WorkflowService extends RestService implements Enhancer {
         if (suffix) {
           parsed.versionTag += `-${suffix}`;
         } else {
-          throw new Error("Git hash command returned no results in working directory (wd) path.");
+          throw new Error('Git hash command returned no results in working directory (cliWd) path.');
         }
       }
 
@@ -386,10 +468,14 @@ class WorkflowService extends RestService implements Enhancer {
     return Promise.reject(`Error: Cannot find workflow.json at ${path}.`);
   }
 
-  private getAccess(): string {
-    const access = config.get('access');
+  private getAccessUrl(): string {
+    const access = config.get('cliAccess');
 
-    return config.get(access);
+    if (access === 'direct') {
+      return config.get('cliDirectUrl');
+    }
+
+    return config.get('cliGatewayUrl');
   }
 
 }

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2024-2025 Texas A&M University Libraries
+  Copyright (C) 2024-2026 Texas A&M University Libraries
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -16,23 +16,24 @@
 */
 const process = require('node:process');
 
+import { cache } from '../cache';
 import { config } from '../config';
 import { RestService } from './rest.service';
 
 class OkapiService extends RestService {
 
-  public login(username: string = config.get('username'), password: string = config.get('password')): Promise<any> {
-    config.delete('token');
-    config.delete('accessToken');
-    config.delete('refreshToken');
+  public login(username: string = config.get('cliFolioUser'), password: string = config.get('cliFolioPass')): Promise<any> {
+    cache.delete('cliFolioToken');
+    cache.delete('cliFolioAccessToken');
+    cache.delete('cliFolioRefreshToken');
 
     return new Promise((resolve, reject) => {
       this.request({
-        url: `${config.get('okapi')}${config.get('okapiLoginPath')}`,
+        url: `${config.get('cliGatewayUrl')}${config.get('cliFolioLoginPath')}`,
         json: { username, password },
         method: 'POST',
         headers: {
-          'X-Okapi-Tenant': config.get('tenant'),
+          'X-Okapi-Tenant': config.get('cliFolioTenant'),
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         }
@@ -70,11 +71,11 @@ class OkapiService extends RestService {
           // The `accessToken` and `refreshToken` provide complete objects to use on HTTP requests.
           // If the `refreshToken` is an empty Object, then this must be a non-RTR access, so `accessToken.folioAccessToken` represents the `X-Okapi-Token`.
           if (!!accessToken?.folioAccessToken) {
-            config.set('token', accessToken.folioAccessToken);
-            config.set('accessToken', accessToken);
+            cache.set('cliFolioToken', accessToken.folioAccessToken);
+            cache.set('cliFolioAccessToken', accessToken);
 
             if (!!refreshToken?.folioRefreshToken) {
-              config.set('refreshToken', refreshToken);
+              cache.set('cliFolioRefreshToken', refreshToken);
             }
 
             resolve({
@@ -99,8 +100,8 @@ class OkapiService extends RestService {
     });
   }
 
-  public getUser(username: string = config.get('username')): Promise<any> {
-    const url = `${config.get('okapi')}/users?query=username==${username}`;
+  public getUser(username: string = config.get('cliFolioUser')): Promise<any> {
+    const url = `${config.get('cliGatewayUrl')}/users?query=username==${username}`;
 
     return new Promise((resolve, reject) => {
       this.request({
@@ -109,7 +110,7 @@ class OkapiService extends RestService {
         headers: {
           'Accept': ['application/json', 'text/plain'],
           'Content-Type': 'application/json',
-          'X-Okapi-Tenant': config.get('tenant'),
+          'X-Okapi-Tenant': config.get('cliFolioTenant'),
           ...this.buildAccessHeaders(),
         }
       }, (error: any, resp: any, body: any) => {
@@ -118,7 +119,7 @@ class OkapiService extends RestService {
 
           if (users?.length > 0) {
             const user = users[0]
-            config.set('userId', user.id);
+            cache.set('cliUserId', user.id);
 
             resolve(user);
           } else {
@@ -133,7 +134,7 @@ class OkapiService extends RestService {
 
   public createReferenceData(request: { path: string, config?: string, data: any[] }): Promise<any> {
     return request.data.map((data: any) => {
-      return () => this.post(`${config.get('okapi')}/${request.path}`, data);
+      return () => this.post(`${config.get('cliGatewayUrl')}/${request.path}`, data);
     }).reduce((chain, callback) => {
       return chain.then(() =>
         callback().then(response => {
@@ -152,7 +153,7 @@ class OkapiService extends RestService {
     return request.data.map((data: any) => {
       return () => {
         const id = request.config ? config.get(request.config) : data.id;
-        return this.delete(`${config.get('okapi')}/${request.path}/${id}`);
+        return this.delete(`${config.get('cliGatewayUrl')}/${request.path}/${id}`);
       };
     }).reduce((chain, callback) => {
       return chain.then(() =>
@@ -169,12 +170,12 @@ class OkapiService extends RestService {
   }
 
   public getDiscoveryModules(): Promise<any> {
-    return this.get(`${config.get('okapi')}/_/discovery/modules`);
+    return this.get(`${config.get('cliGatewayUrl')}/_/discovery/modules`);
   }
 
   public getDiscoveryModuleURL(name: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      this.get(`${config.get('okapi')}/_/discovery/modules`).then((modules: any[]) => {
+      this.get(`${config.get('cliGatewayUrl')}/_/discovery/modules`).then((modules: any[]) => {
         for (const module of modules) {
           if (module.srvcId.startsWith(name) || module.srvcId.startsWith(`mod-${name}`)) {
             resolve(module.url);
@@ -200,7 +201,7 @@ class OkapiService extends RestService {
    */
   protected loginError(user: string, reject: any, body: any, resp?: any) {
     this.serviceError(`Login failed for user '${user}'.`,
-      `${config.get('okapi')}${config.get('okapiLoginPath')}`,
+      `${config.get('cliGatewayUrl')}${config.get('cliFolioLoginPath')}`,
       reject,
       body,
       null,
@@ -236,4 +237,4 @@ class OkapiService extends RestService {
 
 }
 
-export const okapi = new OkapiService();
+export const gateway = new OkapiService();

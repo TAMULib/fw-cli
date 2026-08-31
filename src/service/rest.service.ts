@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2024-2025 Texas A&M University Libraries
+  Copyright (C) 2024-2026 Texas A&M University Libraries
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -17,6 +17,7 @@
 const process = require('node:process');
 const request = require('request');
 
+import { cache } from '../cache';
 import { config } from '../config';
 
 export class RestService {
@@ -28,14 +29,14 @@ export class RestService {
    */
   public buildAccessHeaders(): Record<string, any> {
     const auth: Record<string, any> = {};
-    const accessToken: Record<string, any> = config.get('accessToken');
-    const refreshToken: Record<string, any> = config.get('refreshToken');
+    const accessToken: Record<string, any> = cache.get('cliFolioAccessToken');
+    const refreshToken: Record<string, any> = cache.get('cliFolioRefreshToken');
 
     if (!refreshToken?.folioRefreshToken) {
       auth['X-Okapi-Token'] = accessToken?.folioAccessToken;
     } else {
       if (accessToken?.folioAccessToken) {
-        auth['Cookie'] = `folioAccessToken=${accessToken.folioAccessToken}`;
+        auth.Cookie = `folioAccessToken=${accessToken.folioAccessToken}`;
       }
     }
 
@@ -59,7 +60,7 @@ export class RestService {
         url,
         headers: {
           'Content-Type': contentType,
-          'X-Okapi-Tenant': config.get('tenant'),
+          'X-Okapi-Tenant': config.get('cliFolioTenant'),
           ...this.buildAccessHeaders(),
         }
       }, (error: any, resp?: any, body?: any) => {
@@ -79,7 +80,7 @@ export class RestService {
         json,
         headers: {
           'Content-Type': contentType,
-          'X-Okapi-Tenant': config.get('tenant'),
+          'X-Okapi-Tenant': config.get('cliFolioTenant'),
           ...this.buildAccessHeaders(),
         }
       }, (error: any, resp?: any, body?: any) => {
@@ -99,7 +100,7 @@ export class RestService {
         json,
         headers: {
           'Content-Type': contentType,
-          'X-Okapi-Tenant': config.get('tenant'),
+          'X-Okapi-Tenant': config.get('cliFolioTenant'),
           ...this.buildAccessHeaders(),
         }
       }, (error: any, resp: any, body?: any) => {
@@ -119,12 +120,12 @@ export class RestService {
         headers: {
           'Accept': accept,
           'Content-Type': contentType,
-          'X-Okapi-Tenant': config.get('tenant'),
+          'X-Okapi-Tenant': config.get('cliFolioTenant'),
           ...this.buildAccessHeaders(),
         }
       }, (error: any, resp?: any, body?: any) => {
         if (!!resp && resp?.statusCode >= 200 && resp?.statusCode <= 299) {
-          console.log('Delete succeeded.', url);
+          console.log('Delete succeeded.\n', url);
           resolve(body);
         } else {
           this.serviceError('Error: Failed to DELETE.', url, reject, body, error, resp);
@@ -159,7 +160,7 @@ export class RestService {
       },
       error: !!error
         ? error
-        : contentType == 'application/json' && typeof body == 'string'
+        : contentType === 'application/json' && typeof body === 'string'
           ? JSON.parse(body)
           : body,
     });

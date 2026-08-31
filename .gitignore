@@ -71,4 +71,6 @@ package-lock.json
 *.sh
 *.md
 
+fw-registry
+
 !README.md

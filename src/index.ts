@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /*
-  Copyright (C) 2024-2025 Texas A&M University Libraries
+  Copyright (C) 2024-2026 Texas A&M University Libraries
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -17,14 +17,14 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-const pkg = require('../package.json');
 const chalk = require('chalk');
 const clear = require('clear');
 const figlet = require('figlet');
 const process = require('node:process');
 const program = require('commander');
 
-import { okapi } from './service/okapi.service';
+import { gateway } from './service/gateway.service';
+import { cache } from './cache';
 import { config } from './config';
 import { modWorkflow } from './service/workflow.service';
 import { fileService } from './service/file.service';
@@ -42,7 +42,7 @@ if (!fileService.exists(CONF_DIR)) {
  * @param value The string or object to log to the console.
  */
 function logConsole(value: any) {
-  if (typeof value == 'string') {
+  if (typeof value === 'string') {
     console.log(value);
   } else {
     console.dir(value, { depth: null, colors: true });
@@ -50,14 +50,18 @@ function logConsole(value: any) {
 }
 
 program
-  .version(pkg.version)
+  .version('1.1.0')
   .usage('[options]')
   .allowUnknownOption(false)
   .option('-c, --config', 'show current configuration', () => {
     console.log(JSON.stringify(config.store, null, 2));
     process.exit();
   })
-  .option('-g, --git', 'attempt to append the git hash to the Workflow version during build from within the wd directory.', () => {
+  .option('-C, --cache', 'show current cache', () => {
+    console.log(JSON.stringify(cache.store, null, 2));
+    process.exit();
+  })
+  .option('-g, --git', 'attempt to append the git hash to the Workflow version during build from within the cliWd directory.', () => {
     modWorkflow.enableGitHash();
   })
   .option('-S, --checksum', 'print checksum of current workflow configuration (verify via: jq -cM . config.json | sha256sum).', () => {
@@ -138,7 +142,10 @@ program
         if (property) {
           const path = `${CONF_DIR}/${property}.conf`;
           const conf = JSON.parse(fileService.read(path));
+
+          config.clear();
           config.set(conf);
+
           console.log(`loaded config from ${path}`);
           console.log(JSON.stringify(config.store, null, 2));
         } else {
@@ -153,19 +160,36 @@ program
   });
 
 program
+  .command('cache <action>')
+  .description('Manage cache, actions: clear.')
+  .action((action: 'clear', property?: string, value?: string) => {
+    switch (action) {
+      case 'clear':
+        cache.clear();
+        break;
+      default:
+        console.log(`Error: ${action} not a valid action <clear>.`);
+
+        process.exit(1);
+    }
+  });
+
+program
   .command('login [username] [password]')
   .description('Login to acquire authentication tokens.')
   .action((username?: string, password?: string) => {
-    okapi.login(username, password).then(logConsole, logConsole);
+    gateway.login(username, password).then(logConsole, logConsole);
   });
 
 program
   .command('logout')
   .description('Logout to remove authentication tokens.')
   .action(() => {
-    config.delete('token');
-    config.delete('accessToken');
-    config.delete('refreshToken');
+    cache.delete('cliFolioAccessToken');
+    cache.delete('cliFolioRefreshToken');
+    cache.delete('cliFolioToken');
+    cache.delete('cliUserId');
+
     console.log('success');
   });
 
@@ -173,14 +197,14 @@ program
   .command('user [username]')
   .description('Lookup user.')
   .action((username?: string) => {
-    okapi.getUser(username).then(logConsole, logConsole);
+    gateway.getUser(username).then(logConsole, logConsole);
   });
 
 program
   .command('lookup <module>')
   .description('Lookup module, matching name starting with.')
   .action((name: string) => {
-    okapi.getDiscoveryModuleURL(name).then(logConsole, logConsole);
+    gateway.getDiscoveryModuleURL(name).then(logConsole, logConsole);
   });
 
 program
@@ -194,7 +218,7 @@ program
   .command('add <workflow> <type> <name>')
   .description('Add new processor with name to an existing workflow.')
   .action((workflow: string, type: 'processor', name: string) => {
-    const workflowPath = `${config.get('wd')}/${workflow}`;
+    const workflowPath = `${modWorkflow.getWd()}${workflow}`;
 
     if (fileService.exists(workflowPath)) {
       switch (type) {
@@ -233,6 +257,20 @@ program
   .description('Deactivate workflow by name.')
   .action((name: string) => {
     modWorkflow.deactivate(name).then(logConsole, logConsole);
+  });
+
+program
+  .command('deploy <name>')
+  .description('Build and activate workflow by name.')
+  .action((name: string) => {
+    modWorkflow.deploy(name).then(logConsole, logConsole);
+  });
+
+program
+  .command('redeploy <name>')
+  .description('Delete, build, and activate workflow by name.')
+  .action((name: string) => {
+    modWorkflow.redeploy(name).then(logConsole, logConsole);
   });
 
 program

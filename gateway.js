@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2024-2025 Texas A&M University Libraries
+  Copyright (C) 2024-2026 Texas A&M University Libraries
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as published by
@@ -39,7 +39,8 @@ server.post('/authn/login-with-expiry', function (req, res) {
   console.log(req.headers);
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('X-Okapi-Token', 'TOKEN');
-  res.setHeader('set-cookie', [ {
+  res.setHeader('set-cookie', [
+    {
       folioAccessToken: 'TOKEN',
       'Max-Age': '86400',
       Expires: oneDay.getUTCDate(),
@@ -57,7 +58,7 @@ server.post('/authn/login-with-expiry', function (req, res) {
       HTTPOnly: true,
       SameSite: 'Lax'
     }
-  );
+  ]);
   res.send({});
 });
 
@@ -69,5 +70,5 @@ server.post('/user-import', function (req, res) {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`Mock Okapi server listening on http://${HOST}:${PORT}${BASE_HREF}`);
+  console.log(`Mock Gateway server listening on http://${HOST}:${PORT}${BASE_HREF}`);
 });
