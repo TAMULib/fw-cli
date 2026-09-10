@@ -193,6 +193,23 @@ class WorkflowService extends RestService implements Enhancer {
     });
   }
 
+  public history(name: string): Promise<any> {
+    const path = `${this.getWd()}${name}`;
+
+    console.log(`\nFetching History for Workflow ${name}:`);
+
+    if (fileService.exists(path)) {
+      const json = fileService.read(`${path}/workflow.json`);
+      const workflow = JSON.parse(templateService.template(json));
+
+      return this.get(`${this.getAccessUrl()}/workflows/${workflow.id}/history`);
+    }
+
+    process.exitCode = 2;
+
+    return Promise.reject(`Error: Cannot find workflow at ${path}.`);
+  }
+
   public redeploy(name: string): Promise<any> {
     const service = this;
 
