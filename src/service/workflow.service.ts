@@ -202,20 +202,7 @@ class WorkflowService extends RestService implements Enhancer {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
 
-      return this.get(`${this.getAccessUrl()}/workflows/${workflow.id}/history`)?.then((result) => {
-        return Promise.resolve(result);
-      }).catch(error => {
-        if (error?.http?.code === 404) {
-          process.exitCode = 2;
-          const data = error?.error;
-
-          if (!!data) {
-            return Promise.reject(JSON.parse(data));
-          }
-        }
-
-        return Promise.reject(error);
-      });
+      return this.get(`${this.getAccessUrl()}/workflows/${workflow.id}/history`);
     }
 
     process.exitCode = 2;
