@@ -267,6 +267,13 @@ program
   });
 
 program
+  .command('history <name>')
+  .description('Get history of workflow by name.')
+  .action((name: string) => {
+    modWorkflow.history(name).then(logConsole, logConsole);
+  });
+
+program
   .command('redeploy <name>')
   .description('Delete, build, and activate workflow by name.')
   .action((name: string) => {
