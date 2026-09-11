@@ -22,22 +22,42 @@ import { RestService } from './rest.service';
 
 class OkapiService extends RestService {
 
-  public login(username: string = config.get('cliFolioUser'), password: string = config.get('cliFolioPass')): Promise<any> {
-    cache.delete('cliFolioToken');
-    cache.delete('cliFolioAccessToken');
-    cache.delete('cliFolioRefreshToken');
+  public login(username: string = config.get('cliFolioUser'), password: string = config.get('cliFolioPass'), doRefresh: boolean = false): Promise<any> {
+
+    const loginPath = doRefresh ? config.get('cliFolioRefreshPath') : config.get('cliFolioLoginPath');
+
+    const data = {
+      url: `${config.get('cliGatewayUrl')}${loginPath}`,
+      method: 'POST',
+      headers: {
+        'X-Okapi-Tenant': config.get('cliFolioTenant'),
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      json: {},
+    };
+
+    if (!doRefresh) {
+      cache.delete('cliFolioToken');
+      cache.delete('cliFolioAccessToken');
+      cache.delete('cliFolioRefreshToken');
+
+      data.json = { username, password };
+    } else {
+      const refreshToken: Record<string, any> = cache.get('cliFolioRefreshToken');
+
+      data.json = {
+        //tokenTransport: 'body',
+        refreshToken: refreshToken.folioRefreshToken,
+      };
+
+      console.log("DEBUG: doing refresh, data=", data);
+    }
 
     return new Promise((resolve, reject) => {
-      this.request({
-        url: `${config.get('cliGatewayUrl')}${config.get('cliFolioLoginPath')}`,
-        json: { username, password },
-        method: 'POST',
-        headers: {
-          'X-Okapi-Tenant': config.get('cliFolioTenant'),
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      }, (error: any, resp: any, body: any) => {
+      this.request(data, (error: any, resp: any, body: any) => {
+        console.log("DEBUG: got login response", resp?.statusCode);
+
         if (resp?.statusCode >= 200 && resp?.statusCode <= 299) {
           const matchAccess = /folioAccessToken=([^;\s]*)/i;
           const matchRefresh = /folioRefreshToken=([^;\s]*)/i;
@@ -78,6 +98,8 @@ class OkapiService extends RestService {
               cache.set('cliFolioRefreshToken', refreshToken);
             }
 
+            console.log("DEBUG: accessToken is now ", accessToken);
+
             resolve({
               status: `Login succeeded for user '${username}'.`,
               http: {
@@ -97,6 +119,46 @@ class OkapiService extends RestService {
           this.loginError(username, reject, body, resp);
         }
       });
+    });
+  }
+
+  /**
+   * Helper function for conditionally re-logging in as needed before executing request.
+   *
+   * This checks the expires timestamp to determine if re-logging in is needed.
+   * The request parameter is always executed, except on re-login failure.
+   *
+   * @param {callback} request - The request callback.
+   *
+   * @return {Promise<Object>} - The request promise to resolve or reject after conditionally re-logging in.
+   */
+  public async autoRefresh(request: Function): Promise<any> {
+
+    return new Promise((resolve, reject) => {
+      const cliAutoRefresh = config.get('cliAutoRefresh');
+
+      if (cliAutoRefresh) {
+        const accessToken: Record<string, any> = cache.get('cliFolioAccessToken');
+        const refreshToken: Record<string, any> = cache.get('cliFolioRefreshToken');
+
+        if (accessToken?.Expires) {
+          const expires = Date.parse(accessToken?.Expires);
+
+          console.log("DEBUG: autorefresh?", Date.now(), expires, Date.now() >= expires);
+
+          if (!!expires && Date.now() >= expires) {
+            this.login(undefined, undefined, true)
+              .then(request(resolve, reject), (e) => {
+                reject(e);
+              })
+              .catch((e) => {
+                reject(e);
+              });
+          }
+        }
+      }
+
+      return request(resolve, reject);
     });
   }
 

@@ -19,6 +19,7 @@ const request = require('request');
 
 import { cache } from '../cache';
 import { config } from '../config';
+import { gateway } from './gateway.service';
 
 export class RestService {
 
@@ -55,7 +56,7 @@ export class RestService {
   }
 
   public get(url: string, contentType: string = 'application/json'): Promise<any> {
-    return new Promise((resolve, reject) => {
+    return gateway.autoRefresh((resolve: (value: any) => void, reject: (reason?: any) => void) => {
       request.get({
         url,
         headers: {
@@ -74,7 +75,7 @@ export class RestService {
   }
 
   public post(url: string, json: any, contentType: string = 'application/json'): Promise<any> {
-    return new Promise((resolve, reject) => {
+    return gateway.autoRefresh((resolve: (value: any) => void, reject: (reason?: any) => void) => {
       request.post({
         url,
         json,
@@ -94,7 +95,7 @@ export class RestService {
   }
 
   public put(url: string, json: any, contentType: string = 'application/json'): Promise<any> {
-    return new Promise((resolve, reject) => {
+    return gateway.autoRefresh((resolve: (value: any) => void, reject: (reason?: any) => void) => {
       request.put({
         url,
         json,
@@ -114,7 +115,7 @@ export class RestService {
   }
 
   public delete(url: string, contentType: string = 'application/json', accept: string = 'text/plain'): Promise<any> {
-    return new Promise((resolve, reject) => {
+    return gateway.autoRefresh((resolve: (value: any) => void, reject: (reason?: any) => void) => {
       const req = request.delete({
         url,
         headers: {
