@@ -19,19 +19,21 @@ fw
 
 These are some configuration settings with special meaning that are managed directly by `fw-cli`.
 
-| Setting             | Description
-| ------------------- | -----------
-| `cliAccess`         | For CLI only; Used to toggle between the `gateway` **URL** and the `direct` **URL** (`direct` is generally a local `mod-workflow` instance).
-| `cliDirectUrl`      | For CLI only; The **URL** to use when `cliAccess` is set to `direct`.
-| `cliFolioLoginPath` | For CLI only; The login path to use (`/authn/login-with-expiry`).
-| `cliFolioPass`      | For CLI only; The pass to use for logging into the gateway.
-| `cliFolioTenant`    | For CLI only; The `tenant` to use for logging into or interacting with the gateway.
-| `cliFolioUser`      | For CLI only; The user name to use for logging into the gateway.
-| `cliGatewayUrl`     | For CLI only; The **URL** to use when `cliAccess` is set to `gateway`.
-| `cliWd`             | For CLI only; The working directory that contains the `fw-registry` files (usually either `./fw-registry/` or `./fw-registry/examples`.
-| `folioPass`         | (deprecated, use **FolioRequestTask** instead of **RequestTask** and this is not needed) The pass to use for logging into the gateway in a built node.
-| `folioUser`         | (deprecated, use **FolioRequestTask** instead of **RequestTask** and this is not needed) The user name to use for logging into the gateway in a built node.
-| `gatewayUrl`        | The gateway **URL** that gets embedded into each built node.
+| Setting               | Description
+| --------------------- | -----------
+| `cliAccess`           | For CLI only; Used to toggle between the `gateway` **URL** and the `direct` **URL** (`direct` is generally a local `mod-workflow` instance).
+| `cliAutoRefresh`      | For CLI only; Used to enable/disable attempting to auto-refresh a logged in account if the refresh token exists when necessary.
+| `cliDirectUrl`        | For CLI only; The **URL** to use when `cliAccess` is set to `direct`.
+| `cliFolioLoginPath`   | For CLI only; The login path to use (`/authn/login-with-expiry`).
+| `cliFolioPass`        | For CLI only; The pass to use for logging into the gateway.
+| `cliFolioRefreshPath` | For CLI only; The login path to use (`/authn/refresh`).
+| `cliFolioTenant`      | For CLI only; The `tenant` to use for logging into or interacting with the gateway.
+| `cliFolioUser`        | For CLI only; The user name to use for logging into the gateway.
+| `cliGatewayUrl`       | For CLI only; The **URL** to use when `cliAccess` is set to `gateway`.
+| `cliWd`               | For CLI only; The working directory that contains the `fw-registry` files (usually either `./fw-registry/` or `./fw-registry/examples`.
+| `folioPass`           | (deprecated, use **FolioRequestTask** instead of **RequestTask** and this is not needed) The pass to use for logging into the gateway in a built node.
+| `folioUser`           | (deprecated, use **FolioRequestTask** instead of **RequestTask** and this is not needed) The user name to use for logging into the gateway in a built node.
+| `gatewayUrl`          | The gateway **URL** that gets embedded into each built node.
 
 
 The following are now `cache` rather than `config`.
@@ -54,16 +56,14 @@ The current configuration checksum may be printed using the `-S` or `--checksum`
 
 The following configuration fields are excluded when building the checksum:
   - `cliAccess`
+  - `cliAutoRefresh`
   - `cliDirectUrl`
-  - `cliFolioAccessToken`
   - `cliFolioLoginPath`
   - `cliFolioPass`
-  - `cliFolioRefreshToken`
+  - `cliFolioRefreshPath`
   - `cliFolioTenant`
-  - `cliFolioToken`
   - `cliFolioUser`
   - `cliGatewayUrl`
-  - `cliUserId`
   - `cliWd`
 
 

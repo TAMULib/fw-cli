@@ -38,7 +38,7 @@ class WorkflowService extends RestService implements Enhancer {
    *
    * This should produce an identical hash to the command:
    *   ```sh
-   *   jq --sort-keys -cM 'del(.cliAccess, .cliDirectUrl, .cliFolioLoginPath, .cliFolioPass, .cliFolioTenant, .cliFolioToken, .cliFolioUser, .cliGatewayUrl, .cliWd)' config.json | sha256sum
+   *   jq --sort-keys -cM 'del(.cliAccess, .cliAutoRefresh, .cliDirectUrl, .cliFolioLoginPath, .cliFolioPass, .cliFolioRefreshPath, .cliFolioTenant, .cliFolioUser, .cliGatewayUrl, .cliWd)' config.json | sha256sum
    *   ```
    * Where `config.json` is the configuration file.
    *
@@ -49,13 +49,15 @@ class WorkflowService extends RestService implements Enhancer {
   public checksum(): string {
     const toDelete = [
       'cliAccess',
+      'cliAutoRefresh',
       'cliDirectUrl',
       'cliFolioLoginPath',
       'cliFolioPass',
+      'cliFolioRefreshPath',
       'cliFolioTenant',
       'cliFolioUser',
       'cliGatewayUrl',
-      'cliWd`'
+      'cliWd',
     ];
 
     const json = JSON.stringify(
