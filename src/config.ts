@@ -22,6 +22,10 @@ const schema = {
     enum: ['gateway', 'direct'],
     default: 'gateway',
   },
+  cliAutoRefresh: {
+    type: 'boolean',
+    default: true,
+  },
   cliDirectUrl: {
     type: 'string',
     default: 'http://localhost:9001',
@@ -33,6 +37,10 @@ const schema = {
   cliFolioPass: {
     type: 'string',
     default: 'admin',
+  },
+  cliFolioRefreshPath: {
+    type: 'string',
+    default: '/authn/refresh',
   },
   cliFolioTenant: {
     type: 'string',
