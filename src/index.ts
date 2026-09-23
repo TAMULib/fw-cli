@@ -141,12 +141,12 @@ program
       case 'load':
         if (property) {
           const path = `${CONF_DIR}/${property}`;
-          const extensions = ['.json', '.conf'];
+          const extensions = [ '.json', '.conf' ];
 
           let conf;
           let loadedExt = '';
           for (const ext of extensions) {
-            const filePath = path+ext;
+            const filePath = path + ext;
             if (fileService.exists(filePath)) {
               conf = JSON.parse(fileService.read(filePath));
               loadedExt = ext;
@@ -166,7 +166,7 @@ program
           console.log(JSON.stringify(config.store, null, 2));
 
           if (loadedExt !== '.json') {
-            console.log(`The ${path+loadedExt} file name is deprecated, please rename your configuration file to ${path}.json.`);
+            console.log(`The ${path + loadedExt} file name is deprecated, please rename your configuration file to ${path}.json.`);
           }
 
         } else {
