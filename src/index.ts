@@ -142,12 +142,11 @@ program
         if (property) {
           const path = `${CONF_DIR}/${property}`;
           const primaryExtension = '.json';
-          const otherExtensions = [ '.conf' ];
-          const allExtensions = [primaryExtension].concat(otherExtensions);
+          const extensions = [ primaryExtension, '.conf' ];
 
           let conf;
           let loadedExt = '';
-          for (const ext of allExtensions) {
+          for (const ext of extensions) {
             const filePath = path + ext;
             if (fileService.exists(filePath)) {
               conf = JSON.parse(fileService.read(filePath));
