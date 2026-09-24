@@ -141,11 +141,13 @@ program
       case 'load':
         if (property) {
           const path = `${CONF_DIR}/${property}`;
-          const extensions = [ '.json', '.conf' ];
+          const primaryExtension = '.json';
+          const otherExtensions = [ '.conf' ];
+          const allExtensions = [primaryExtension].concat(otherExtensions);
 
           let conf;
           let loadedExt = '';
-          for (const ext of extensions) {
+          for (const ext of allExtensions) {
             const filePath = path + ext;
             if (fileService.exists(filePath)) {
               conf = JSON.parse(fileService.read(filePath));
@@ -155,7 +157,7 @@ program
           }
 
           if (loadedExt === '') {
-            console.error(`Error: File not found: ${path}.json`);
+            console.error(`Error: File not found: ${path + primaryExtension}`);
             process.exit(1);
           }
 
@@ -165,8 +167,8 @@ program
           console.log(`loaded config from ${path}`);
           console.log(JSON.stringify(config.store, null, 2));
 
-          if (loadedExt !== '.json') {
-            console.log(`The ${path + loadedExt} file name is deprecated, please rename your configuration file to ${path}.json.`);
+          if (loadedExt !== primaryExtension) {
+            console.log(`The ${path + loadedExt} file name is deprecated, please rename your configuration file to ${path + primaryExtension}.`);
           }
 
         } else {
