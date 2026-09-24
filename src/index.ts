@@ -130,7 +130,7 @@ program
         break;
       case 'save':
         if (property) {
-          const path = `${CONF_DIR}/${property}.conf`;
+          const path = `${CONF_DIR}/${property}.json`;
           fileService.save(path, config.store);
           console.log(`stored the following config to ${path}`);
           console.log(JSON.stringify(config.store, null, 2));
@@ -140,14 +140,27 @@ program
         break;
       case 'load':
         if (property) {
-          const path = `${CONF_DIR}/${property}.conf`;
-          const conf = JSON.parse(fileService.read(path));
+          const path = `${CONF_DIR}/${property}`;
+          const primaryExt = '.json';
+          const extensions = [ primaryExt, '.conf' ];
 
+          let loadedExt = extensions.find(ext => fileService.exists(path + ext));
+          if (loadedExt === undefined) {
+            console.error(`Error: File not found: ${path + primaryExt}`);
+            process.exit(1);
+          }
+
+          const conf = JSON.parse(fileService.read(path + loadedExt));
           config.clear();
           config.set(conf);
 
           console.log(`loaded config from ${path}`);
           console.log(JSON.stringify(config.store, null, 2));
+
+          if (loadedExt !== primaryExt) {
+            console.log(`The ${path + loadedExt} file name is deprecated, please rename your configuration file to ${path + primaryExt}.`);
+          }
+
         } else {
           console.log('config load requires name for the stored config');
         }
