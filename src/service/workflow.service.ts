@@ -78,23 +78,6 @@ class WorkflowService extends RestService implements Enhancer {
     return sha256(json).toString();
   }
 
-  /**
-   * Test a JSON identifier / key to determine if it is a designated custom identifier.
-   * 
-   * The practice being used to designate custom identifiers is to use non-word characters (other than `-`), similiar to the following example:
-   *  ```
-   *    "==FILE==": "EXAMPLE",
-   *  ```
-   * 
-   * @param key The JSON key to be tested.
-   * 
-   * @returns `true` if the key matches the expected practices of a custom identifier, `false` otherwise.
-   */
-  private customJsonIdentifier(key: string): boolean {
-    const customValidatorRegex = /[^\w-]/;
-    return customValidatorRegex.test(key);
-  }
-
   public createTrigger(extractor: any): Promise<any> {
     return this.post(`${this.getAccessUrl()}/triggers`, extractor);
   }
@@ -355,6 +338,23 @@ class WorkflowService extends RestService implements Enhancer {
     if (wd === '') return './';
 
     return wd.replace(/\/*$/, '/');
+  }
+
+  /**
+   * Test a JSON identifier / key to determine if it is a designated custom identifier.
+   * 
+   * The practice being used to designate custom identifiers is to use non-word characters (other than `-`), similiar to the following example:
+   *  ```
+   *    "==FILE==": "EXAMPLE",
+   *  ```
+   * 
+   * @param key The JSON key to be tested.
+   * 
+   * @returns `true` if the key matches the expected practices of a custom identifier, `false` otherwise.
+   */
+  private customJsonIdentifier(key: string): boolean {
+    const customValidatorRegex = /[^\w-]/;
+    return customValidatorRegex.test(key);
   }
 
   private script(path: string, obj: any, prop: string): void {
