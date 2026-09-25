@@ -34,11 +34,18 @@ class WorkflowService extends RestService implements Enhancer {
   /**
    * Use SHA256 in such a way that it matches what can be reproduced through manual hashing.
    *
-   * This excludes all **CLI** specific variables.
+   * This excludes all **CLI** specific variables as well as designated custom identifiers.
    *
    * This should produce an identical hash to the command:
    *   ```sh
-   *   jq --sort-keys -cM 'del(.cliAccess, .cliAutoRefresh, .cliDirectUrl, .cliFolioLoginPath, .cliFolioPass, .cliFolioRefreshPath, .cliFolioTenant, .cliFolioUser, .cliGatewayUrl, .cliWd)' config.json | sha256sum
+   *   jq --sort-keys -cM '
+   *     del(.cliAccess, .cliAutoRefresh, .cliDirectUrl, .cliFolioLoginPath, .cliFolioPass, .cliFolioRefreshPath, .cliFolioTenant, .cliFolioUser, .cliGatewayUrl, .cliWd)
+   *     | walk(if type == "object"
+   *     then with_entries(
+   *       select(.key | test("[^\\w-]") | not)
+   *     )
+   *     else . end
+   *   )' config.json | sha256sum
    *   ```
    * Where `config.json` is the configuration file.
    *
@@ -63,7 +70,7 @@ class WorkflowService extends RestService implements Enhancer {
     const json = JSON.stringify(
       Object.fromEntries(
         Object.entries(config.store)
-          .filter(([key]) => !toDelete.includes(key))
+          .filter(([key]) => !toDelete.includes(key) && !this.customJsonIdentifier(key))
           .sort(([left], [right]) => left.localeCompare(right))
       )
     ) + '\n';
@@ -331,6 +338,23 @@ class WorkflowService extends RestService implements Enhancer {
     if (wd === '') return './';
 
     return wd.replace(/\/*$/, '/');
+  }
+
+  /**
+   * Test a JSON identifier / key to determine if it is a designated custom identifier.
+   * 
+   * The practice being used to designate custom identifiers is to use non-word characters (other than `-`), similiar to the following example:
+   *  ```
+   *    "==FILE==": "EXAMPLE",
+   *  ```
+   * 
+   * @param key The JSON key to be tested.
+   * 
+   * @returns `true` if the key matches the expected practices of a custom identifier, `false` otherwise.
+   */
+  private customJsonIdentifier(key: string): boolean {
+    const customValidatorRegex = /[^\w-]/;
+    return customValidatorRegex.test(key);
   }
 
   private script(path: string, obj: any, prop: string): void {
