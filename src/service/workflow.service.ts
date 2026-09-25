@@ -75,8 +75,6 @@ class WorkflowService extends RestService implements Enhancer {
       )
     ) + '\n';
 
-    console.log(json);
-
     return sha256(json).toString();
   }
 
