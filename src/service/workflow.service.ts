@@ -40,10 +40,10 @@ class WorkflowService extends RestService implements Enhancer {
    *   ```sh
    *   jq --sort-keys -cM '
    *     del(.cliAccess, .cliAutoRefresh, .cliDirectUrl, .cliFolioLoginPath, .cliFolioPass, .cliFolioRefreshPath, .cliFolioTenant, .cliFolioUser, .cliGatewayUrl, .cliWd)
-   *     | walk(if type == "object" 
+   *     | walk(if type == "object"
    *     then with_entries(
    *       select(.key | test("[^\\w-]") | not)
-   *     ) 
+   *     )
    *     else . end
    *   )' config.json | sha256sum
    *   ```
