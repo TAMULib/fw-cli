@@ -38,7 +38,14 @@ class WorkflowService extends RestService implements Enhancer {
    *
    * This should produce an identical hash to the command:
    *   ```sh
-   *   jq --sort-keys -cM 'del(.cliAccess, .cliAutoRefresh, .cliDirectUrl, .cliFolioLoginPath, .cliFolioPass, .cliFolioRefreshPath, .cliFolioTenant, .cliFolioUser, .cliGatewayUrl, .cliWd)' config.json | sha256sum
+   *   jq --sort-keys -cM '
+   *     del(.cliAccess, .cliAutoRefresh, .cliDirectUrl, .cliFolioLoginPath, .cliFolioPass, .cliFolioRefreshPath, .cliFolioTenant, .cliFolioUser, .cliGatewayUrl, .cliWd)
+   *     | walk(if type == "object" 
+   *     then with_entries(
+   *       select(.key | test("[^\\w-]") | not)
+   *     ) 
+   *     else . end
+   *   )' config.json | sha256sum
    *   ```
    * Where `config.json` is the configuration file.
    *
