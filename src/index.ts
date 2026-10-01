@@ -280,10 +280,10 @@ program
   });
 
 program
-  .command('history <name>')
-  .description('Get history of workflow by name.')
-  .action((name: string) => {
-    modWorkflow.history(name).then(logConsole, logConsole);
+  .command('history <name> [keys...]')
+  .description('Get history of workflow by name with optional keys to limit results to.')
+  .action((name: string, keys = []) => {
+    modWorkflow.history(name, keys).then(logConsole, logConsole);
   });
 
 program
