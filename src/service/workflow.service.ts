@@ -202,7 +202,7 @@ class WorkflowService extends RestService implements Enhancer {
     });
   }
 
-  public history(name: string): Promise<any> {
+  public history(name: string, keys: string[]): Promise<any> {
     const path = `${this.getWd()}${name}`;
 
     console.log(`\nFetching History for Workflow ${name}:`);
@@ -211,7 +211,15 @@ class WorkflowService extends RestService implements Enhancer {
       const json = fileService.read(`${path}/workflow.json`);
       const workflow = JSON.parse(templateService.template(json));
 
-      return this.get(`${this.getAccessUrl()}/workflows/${workflow.id}/history`);
+      return this.get(`${this.getAccessUrl()}/workflows/${workflow.id}/history`)?.then((result) => {
+        if ((keys?.length || 0) > 0) {
+          return result?.map((data: any) =>
+            Object.fromEntries(keys.map(k => [ k, data[k] ]))
+          );
+        }
+
+        return result;
+      });
     }
 
     process.exitCode = 2;
@@ -342,14 +350,14 @@ class WorkflowService extends RestService implements Enhancer {
 
   /**
    * Test a JSON identifier / key to determine if it is a designated custom identifier.
-   * 
+   *
    * The practice being used to designate custom identifiers is to use non-word characters (other than `-`), similiar to the following example:
    *  ```
    *    "==FILE==": "EXAMPLE",
    *  ```
-   * 
+   *
    * @param key The JSON key to be tested.
-   * 
+   *
    * @returns `true` if the key matches the expected practices of a custom identifier, `false` otherwise.
    */
   private customJsonIdentifier(key: string): boolean {
