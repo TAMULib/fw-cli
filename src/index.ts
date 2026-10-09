@@ -50,7 +50,7 @@ function logConsole(value: any) {
 }
 
 program
-  .version('1.1.1')
+  .version('1.1.2-SNAPSHOT')
   .usage('[options]')
   .allowUnknownOption(false)
   .option('-c, --config', 'show current configuration', () => {
