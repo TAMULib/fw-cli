@@ -131,8 +131,9 @@ class OkapiService extends RestService {
 
     return new Promise((resolve, reject) => {
       const cliAutoRefresh = config.get('cliAutoRefresh');
+      const cliAccess = config.get('cliAccess');
 
-      if (cliAutoRefresh) {
+      if (cliAutoRefresh && cliAccess !== 'direct') {
         const accessToken: Record<string, any> = cache.get('cliFolioAccessToken');
         const refreshToken: Record<string, any> = cache.get('cliFolioRefreshToken');
 

@@ -65,6 +65,7 @@ The following configuration fields are excluded when building the checksum:
   - `cliFolioUser`
   - `cliGatewayUrl`
   - `cliWd`
+  - Identifier fields with non-word characters (excluding `-`).
 
 
 ### Git Hash Support

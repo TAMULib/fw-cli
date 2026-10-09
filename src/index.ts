@@ -50,7 +50,7 @@ function logConsole(value: any) {
 }
 
 program
-  .version('1.1.0')
+  .version('1.1.1-SNAPSHOT')
   .usage('[options]')
   .allowUnknownOption(false)
   .option('-c, --config', 'show current configuration', () => {
@@ -130,7 +130,7 @@ program
         break;
       case 'save':
         if (property) {
-          const path = `${CONF_DIR}/${property}.conf`;
+          const path = `${CONF_DIR}/${property}.json`;
           fileService.save(path, config.store);
           console.log(`stored the following config to ${path}`);
           console.log(JSON.stringify(config.store, null, 2));
@@ -140,14 +140,27 @@ program
         break;
       case 'load':
         if (property) {
-          const path = `${CONF_DIR}/${property}.conf`;
-          const conf = JSON.parse(fileService.read(path));
+          const path = `${CONF_DIR}/${property}`;
+          const primaryExt = '.json';
+          const extensions = [ primaryExt, '.conf' ];
 
+          let loadedExt = extensions.find(ext => fileService.exists(path + ext));
+          if (loadedExt === undefined) {
+            console.error(`Error: File not found: ${path + primaryExt}`);
+            process.exit(1);
+          }
+
+          const conf = JSON.parse(fileService.read(path + loadedExt));
           config.clear();
           config.set(conf);
 
           console.log(`loaded config from ${path}`);
           console.log(JSON.stringify(config.store, null, 2));
+
+          if (loadedExt !== primaryExt) {
+            console.log(`The ${path + loadedExt} file name is deprecated, please rename your configuration file to ${path + primaryExt}.`);
+          }
+
         } else {
           console.log('config load requires name for the stored config');
         }
@@ -267,10 +280,10 @@ program
   });
 
 program
-  .command('history <name>')
-  .description('Get history of workflow by name.')
-  .action((name: string) => {
-    modWorkflow.history(name).then(logConsole, logConsole);
+  .command('history <name> [keys...]')
+  .description('Get history of workflow by name with optional keys to limit results to.')
+  .action((name: string, keys = []) => {
+    modWorkflow.history(name, keys).then(logConsole, logConsole);
   });
 
 program
