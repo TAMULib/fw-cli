@@ -58,7 +58,7 @@ program
     process.exit();
   })
   .option('-C, --cache', 'show current cache', () => {
-    console.log(JSON.stringify(cache.store, null, 2));
+    console.log(JSON.stringify(sortConfig(cache), null, 2));
     process.exit();
   })
   .option('-g, --git', 'attempt to append the git hash to the Workflow version during build from within the cliWd directory.', () => {
