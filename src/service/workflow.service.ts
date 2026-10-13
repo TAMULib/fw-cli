@@ -17,12 +17,10 @@
 const childProcess = require('node:child_process');
 const process = require('node:process');
 
-import sha256 from 'crypto-js/sha256';
-
 import { RestService } from './rest.service';
 import { Enhancer } from './enhancer.interface';
 
-import { config } from '../config';
+import { config, configChecksum, privateConfigFields, sortConfig } from '../config';
 import { fileService } from './file.service';
 import { templateService } from './template.service';
 import { defaultService } from './default.service';
@@ -30,53 +28,6 @@ import { defaultService } from './default.service';
 class WorkflowService extends RestService implements Enhancer {
 
   private gitHashVersion = false;
-
-  /**
-   * Use SHA256 in such a way that it matches what can be reproduced through manual hashing.
-   *
-   * This excludes all **CLI** specific variables as well as designated custom identifiers.
-   *
-   * This should produce an identical hash to the command:
-   *   ```sh
-   *   jq --sort-keys -cM '
-   *     del(.cliAccess, .cliAutoRefresh, .cliDirectUrl, .cliFolioLoginPath, .cliFolioPass, .cliFolioRefreshPath, .cliFolioTenant, .cliFolioUser, .cliGatewayUrl, .cliWd)
-   *     | walk(if type == "object"
-   *     then with_entries(
-   *       select(.key | test("[^\\w-]") | not)
-   *     )
-   *     else . end
-   *   )' config.json | sha256sum
-   *   ```
-   * Where `config.json` is the configuration file.
-   *
-   * The trailing new line is necessary to produce a consistent valid hash in this manner.
-   *
-   * @return The configration hash string.
-   */
-  public checksum(): string {
-    const toDelete = [
-      'cliAccess',
-      'cliAutoRefresh',
-      'cliDirectUrl',
-      'cliFolioLoginPath',
-      'cliFolioPass',
-      'cliFolioRefreshPath',
-      'cliFolioTenant',
-      'cliFolioUser',
-      'cliGatewayUrl',
-      'cliWd',
-    ];
-
-    const json = JSON.stringify(
-      Object.fromEntries(
-        Object.entries(config.store)
-          .filter(([key]) => !toDelete.includes(key) && !this.customJsonIdentifier(key))
-          .sort(([left], [right]) => left.localeCompare(right))
-      )
-    ) + '\n';
-
-    return sha256(json).toString();
-  }
 
   public createTrigger(extractor: any): Promise<any> {
     return this.post(`${this.getAccessUrl()}/triggers`, extractor);
@@ -348,23 +299,6 @@ class WorkflowService extends RestService implements Enhancer {
     return wd.replace(/\/*$/, '/');
   }
 
-  /**
-   * Test a JSON identifier / key to determine if it is a designated custom identifier.
-   *
-   * The practice being used to designate custom identifiers is to use non-word characters (other than `-`), similiar to the following example:
-   *  ```
-   *    "==FILE==": "EXAMPLE",
-   *  ```
-   *
-   * @param key The JSON key to be tested.
-   *
-   * @returns `true` if the key matches the expected practices of a custom identifier, `false` otherwise.
-   */
-  private customJsonIdentifier(key: string): boolean {
-    const customValidatorRegex = /[^\w-]/;
-    return customValidatorRegex.test(key);
-  }
-
   private script(path: string, obj: any, prop: string): void {
     if (!!obj && !!obj.scriptFormat && typeof obj.scriptFormat === 'string') {
       let extension;
@@ -499,7 +433,7 @@ class WorkflowService extends RestService implements Enhancer {
       const workflow = templateService.template(json);
       const parsed = JSON.parse(workflow);
 
-      parsed.checksum = modWorkflow.checksum();
+      parsed.checksum = configChecksum();
 
       if (this.gitHashVersion) {
         const suffix = this.getGitHash();
