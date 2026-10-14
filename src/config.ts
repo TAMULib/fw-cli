@@ -119,7 +119,7 @@ const schema = {
  * @return The configration hash string.
  */
 export function configChecksum(): string {
-  const json = JSON.stringify(sortConfig(config, privateConfigFields)) + '\n';
+  const json = JSON.stringify(sortConfig(config?.store, privateConfigFields)) + '\n';
 
   return sha256(json).toString();
 }
@@ -144,13 +144,13 @@ function customJsonIdentifier(key: string): boolean {
 /**
  * Get the configuration as JSON, in a sorted manner.
  *
- * @param config    The configuration to sort.
+ * @param config    The configuration JSON to sort (not the config object, but instead config.store).
  * @param filterOut (optional) An array list of keys to filter out.
  *
  * @return a JSON Object representing the configuration.
  */
 export function sortConfig(config?: any, filterOut?: string[]): Object {
-  const sorted = Object.entries(config?.store)
+  const sorted = Object.entries(config)
     .sort(([left], [right]) => left.localeCompare(right))
 
   return Object.fromEntries(

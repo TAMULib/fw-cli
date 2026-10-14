@@ -20,7 +20,7 @@ const process = require('node:process');
 import { RestService } from './rest.service';
 import { Enhancer } from './enhancer.interface';
 
-import { config, configChecksum, privateConfigFields, sortConfig } from '../config';
+import { config, configChecksum } from '../config';
 import { fileService } from './file.service';
 import { templateService } from './template.service';
 import { defaultService } from './default.service';
@@ -269,8 +269,7 @@ class WorkflowService extends RestService implements Enhancer {
   }
 
   public getGitHash() {
-    const data = config?.store;
-    const cliWd = data?.cliWd;
+    const cliWd = config?.store?.cliWd;
 
     if (!cliWd) return false;
 

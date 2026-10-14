@@ -54,11 +54,11 @@ program
   .usage('[options]')
   .allowUnknownOption(false)
   .option('-c, --config', 'show current configuration', () => {
-    console.log(JSON.stringify(sortConfig(config), null, 2));
+    console.log(JSON.stringify(sortConfig(config?.store), null, 2));
     process.exit();
   })
   .option('-C, --cache', 'show current cache', () => {
-    console.log(JSON.stringify(sortConfig(cache), null, 2));
+    console.log(JSON.stringify(sortConfig(cache?.store), null, 2));
     process.exit();
   })
   .option('-g, --git', 'attempt to append the git hash to the Workflow version during build from within the cliWd directory.', () => {
@@ -117,7 +117,7 @@ program
         } else {
           config.clear();
           console.log('reset config to default');
-          console.log(JSON.stringify(config.store, null, 2));
+          console.log(JSON.stringify(sortConfig(config?.store), null, 2));
         }
         break;
       case 'delete':
@@ -131,7 +131,7 @@ program
       case 'save':
         if (property) {
           const path = `${CONF_DIR}/${property}.json`;
-          const sorted = sortConfig(config);
+          const sorted = sortConfig(config?.store);
 
           fileService.save(path, sorted);
           console.log(`stored the following config to ${path}`);
@@ -153,7 +153,7 @@ program
           }
 
           const conf = JSON.parse(fileService.read(path + loadedExt));
-          const sorted = sortConfig(config);
+          const sorted = sortConfig(conf);
           config.clear();
           config.set(sorted);
 

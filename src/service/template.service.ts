@@ -22,7 +22,7 @@ class TemplateService {
 
   public template(value: string, data: any = {}): any {
     const templateFn = handlebars.compile(value);
-    const store = JSON.parse(JSON.stringify(sortConfig(config, privateConfigFields)));
+    const store = JSON.parse(JSON.stringify(sortConfig(config?.store, privateConfigFields)));
 
     return templateFn(Object.assign(data, store));
   }
