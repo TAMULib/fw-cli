@@ -16,13 +16,13 @@
 */
 const handlebars = require('handlebars');
 
-import { config } from '../config';
+import { config, privateConfigFields, sortConfig } from '../config';
 
 class TemplateService {
 
   public template(value: string, data: any = {}): any {
     const templateFn = handlebars.compile(value);
-    const store = JSON.parse(JSON.stringify(config.store));
+    const store = JSON.parse(JSON.stringify(sortConfig(config?.store, privateConfigFields)));
 
     return templateFn(Object.assign(data, store));
   }
