@@ -299,18 +299,24 @@ class WorkflowService extends RestService implements Enhancer {
   }
 
   private script(path: string, obj: any, prop: string): void {
-    if (!!obj && !!obj.scriptFormat && typeof obj.scriptFormat === 'string') {
+
+    if (!!obj) {
       let extension;
 
-      if (obj.scriptFormat.toLowerCase() === 'javascript') {
-        extension = 'js';
-      } else if (obj.scriptFormat.toLowerCase() === 'python') {
-        extension = 'py';
-      } else if (obj.scriptFormat.toLowerCase() === 'ruby') {
-        extension = 'rb';
+      if (!!obj.scriptFormat && typeof obj.scriptFormat === 'string') {
+        if (obj.scriptFormat.toLowerCase() === 'javascript') {
+          extension = 'js';
+        } else if (obj.scriptFormat.toLowerCase() === 'python') {
+          extension = 'py';
+        } else if (obj.scriptFormat.toLowerCase() === 'ruby') {
+          extension = 'rb';
+        } else {
+          // Fallback to using the lower case script format itself as the directory name.
+          extension = obj.scriptFormat.toLowerCase().trim();
+        }
       } else {
-        // Fallback to using the lower case script format itself as the directory name.
-        extension = obj.scriptFormat.toLowerCase().trim();
+        // Default to Javascript.
+        extension = 'js';
       }
 
       if (!!extension) {
