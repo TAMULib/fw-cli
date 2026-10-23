@@ -14,8 +14,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-const Conf = require('conf');
-
+import Conf, { Schema } from 'conf';
 import sha256 from 'crypto-js/sha256';
 
 /**
@@ -37,10 +36,29 @@ export const privateConfigFields = [
 ];
 
 /**
+ * The initial Store typing template.
+ */
+type Store = {
+  cliAccess: string,
+  cliAutoRefresh: boolean,
+  cliDirectUrl: string,
+  cliFolioLoginPath: string,
+  cliFolioPass: string,
+  cliFolioRefreshPath: string,
+  cliFolioTenant: string,
+  cliFolioUser: string,
+  cliGatewayUrl: string,
+  cliWd: string,
+  folioPass: string,
+  folioUser: string,
+  gatewayUrl: string,
+};
+
+/**
  * The initial schema template.
  *
  */
-const schema = {
+const schema: Schema<Store> = {
   cliAccess: {
     type: 'string',
     enum: ['gateway', 'direct'],
@@ -160,9 +178,23 @@ export function sortConfig(config?: any, filterOut?: string[]): Object {
   );
 }
 
+/**
+ * Validate if a key variable is a usable configuration key.
+ * 
+ * For purposes of using dynamic keys, this accepts any `string` value and forces compliance with config functions like `reset` and `delete`.
+ * This should be used *specifically* with config functions that require a `keyOf Store` value, as other config functions may instead break.
+ * 
+ * @param key Key value to test, preferrably a `string` key.
+ * 
+ * @returns `true` if the value is a usable store key, in which the `key` variable can then satisfy requirements for `keyOf Store` config functions. 
+ */
+export function isConfigKey(key: unknown): key is keyof Store {
+  return typeof key == 'string';
+}
+
 export const projectName = 'fwcli';
 
-export const config = new Conf({
+export const config = new Conf<Store>({
   projectName,
-  schema
+  schema,
 });

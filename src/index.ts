@@ -21,11 +21,12 @@ const chalk = require('chalk');
 const clear = require('clear');
 const figlet = require('figlet');
 const process = require('node:process');
-const program = require('commander');
+
+const { program } = require('commander');
 
 import { gateway } from './service/gateway.service';
 import { cache } from './cache';
-import { config, configChecksum, sortConfig } from './config';
+import { config, configChecksum, sortConfig, isConfigKey } from './config';
 import { modWorkflow } from './service/workflow.service';
 import { fileService } from './service/file.service';
 import { defaultService } from './service/default.service';
@@ -111,7 +112,7 @@ program
         }
         break;
       case 'reset':
-        if (property) {
+        if (isConfigKey(property)) {
           config.reset(property);
           console.log(`reset ${property} to ${config.get(property)}`);
         } else {
@@ -121,7 +122,7 @@ program
         }
         break;
       case 'delete':
-        if (property) {
+        if (isConfigKey(property)) {
           config.delete(property);
           console.log(`deleted ${property}`);
         } else {
