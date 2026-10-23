@@ -444,6 +444,10 @@ class WorkflowService extends RestService implements Enhancer {
         const suffix = this.getGitHash();
 
         if (suffix) {
+          if (!parsed.versionTag) {
+            parsed.versionTag = "1.0";
+          }
+
           parsed.versionTag += `-${suffix}`;
         } else {
           throw new Error('Git hash command returned no results in working directory (cliWd) path.');
