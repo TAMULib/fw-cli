@@ -14,9 +14,16 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-const Conf = require('conf');
+import Conf, { Schema } from 'conf';
 
-const schema = {
+type Store = {
+  cliFolioAccessToken: Object,
+  cliFolioRefreshToken: Object,
+  cliFolioToken: string,
+  cliUserId: string,
+};
+
+const schema: Schema<Store> = {
   cliFolioAccessToken: {
     type: 'object',
     default: {},
@@ -37,7 +44,7 @@ const schema = {
 
 export const projectName = 'fwcli';
 
-export const cache = new Conf({
+export const cache = new Conf<Store>({
   configName: 'cache',
   projectName,
   schema,
