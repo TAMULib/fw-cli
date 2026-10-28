@@ -14,9 +14,51 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-const Conf = require('conf');
+import Conf, { Schema } from 'conf';
+import sha256 from 'crypto-js/sha256';
 
-const schema = {
+/**
+ * A list of all fields private to fw-cli.
+ *
+ * These are excluded from the list during generation of a workflow and check sum processes.
+ */
+export const privateConfigFields = [
+  'cliAccess',
+  'cliAutoRefresh',
+  'cliDirectUrl',
+  'cliFolioLoginPath',
+  'cliFolioPass',
+  'cliFolioRefreshPath',
+  'cliFolioTenant',
+  'cliFolioUser',
+  'cliGatewayUrl',
+  'cliWd',
+];
+
+/**
+ * The initial Store typing template.
+ */
+type Store = {
+  cliAccess: string,
+  cliAutoRefresh: boolean,
+  cliDirectUrl: string,
+  cliFolioLoginPath: string,
+  cliFolioPass: string,
+  cliFolioRefreshPath: string,
+  cliFolioTenant: string,
+  cliFolioUser: string,
+  cliGatewayUrl: string,
+  cliWd: string,
+  folioPass: string,
+  folioUser: string,
+  gatewayUrl: string,
+};
+
+/**
+ * The initial schema template.
+ *
+ */
+const schema: Schema<Store> = {
   cliAccess: {
     type: 'string',
     enum: ['gateway', 'direct'],
@@ -72,9 +114,87 @@ const schema = {
   }
 };
 
+/**
+ * Use SHA256 in such a way that it matches what can be reproduced through manual hashing.
+ *
+ * This excludes all **CLI** specific variables as well as designated custom identifiers.
+ *
+ * This should produce an identical hash to the command:
+ *   ```sh
+ *   jq --sort-keys -cM '
+ *     del(.cliAccess, .cliAutoRefresh, .cliDirectUrl, .cliFolioLoginPath, .cliFolioPass, .cliFolioRefreshPath, .cliFolioTenant, .cliFolioUser, .cliGatewayUrl, .cliWd)
+ *     | walk(if type == "object"
+ *     then with_entries(
+ *       select(.key | test("[^\\w-]") | not)
+ *     )
+ *     else . end
+ *   )' config.json | sha256sum
+ *   ```
+ * Where `config.json` is the configuration file.
+ *
+ * The trailing new line is necessary to produce a consistent valid hash in this manner.
+ *
+ * @return The configration hash string.
+ */
+export function configChecksum(): string {
+  const json = JSON.stringify(sortConfig(config?.store, privateConfigFields)) + '\n';
+
+  return sha256(json).toString();
+}
+
+/**
+ * Test a JSON identifier / key to determine if it is a designated custom identifier.
+ *
+ * The practice being used to designate custom identifiers is to use non-word characters (other than `-`), similiar to the following example:
+ *  ```
+ *    "==FILE==": "EXAMPLE",
+ *  ```
+ *
+ * @param key The JSON key to be tested.
+ *
+ * @returns `true` if the key matches the expected practices of a custom identifier, `false` otherwise.
+ */
+function customJsonIdentifier(key: string): boolean {
+  const customValidatorRegex = /[^\w-]/;
+  return customValidatorRegex.test(key);
+}
+
+/**
+ * Get the configuration as JSON, in a sorted manner.
+ *
+ * @param config    The configuration JSON to sort (not the config object, but instead config.store).
+ * @param filterOut (optional) An array list of keys to filter out.
+ *
+ * @return a JSON Object representing the configuration.
+ */
+export function sortConfig(config?: any, filterOut?: string[]): Object {
+  const sorted = Object.entries(config)
+    .sort(([left], [right]) => left.localeCompare(right))
+
+  return Object.fromEntries(
+    filterOut
+      ? sorted.filter(([key]) => !filterOut.includes(key) && !customJsonIdentifier(key))
+      : sorted
+  );
+}
+
+/**
+ * Validate if a key variable is a usable configuration key.
+ * 
+ * For purposes of using dynamic keys, this accepts any `string` value and forces compliance with config functions like `reset` and `delete`.
+ * This should be used *specifically* with config functions that require a `keyOf Store` value, as other config functions may instead break.
+ * 
+ * @param key Key value to test, preferrably a `string` key.
+ * 
+ * @returns `true` if the value is a usable store key, in which the `key` variable can then satisfy requirements for `keyOf Store` config functions. 
+ */
+export function isConfigKey(key: unknown): key is keyof Store {
+  return typeof key == 'string';
+}
+
 export const projectName = 'fwcli';
 
-export const config = new Conf({
+export const config = new Conf<Store>({
   projectName,
-  schema
+  schema,
 });

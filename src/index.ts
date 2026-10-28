@@ -21,11 +21,12 @@ const chalk = require('chalk');
 const clear = require('clear');
 const figlet = require('figlet');
 const process = require('node:process');
-const program = require('commander');
+
+const { program } = require('commander');
 
 import { gateway } from './service/gateway.service';
 import { cache } from './cache';
-import { config } from './config';
+import { config, configChecksum, sortConfig, isConfigKey } from './config';
 import { modWorkflow } from './service/workflow.service';
 import { fileService } from './service/file.service';
 import { defaultService } from './service/default.service';
@@ -54,18 +55,18 @@ program
   .usage('[options]')
   .allowUnknownOption(false)
   .option('-c, --config', 'show current configuration', () => {
-    console.log(JSON.stringify(config.store, null, 2));
+    console.log(JSON.stringify(sortConfig(config?.store), null, 2));
     process.exit();
   })
   .option('-C, --cache', 'show current cache', () => {
-    console.log(JSON.stringify(cache.store, null, 2));
+    console.log(JSON.stringify(sortConfig(cache?.store), null, 2));
     process.exit();
   })
   .option('-g, --git', 'attempt to append the git hash to the Workflow version during build from within the cliWd directory.', () => {
     modWorkflow.enableGitHash();
   })
   .option('-S, --checksum', 'print checksum of current workflow configuration (verify via: jq -cM . config.json | sha256sum).', () => {
-    console.log(`${modWorkflow.checksum()}  ${config?.path}\n`);
+    console.log(`${configChecksum()}  ${config?.path}\n`);
     process.exit();
   })
   .option('-w, --workflows', 'list workflows', () => {
@@ -111,17 +112,17 @@ program
         }
         break;
       case 'reset':
-        if (property) {
+        if (isConfigKey(property)) {
           config.reset(property);
           console.log(`reset ${property} to ${config.get(property)}`);
         } else {
           config.clear();
           console.log('reset config to default');
-          console.log(JSON.stringify(config.store, null, 2));
+          console.log(JSON.stringify(sortConfig(config?.store), null, 2));
         }
         break;
       case 'delete':
-        if (property) {
+        if (isConfigKey(property)) {
           config.delete(property);
           console.log(`deleted ${property}`);
         } else {
@@ -131,9 +132,11 @@ program
       case 'save':
         if (property) {
           const path = `${CONF_DIR}/${property}.json`;
-          fileService.save(path, config.store);
+          const sorted = sortConfig(config?.store);
+
+          fileService.save(path, sorted);
           console.log(`stored the following config to ${path}`);
-          console.log(JSON.stringify(config.store, null, 2));
+          console.log(JSON.stringify(sorted, null, 2));
         } else {
           console.log('config save requires name for the stored config');
         }
@@ -151,11 +154,12 @@ program
           }
 
           const conf = JSON.parse(fileService.read(path + loadedExt));
+          const sorted = sortConfig(conf);
           config.clear();
-          config.set(conf);
+          config.set(sorted);
 
           console.log(`loaded config from ${path}`);
-          console.log(JSON.stringify(config.store, null, 2));
+          console.log(JSON.stringify(sorted, null, 2));
 
           if (loadedExt !== primaryExt) {
             console.log(`The ${path + loadedExt} file name is deprecated, please rename your configuration file to ${path + primaryExt}.`);
